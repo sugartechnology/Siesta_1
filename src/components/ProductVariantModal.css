@@ -1,0 +1,183 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(10.5px);
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-rotated-wrapper {
+  transform: rotate(270deg);
+  transform-origin: center center;
+}
+
+.variant-modal {
+  background: white;
+  border-radius: 30px;
+  box-shadow: 0px 4px 6px 0px rgba(0, 0, 0, 0.45);
+  width: 639px;
+  padding: 32px 28.5px;
+}
+
+.modal-content {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 42px;
+}
+
+.modal-title {
+  font-size: 27.88px;
+  font-weight: 600;
+  color: #000;
+  text-transform: capitalize;
+  line-height: 41.82px;
+  margin: 0;
+}
+
+.close-btn {
+  width: 21px;
+  height: 21px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.3s;
+}
+
+.close-btn:hover {
+  opacity: 0.7;
+}
+
+.close-btn img {
+  width: 100%;
+  height: 100%;
+}
+
+.variants-grid {
+  display: flex;
+  justify-content: space-between;
+  gap: 37px;
+}
+
+.variant-item {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+  width: 164.085px;
+}
+
+.variant-image-container {
+  width: 164.085px;
+  height: 163px;
+  border-radius: 15px;
+  border: 1.348px solid #000;
+  background: rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.variant-image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.variant-product-name {
+  font-size: 15px;
+  color: #000;
+  text-transform: capitalize;
+  margin: 0;
+}
+
+.variant-name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #000;
+  text-transform: capitalize;
+  margin: 0;
+}
+
+.quantity-control {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.qty-btn {
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  border: 1.5px solid #000;
+  background: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.qty-btn:hover {
+  background: #f5f5f5;
+}
+
+.qty-display {
+  min-width: 13px;
+  text-align: center;
+  font-size: 16.17px;
+  font-weight: 500;
+  color: #000;
+  position: relative;
+}
+
+.qty-display::after {
+  content: '';
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: #d8d8d8;
+}
+
+.add-to-design-btn {
+  width: 190px;
+  height: 51px;
+  background: #000;
+  color: white;
+  border: none;
+  border-radius: 78.802px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  margin: 24px auto 0;
+  display: block;
+  transition: all 0.3s;
+}
+
+.add-to-design-btn:hover {
+  background: #333;
+  transform: scale(1.05);
+}
+
+
+

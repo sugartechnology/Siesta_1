@@ -1,0 +1,274 @@
+.splash-screen-new {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  overflow: hidden;
+  background: #fff;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Images Container */
+.splash-images-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* Left Image Section */
+.splash-image-left {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.splash-image-left .splash-bg-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Right Image Section */
+.splash-image-right {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  overflow: hidden;
+}
+
+.splash-image-right .splash-bg-image {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Text Overlay on Left */
+.splash-text-overlay {
+  position: absolute;
+  top: 50%;
+  left: 80px;
+  transform: translateY(-50%);
+  z-index: 10;
+  pointer-events: none;
+}
+
+.splash-heading {
+  font-family: 'Poppins', sans-serif;
+  font-size: 51.826px;
+  font-weight: 400;
+  color: #000;
+  margin: 0 0 10px 0;
+  text-transform: capitalize;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.splash-brand-name {
+  font-family: 'Poppins', sans-serif;
+  font-size: 82.922px;
+  font-weight: 400;
+  color: #000;
+  margin: 0;
+  text-transform: capitalize;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* Logo in Bottom Right */
+.splash-logo-bottom {
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.siesta-logo {
+  width: 200px;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0px 2px 8px rgba(0, 0, 0, 0.2));
+}
+
+/* Slider Control */
+.splash-slider-control {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 100;
+  cursor: grab;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.splash-slider-control:active {
+  cursor: grabbing;
+}
+
+/* Slider Button */
+.slider-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 99px;
+  height: 99px;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.slider-icon-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  filter: drop-shadow(0px 4px 20px rgba(0, 0, 0, 0.25));
+}
+
+.slider-button:hover {
+  transform: scale(1.05);
+}
+
+.slider-button:hover .slider-icon-img {
+  filter: drop-shadow(0px 6px 25px rgba(0, 0, 0, 0.3));
+}
+
+.slider-button:active {
+  transform: scale(0.98);
+}
+
+/* Vertical Line */
+.slider-vertical-line {
+  position: absolute;
+  top: calc(50% + 60px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 2px;
+  height: calc(100vh - 50% - 60px);
+  background: rgba(0, 0, 0, 0.15);
+  pointer-events: none;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .splash-heading {
+    font-size: 40px;
+  }
+
+  .splash-brand-name {
+    font-size: 64px;
+  }
+
+  .splash-text-overlay {
+    left: 60px;
+  }
+
+  .slider-button {
+    width: 80px;
+    height: 80px;
+  }
+
+  .slider-icon-img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .siesta-logo {
+    width: 160px;
+  }
+
+  .splash-logo-bottom {
+    bottom: 30px;
+    right: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  .splash-heading {
+    font-size: 32px;
+  }
+
+  .splash-brand-name {
+    font-size: 52px;
+  }
+
+  .splash-text-overlay {
+    left: 40px;
+  }
+
+  .slider-button {
+    width: 70px;
+    height: 70px;
+  }
+
+  .slider-icon-img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .siesta-logo {
+    width: 140px;
+  }
+
+  .splash-logo-bottom {
+    bottom: 20px;
+    right: 20px;
+  }
+}
+
+@media (max-width: 480px) {
+  .splash-heading {
+    font-size: 24px;
+  }
+
+  .splash-brand-name {
+    font-size: 40px;
+  }
+
+  .splash-text-overlay {
+    left: 20px;
+  }
+
+  .slider-button {
+    width: 60px;
+    height: 60px;
+  }
+
+  .slider-icon-img {
+    width: 100%;
+    height: 100%;
+  }
+
+  .siesta-logo {
+    width: 120px;
+  }
+
+  .splash-logo-bottom {
+    bottom: 15px;
+    right: 15px;
+  }
+}
+
+/* Loading Animation */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.splash-screen-new {
+  animation: fadeIn 0.5s ease-out;
+}
