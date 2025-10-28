@@ -14,7 +14,6 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     checkSession();
-    navigate("/home");
     //setLoading(false);
   }, []);
 
@@ -27,11 +26,14 @@ export function AuthProvider({ children }) {
       if (res.ok) {
         //const data = await res.json();
         setUser({ id: "data.id", name: "data.name", email: "" });
+        navigate("/home");
       } else {
+        navigate("/login");
         setUser(null);
       }
     } catch (error) {
       console.error("Session check failed:", error);
+      navigate("/login");
       setUser(null);
     } finally {
       setLoading(false);
