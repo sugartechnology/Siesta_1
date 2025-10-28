@@ -1,0 +1,29 @@
+.editable-title-container {
+  position: relative;
+  display: inline-block;
+}
+
+.editable-title-span {
+  cursor: pointer;
+  transition: opacity 0.3s ease;
+  pointer-events: auto;
+}
+
+.editable-title-span:hover {
+  opacity: 0.8;
+}
+
+.editable-title-container .editable-title-input {
+  border-radius: 8px !important;
+  outline: none !important;
+  backdrop-filter: blur(5px) !important;
+
+  z-index: 10 !important;
+  width: 100% !important;
+  box-sizing: border-box !important;
+  position: relative !important;
+}
+
+.editable-title-container .editable-title-input:focus {
+  border-color: rgba(255, 255, 255, 0.8) !important;
+}

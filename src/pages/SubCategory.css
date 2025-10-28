@@ -53,7 +53,7 @@
 }
 
 .subcategory-top-menu .menu-item {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 17px;
   font-weight: 300;
   line-height: 24px;
@@ -105,7 +105,7 @@
 }
 
 /* Category Grid */
-.category-grid {
+.sub-category-grid {
   flex: 1;
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -114,7 +114,7 @@
   padding: 10px 0;
 }
 
-.category-card {
+.sub-category-card {
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -130,20 +130,20 @@
   padding: 25px;
 }
 
-.category-card:hover {
+.sub-category-card:hover {
   transform: translateY(-5px);
   box-shadow: 0px 8px 20px 0px rgba(0, 0, 0, 0.45);
 }
 
-.category-overlay {
+.sub-category-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent 60%);
   pointer-events: none;
 }
 
-.category-name {
-  font-family: 'Poppins', sans-serif;
+.sub-category-name {
+  font-family: "Poppins", sans-serif;
   font-size: 30px;
   font-weight: 500;
   line-height: 1.19;
@@ -155,58 +155,58 @@
   white-space: pre-line;
 }
 
-.category-name.multiline {
+.sub-category-name.multiline {
   white-space: pre-line;
 }
 
 /* Grid Areas */
-.category-card.chairs {
+.sub-category-card.chairs {
   grid-column: 1 / 2;
   grid-row: 1 / 2;
   background-color: #8b5e5e;
 }
 
-.category-card.chairs .category-name {
+.sub-category-card.chairs .sub-category-name {
   color: #000;
 }
 
-.category-card.sunlounger {
+.sub-category-card.sunlounger {
   grid-column: 3 / 4;
   grid-row: 1 / 2;
   background-color: #a99c8b;
 }
 
-.category-card.sunlounger .category-name {
+.sub-category-card.sunlounger .sub-category-name {
   color: #000;
 }
 
-.category-card.stools {
+.sub-category-card.stools {
   grid-column: 2 / 3;
   grid-row: 1 / 3;
   background-color: #d4875d;
 }
 
-.category-card.stools .category-name {
+.sub-category-card.stools .sub-category-name {
   color: #000;
 }
 
-.category-card.lighting {
+.sub-category-card.lighting {
   grid-column: 1 / 2;
   grid-row: 2 / 3;
   background-color: #cde2e8;
 }
 
-.category-card.lighting .category-name {
+.sub-category-card.lighting .sub-category-name {
   color: #000;
 }
 
-.category-card.tables {
+.sub-category-card.tables {
   grid-column: 3 / 4;
   grid-row: 2 / 3;
   background-color: #e8e4d9;
 }
 
-.category-card.tables .category-name {
+.sub-category-card.tables .sub-category-name {
   color: #000;
 }
 
@@ -216,13 +216,12 @@
     max-width: 95vw;
     max-height: 95vh;
   }
-  
-  .category-grid {
+
+  .sub-category-grid {
     gap: 15px;
   }
-  
-  .category-name {
+
+  .sub-category-name {
     font-size: 24px;
   }
 }
-

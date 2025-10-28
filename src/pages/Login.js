@@ -1,48 +1,61 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Login.css';
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import "./Login.css";
+import { useAuth } from "../auth/useAuth";
 
 const Login = () => {
   const navigate = useNavigate();
   const [isLogin, setIsLogin] = useState(true); // Toggle between login and register
-  
+
   // Login form state
-  const [loginUsername, setLoginUsername] = useState('');
-  const [loginPassword, setLoginPassword] = useState('');
-  
+  const [loginUsername, setLoginUsername] = useState("");
+  const [loginPassword, setLoginPassword] = useState("");
+
   // Register form state
-  const [registerName, setRegisterName] = useState('');
-  const [registerEmail, setRegisterEmail] = useState('');
-  const [registerPassword, setRegisterPassword] = useState('');
-  const [registerRePassword, setRegisterRePassword] = useState('');
-  
+  const [registerName, setRegisterName] = useState("");
+  const [registerEmail, setRegisterEmail] = useState("");
+  const [registerPassword, setRegisterPassword] = useState("");
+  const [registerRePassword, setRegisterRePassword] = useState("");
+
   // Error states
-  const [loginError, setLoginError] = useState('');
+  const [loginError, setLoginError] = useState("");
   const [registerErrors, setRegisterErrors] = useState({
-    name: '',
-    email: '',
-    password: '',
-    rePassword: ''
+    name: "",
+    email: "",
+    password: "",
+    rePassword: "",
   });
 
-  const imgLogo = "http://localhost:3845/assets/56b68463c1acec5ac9da8e728326a8fb6cf8482d.png";
-  const imgBackground = "http://localhost:3845/assets/5229f6f2d7ab3fc28c805c8494656b953210df71.png";
-  const imgFacebook = "http://localhost:3845/assets/88b63fe33fffe95c43e282e2280b18c129842d26.svg";
-  const imgGoogle = "http://localhost:3845/assets/6976bc1ec977a49f1b8210b6a3215c023b636d69.svg";
-  const imgApple = "http://localhost:3845/assets/aa9ac7f11aa49d2924c673c3aa1f0b953d28b9b8.svg";
+  const imgLogo = "/assets/logo_big.png";
+  const imgBackground = "/assets/login_background.png";
+  const imgFacebook =
+    "http://localhost:3845/assets/88b63fe33fffe95c43e282e2280b18c129842d26.svg";
+  const imgGoogle =
+    "http://localhost:3845/assets/6976bc1ec977a49f1b8210b6a3215c023b636d69.svg";
+  const imgApple =
+    "http://localhost:3845/assets/aa9ac7f11aa49d2924c673c3aa1f0b953d28b9b8.svg";
+
+  const auth = useAuth();
 
   const handleSignIn = (e) => {
     e.preventDefault();
-    setLoginError('');
-    
+    setLoginError("");
+
     // Accept any login info as long as both fields have values
     if (!loginUsername.trim() || !loginPassword.trim()) {
-      setLoginError('Please enter both username and password');
+      setLoginError("Please enter both username and password");
       return;
     }
-    
-    // Navigate to home on successful login
-    navigate('/home');
+
+    auth
+      .login(loginUsername, loginPassword)
+      .then(() => {
+        navigate("/home");
+      })
+      .catch((error) => {
+        console.error("Login error:", error);
+        setLoginError("Invalid username or password");
+      });
   };
 
   const validateEmail = (email) => {
@@ -52,103 +65,107 @@ const Login = () => {
 
   const handleRegister = (e) => {
     e.preventDefault();
-    
+
     // Reset errors
     const errors = {
-      name: '',
-      email: '',
-      password: '',
-      rePassword: ''
+      name: "",
+      email: "",
+      password: "",
+      rePassword: "",
     };
-    
+
     let hasError = false;
-    
+
     // Validate name
     if (!registerName.trim()) {
-      errors.name = 'Name is required';
+      errors.name = "Name is required";
       hasError = true;
     } else if (registerName.trim().length < 2) {
-      errors.name = 'Name must be at least 2 characters';
+      errors.name = "Name must be at least 2 characters";
       hasError = true;
     }
-    
+
     // Validate email
     if (!registerEmail.trim()) {
-      errors.email = 'Email is required';
+      errors.email = "Email is required";
       hasError = true;
     } else if (!validateEmail(registerEmail)) {
-      errors.email = 'Please enter a valid email address';
+      errors.email = "Please enter a valid email address";
       hasError = true;
     }
-    
+
     // Validate password
     if (!registerPassword) {
-      errors.password = 'Password is required';
+      errors.password = "Password is required";
       hasError = true;
     } else if (registerPassword.length < 6) {
-      errors.password = 'Password must be at least 6 characters';
+      errors.password = "Password must be at least 6 characters";
       hasError = true;
     }
-    
+
     // Validate re-password
     if (!registerRePassword) {
-      errors.rePassword = 'Please confirm your password';
+      errors.rePassword = "Please confirm your password";
       hasError = true;
     } else if (registerPassword !== registerRePassword) {
-      errors.rePassword = 'Passwords do not match';
+      errors.rePassword = "Passwords do not match";
       hasError = true;
     }
-    
+
     setRegisterErrors(errors);
-    
+
     if (!hasError) {
       // Registration successful - switch to login form
-      alert('Registration successful! Please login with your credentials.');
+      alert("Registration successful! Please login with your credentials.");
       setIsLogin(true);
       // Clear register form
-      setRegisterName('');
-      setRegisterEmail('');
-      setRegisterPassword('');
-      setRegisterRePassword('');
-      setRegisterErrors({ name: '', email: '', password: '', rePassword: '' });
+      setRegisterName("");
+      setRegisterEmail("");
+      setRegisterPassword("");
+      setRegisterRePassword("");
+      setRegisterErrors({ name: "", email: "", password: "", rePassword: "" });
     }
   };
 
   const handleSocialLogin = (provider) => {
     // Simulate social login - in real app, this would handle OAuth
     alert(`Logging in with ${provider}...`);
-    navigate('/home');
+    navigate("/home");
   };
 
   const handleContinueWithoutLogin = () => {
-    navigate('/home');
+    navigate("/home");
   };
 
   const switchToRegister = () => {
     setIsLogin(false);
-    setLoginError('');
+    setLoginError("");
   };
 
   const switchToLogin = () => {
     setIsLogin(true);
-    setRegisterErrors({ name: '', email: '', password: '', rePassword: '' });
+    setRegisterErrors({ name: "", email: "", password: "", rePassword: "" });
   };
 
   return (
     <div className="login-container">
       {/* Background Image */}
       <div className="login-background">
-        <img src={imgBackground} alt="Background" className="background-image" />
+        <img
+          src={imgBackground}
+          alt="Background"
+          className="background-image"
+        />
         <div className="background-overlay"></div>
       </div>
 
       {/* Login Content */}
       <div className="login-content">
-        {/* Logo */}
+        {/* Logo
         <div className="login-logo-container">
           <img src={imgLogo} alt="Siesta" className="login-logo" />
         </div>
-
+ */}
         {/* Welcome Text */}
         <div className="login-welcome-text">
           <h2 className="welcome-subtitle">Welcome to</h2>
@@ -156,7 +173,9 @@ const Login = () => {
         </div>
 
         {/* Sign in to continue - Moved outside card */}
-        <h3 className="login-page-title">{isLogin ? 'Sign in to continue' : 'Create your account'}</h3>
+        <h3 className="login-page-title">
+          {isLogin ? "Sign in to continue" : "Create your account"}
+        </h3>
 
         {/* Login/Register Form Card */}
         <div className="login-card">
@@ -164,7 +183,7 @@ const Login = () => {
             // LOGIN FORM
             <form onSubmit={handleSignIn} className="login-form">
               {loginError && <div className="error-message">{loginError}</div>}
-              
+
               {/* Username Field */}
               <div className="input-group">
                 <label className="input-label">Username</label>
@@ -210,9 +229,13 @@ const Login = () => {
                   value={registerName}
                   onChange={(e) => setRegisterName(e.target.value)}
                   placeholder="John Doe"
-                  className={`input-field ${registerErrors.name ? 'input-error' : ''}`}
+                  className={`input-field ${
+                    registerErrors.name ? "input-error" : ""
+                  }`}
                 />
-                {registerErrors.name && <span className="field-error">{registerErrors.name}</span>}
+                {registerErrors.name && (
+                  <span className="field-error">{registerErrors.name}</span>
+                )}
               </div>
 
               {/* Email Field */}
@@ -223,9 +246,13 @@ const Login = () => {
                   value={registerEmail}
                   onChange={(e) => setRegisterEmail(e.target.value)}
                   placeholder="johndoe@mail.com"
-                  className={`input-field ${registerErrors.email ? 'input-error' : ''}`}
+                  className={`input-field ${
+                    registerErrors.email ? "input-error" : ""
+                  }`}
                 />
-                {registerErrors.email && <span className="field-error">{registerErrors.email}</span>}
+                {registerErrors.email && (
+                  <span className="field-error">{registerErrors.email}</span>
+                )}
               </div>
 
               {/* Password Field */}
@@ -236,9 +263,13 @@ const Login = () => {
                   value={registerPassword}
                   onChange={(e) => setRegisterPassword(e.target.value)}
                   placeholder="•••••••••"
-                  className={`input-field ${registerErrors.password ? 'input-error' : ''}`}
+                  className={`input-field ${
+                    registerErrors.password ? "input-error" : ""
+                  }`}
                 />
-                {registerErrors.password && <span className="field-error">{registerErrors.password}</span>}
+                {registerErrors.password && (
+                  <span className="field-error">{registerErrors.password}</span>
+                )}
               </div>
 
               {/* Re-Password Field */}
@@ -249,9 +280,15 @@ const Login = () => {
                   value={registerRePassword}
                   onChange={(e) => setRegisterRePassword(e.target.value)}
                   placeholder="•••••••••"
-                  className={`input-field ${registerErrors.rePassword ? 'input-error' : ''}`}
+                  className={`input-field ${
+                    registerErrors.rePassword ? "input-error" : ""
+                  }`}
                 />
-                {registerErrors.rePassword && <span className="field-error">{registerErrors.rePassword}</span>}
+                {registerErrors.rePassword && (
+                  <span className="field-error">
+                    {registerErrors.rePassword}
+                  </span>
+                )}
               </div>
 
               {/* Sign Up Button */}
@@ -264,11 +301,13 @@ const Login = () => {
           {/* Social Login Divider */}
           <div className="social-divider">
             <div className="divider-line"></div>
-            <span className="divider-text">or {isLogin ? 'Sign in' : 'Sign up'} with</span>
+            <span className="divider-text">
+              or {isLogin ? "Sign in" : "Sign up"} with
+            </span>
             <div className="divider-line"></div>
           </div>
 
-          {/* Social Login Buttons */}
+          {/* Social Login Buttons 
           <div className="social-buttons">
             <button className="social-btn" onClick={() => handleSocialLogin('Facebook')}>
               <img src={imgFacebook} alt="Facebook" />
@@ -280,26 +319,35 @@ const Login = () => {
               <img src={imgApple} alt="Apple" />
             </button>
           </div>
-
+          */}
           {/* Toggle between Login and Register */}
           {isLogin ? (
             <div className="signup-link">
-              Don't have an account? <span className="signup-link-text" onClick={switchToRegister}>Sign Up</span>
+              Don't have an account?{" "}
+              <span className="signup-link-text" onClick={switchToRegister}>
+                Sign Up
+              </span>
             </div>
           ) : (
             <div className="signup-link">
-              Already have an account? <span className="signup-link-text" onClick={switchToLogin}>Sign In</span>
+              Already have an account?{" "}
+              <span className="signup-link-text" onClick={switchToLogin}>
+                Sign In
+              </span>
             </div>
           )}
 
-          {/* Continue Without Login */}
+          {/* Continue Without Login 
           {isLogin && (
             <div className="continue-without-login">
-              <button className="continue-link" onClick={handleContinueWithoutLogin}>
+              <button
+                className="continue-link"
+                onClick={handleContinueWithoutLogin}
+              >
                 Continue Without Login
               </button>
             </div>
-          )}
+          )}*/}
         </div>
       </div>
     </div>

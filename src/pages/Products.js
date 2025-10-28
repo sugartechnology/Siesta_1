@@ -1,58 +1,270 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './Products.css';
+import { useEffect, useRef, useState } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { fetchProducts } from "../api/Api";
+import FilterButton from "../components/FilterButton";
+import { getNextPage, NavigationState } from "../utils/NavigationState";
+import "./Products.css";
 
 export default function Products() {
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [showVariantModal, setShowVariantModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
-  const [activeFilters, setActiveFilters] = useState(['Filter 1', 'Filter 2', 'Filter 3', 'Filter 4']);
+
+  // URL parametrelerinden initial state oluştur
+  const getInitialFilterState = () => {
+    const category = searchParams.get("category");
+    const subCategory = searchParams.get("subCategory");
+    const search = searchParams.get("search") || "";
+
+    return {
+      searchQuery: search,
+      page: 0,
+      selectedCategories: category ? [category] : [],
+      selectedSubCategories: subCategory
+        ? [decodeURIComponent(subCategory)]
+        : [],
+      selectedRooms: [],
+      selectedStyles: [],
+      activeFilters: [],
+    };
+  };
+
+  // Combined filter and pagination state
+  const [filterState, setFilterState] = useState(getInitialFilterState);
+
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  // Dışardan seçili ürünleri set etme fonksiyonları
+  const getInitialSelectedProducts = () => {
+    // 1. URL parametresinden (selectedProducts)
+    const selectedProductsParam = searchParams.get("selectedProducts");
+    if (selectedProductsParam) {
+      try {
+        return JSON.parse(decodeURIComponent(selectedProductsParam));
+      } catch (e) {
+        console.error("Error parsing selectedProducts from URL:", e);
+      }
+    }
+
+    // 2. Location state'inden (navigate ile gönderilen)
+    if (NavigationState.selectedProducts) {
+      return NavigationState.selectedProducts;
+    }
+
+    // 3. Varsayılan boş array
+    return [];
+  };
+
+  // Seçili ürünlerin state'i (ProductQuantityDTO benzeri)
+  const [selectedProducts, setSelectedProducts] = useState(
+    getInitialSelectedProducts
+  );
+
+  // Dışardan seçili ürünleri set et
+  const setSelectedProductsFromExternal = (products) => {
+    setSelectedProducts(products);
+  };
+
+  // Seçili ürünleri temizle
+  const clearSelectedProducts = () => {
+    setSelectedProducts([]);
+  };
+
+  const sentinelRef = useRef(null);
+
+  // Filter options
+  const categoryOptions = [
+    { value: "contract", label: "Contract" },
+    { value: "garden", label: "Garden" },
+    { value: "rattan", label: "Rattan" },
+  ];
+
+  const subCategoryOptions = [
+    {
+      value: "chairs",
+      label: "Chairs",
+    },
+    {
+      value: "tables",
+      label: "Tables",
+    },
+    {
+      value: "stools & complements",
+      label: "Stools & Complements",
+    },
+    {
+      value: "sunlounger & lounge",
+      label: "Sunlounger & Lounge",
+    },
+    {
+      value: "lounge",
+      label: "Lounge",
+    },
+    {
+      value: "li̇ghti̇ng",
+      label: "Lighting",
+    },
+    {
+      value: "stools & multi purpose",
+      label: "Stools & Multi Purpose",
+    },
+    {
+      value: "sunlounger",
+      label: "Sunlounger",
+    },
+    {
+      value: "children group",
+      label: "Children Group",
+    },
+    {
+      value: "sunloungers",
+      label: "Sunloungers",
+    },
+    {
+      value: "bar stool",
+      label: "Bar Stool",
+    },
+  ];
+
   const [variantQuantities, setVariantQuantities] = useState({
-    1: 2,  // Black
-    2: 0,  // White
-    3: 1,  // Olive Green
-    4: 0,  // Taupe
-    5: 1,  // Dark Grey
-    6: 0   // Marsala
+    1: 2, // Black
+    2: 0, // White
+    3: 1, // Olive Green
+    4: 0, // Taupe
+    5: 1, // Dark Grey
+    6: 0, // Marsala
   });
 
-  // Figma product images
-  const img02 = "http://localhost:3845/assets/bf4a83eb75528411ffaad26c0a927b96401c88e5.png";
-  const img3 = "http://localhost:3845/assets/926e7ce4ce4bbff3824c4861a64e8260118059a2.png";
-  const img4 = "http://localhost:3845/assets/d57e531839470a67382710da5264460f295a81fb.png";
-  const img5 = "http://localhost:3845/assets/3fd4d41096aa9bb62c313d131a51afb1cf26c4ef.png";
-  const img6 = "http://localhost:3845/assets/e55c1aba30c76e4eab0da799e6471588ea482fd5.png";
-  const img7 = "http://localhost:3845/assets/5f0130d6302d6dd3f3d04276f815e487e756e44a.png";
-  const img8 = "http://localhost:3845/assets/be884f6eb157910b7d19e9dae16fa1ec92137a59.png";
-  const img9 = "http://localhost:3845/assets/3a5ed71b34346667a9b87c7e5ecd6f3cae6d19ee.png";
-  const img10 = "http://localhost:3845/assets/5c593eb109e4f4d5f953dab28054b56e772862e9.png";
-
-  const products = [
-    { id: 1, code: '220', name: 'Tulum Armchair', price: '39.99', image: img02, hasVariants: false },
-    { id: 2, code: '213', name: 'Portofino Chair', price: '49.99', image: img3, hasVariants: false },
-    { id: 3, code: '212', name: 'Portofino Armchair', price: '39.55', image: img4, hasVariants: true },
-    { id: 4, code: '945', name: 'Portofino Seat Cushion', price: '89.00', image: img5, hasVariants: false },
-    { id: 5, code: '945', name: 'Portofino Seat Cushion', price: '89.00', image: img6, hasVariants: false },
-    { id: 6, code: '220', name: 'Tulum Armchair', price: '39.99', image: img7, hasVariants: false },
-    { id: 7, code: '212', name: 'Portofino Armchair', price: '39.55', image: img8, hasVariants: true },
-    { id: 8, code: '213', name: 'Portofino Chair', price: '49.99', image: img9, hasVariants: false },
-    { id: 9, code: '220', name: 'Tulum Armchair', price: '39.99', image: img10, hasVariants: false },
-    { id: 10, code: '220', name: 'Tulum Armchair', price: '39.99', image: img10, hasVariants: false },
-    { id: 11, code: '220', name: 'Tulum Armchair', price: '39.99', image: img10, hasVariants: false },
-    { id: 12, code: '220', name: 'Tulum Armchair', price: '39.99', image: img10, hasVariants: false },
-  ];
-
   const variants = [
-    { id: 1, name: 'Black', stock: 2, image: '/assets/variant-black.png' },
-    { id: 2, name: 'White', stock: 0, image: '/assets/variant-white.png' },
-    { id: 3, name: 'Olive Green', stock: 1, image: '/assets/variant-olive-green.png' },
-    { id: 4, name: 'Taupe', stock: 0, image: '/assets/variant-taupe.png' },
-    { id: 5, name: 'Dark Grey', stock: 1, image: '/assets/variant-dark-grey.png' },
-    { id: 6, name: 'Marsala', stock: 0, image: '/assets/variant-marsala.png' },
+    { id: 1, name: "Black", stock: 2, image: "/assets/variant-black.png" },
+    { id: 2, name: "White", stock: 0, image: "/assets/variant-white.png" },
+    {
+      id: 3,
+      name: "Olive Green",
+      stock: 1,
+      image: "/assets/variant-olive-green.png",
+    },
+    { id: 4, name: "Taupe", stock: 0, image: "/assets/variant-taupe.png" },
+    {
+      id: 5,
+      name: "Dark Grey",
+      stock: 1,
+      image: "/assets/variant-dark-grey.png",
+    },
+    { id: 6, name: "Marsala", stock: 0, image: "/assets/variant-marsala.png" },
   ];
 
-  const removeFilter = (filter) => {
-    setActiveFilters(activeFilters.filter(f => f !== filter));
+  const removeFilter = (filterType, filter) => {
+    setFilterState((prev) => {
+      const newState = {
+        ...prev,
+        [filterType]: prev[filterType].filter((f) => f !== filter),
+      };
+      //updateURL(newState);
+      return newState;
+    });
+  };
+
+  // URL'i güncelle
+  const updateURL = (newFilterState, selectedProductsToUpdate = null) => {
+    const params = new URLSearchParams();
+
+    if (newFilterState.searchQuery) {
+      params.set("search", newFilterState.searchQuery);
+    }
+    if (newFilterState.selectedCategories.length > 0) {
+      params.set("category", newFilterState.selectedCategories[0]);
+    }
+    if (newFilterState.selectedSubCategories.length > 0) {
+      params.set("subCategory", newFilterState.selectedSubCategories[0]);
+    }
+
+    // Seçili ürünleri URL'e ekle
+    const productsToSave = selectedProductsToUpdate || selectedProducts;
+    if (productsToSave.length > 0) {
+      params.set(
+        "selectedProducts",
+        encodeURIComponent(JSON.stringify(productsToSave))
+      );
+    }
+
+    setSearchParams(params);
+  };
+
+  // Ürün ekleme/çıkarma fonksiyonları
+  const addProductToSelection = (product, quantity = 1) => {
+    setSelectedProducts((prev) => {
+      const existingIndex = prev.findIndex(
+        (item) => item.productId === product.productId
+      );
+
+      let updated;
+      if (existingIndex >= 0) {
+        // Ürün zaten var, miktarını artır
+        updated = [...prev];
+        updated[existingIndex] = {
+          ...updated[existingIndex],
+          quantity: updated[existingIndex].quantity + quantity,
+        };
+      } else {
+        // Yeni ürün ekle
+        updated = [
+          ...prev,
+          {
+            quantity: quantity,
+            productId: product.productId,
+            baseName: product.name,
+            description: product.description,
+            url: product.images[0],
+          },
+        ];
+      }
+
+      // URL'i güncelle
+      //updateURL(filterState, updated);
+      return updated;
+    });
+  };
+
+  const removeProductFromSelection = (productId, quantity = 1) => {
+    setSelectedProducts((prev) => {
+      const existingIndex = prev.findIndex(
+        (item) => item.productId === productId
+      );
+
+      let updated;
+      if (existingIndex >= 0) {
+        updated = [...prev];
+        const newQuantity = updated[existingIndex].quantity - quantity;
+
+        if (newQuantity <= 0) {
+          // Miktar 0 veya altına düştü, ürünü kaldır
+          updated = updated.filter((item) => item.productId !== productId);
+        } else {
+          // Miktarı güncelle
+          updated[existingIndex] = {
+            ...updated[existingIndex],
+            quantity: newQuantity,
+          };
+        }
+      } else {
+        updated = prev;
+      }
+
+      // URL'i güncelle
+      //updateURL(filterState, updated);
+      return updated;
+    });
+  };
+
+  const getProductQuantity = (productId) => {
+    const selected = selectedProducts.find(
+      (item) => item.productId === productId
+    );
+    return selected ? selected.quantity : 0;
   };
 
   const handleAddToCart = (product) => {
@@ -60,170 +272,424 @@ export default function Products() {
       setSelectedProduct(product);
       setShowVariantModal(true);
     } else {
-      // Add product directly to cart
-      console.log('Add to cart:', product);
+      addProductToSelection(product, 1);
+      console.log("Product added to selection:", product);
     }
   };
 
+  const getFilter = () => {
+    const filter = {
+      search: filterState.searchQuery,
+      filters: [],
+    };
+    if (filterState.selectedCategories.length > 0) {
+      filter.filters.push({
+        key: "Category",
+        options: filterState.selectedCategories.map((c) => {
+          return {
+            key: c,
+            selected: true,
+          };
+        }),
+      });
+    }
+    if (filterState.selectedSubCategories.length > 0) {
+      filter.filters.push({
+        key: "SubCategory",
+        options: filterState.selectedSubCategories.map((c) => {
+          return {
+            key: c,
+            selected: true,
+          };
+        }),
+      });
+    }
+    if (filterState.selectedRooms.length > 0) {
+      filter.filters.push({
+        key: "Rooms",
+        options: filterState.selectedRooms.map((c) => c.value),
+      });
+    }
+    if (filterState.selectedStyles.length > 0) {
+      filter.filters.push({
+        key: "Styles",
+        options: filterState.selectedStyles.map((c) => c.value),
+      });
+    }
+    console.log("filter", filter);
+    return filter;
+  };
+
+  const fetchProductsData = async (pageNum = filterState.page) => {
+    try {
+      setLoading(true);
+      // Seçili filtreleri API formatına çevir
+      const filter = getFilter();
+      const data = await fetchProducts({}, filter, pageNum);
+      const items = data.results.content ?? [];
+
+      setHasMore(pageNum + 1 < data.results.totalPages);
+      setProducts((prev) => (pageNum === 0 ? items : [...prev, ...items]));
+    } catch (e) {
+      setHasMore(false);
+      console.error(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    console.log("selectedCategories", filterState.selectedCategories);
+    setProducts(filterState.page === 0 ? [] : products);
+    setHasMore(true);
+    setLoading(true);
+    fetchProductsData(filterState.page);
+  }, [filterState]);
+
+  useEffect(() => {
+    if (!sentinelRef.current) return;
+    const el = sentinelRef.current;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        const entry = entries[0];
+        if (entry.isIntersecting && !loading && hasMore) {
+          console.log("Loading more products...");
+          setFilterState((prev) => ({ ...prev, page: prev.page + 1 }));
+        }
+      },
+      {
+        root: null,
+        rootMargin: "600px 0px", // erken yükleme için önden 400px
+        threshold: 0.01,
+      }
+    );
+
+    io.observe(el);
+    return () => io.unobserve(el);
+  }, [loading, hasMore]);
+
   const handleQuantityChange = (variantId, delta) => {
-    setVariantQuantities(prev => {
+    setVariantQuantities((prev) => {
       const currentQty = prev[variantId] || 0;
       const newQty = Math.max(0, currentQty + delta); // Don't allow negative quantities
       return {
         ...prev,
-        [variantId]: newQty
+        [variantId]: newQty,
       };
     });
   };
 
+  const handleGenerateDesign = () => {
+    // Sonraki sayfayı belirle
+    const nextPage = getNextPage("products", {
+      selectedProducts: selectedProducts,
+    });
+
+    navigate(nextPage);
+  };
+
+  const renderFiltersByName = (filterName, filters) => {
+    return filters[filterName].map((filter, index) =>
+      renderFilter(filterName, filter, index)
+    );
+  };
+
+  const renderFilter = (filterType, filter, index) => {
+    return (
+      <div key={index} className="filter-chip">
+        <span>{filter}</span>
+        <button onClick={() => removeFilter(filterType, filter)}>
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path
+              d="M12 4L4 12M4 4L12 12"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </button>
+      </div>
+    );
+  };
+
   return (
-    <div className="products-container">
-      <div className="products-content">
-        {/* Top Menu */}
-        <div className="products-top-menu">
-          <div className="menu-left">
-            <div className="back-icon" onClick={() => navigate('/subcategory')}>
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <path d="M20 24L12 16L20 8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-            <span className="menu-item" onClick={() => navigate('/home')}>Home</span>
-            <span className="menu-item">Collections</span>
-            <span className="menu-item" onClick={() => navigate('/projects')}>Projects</span>
-          </div>
-          <div className="menu-center">
-            <img src="/assets/logo.png" alt="Siesta" className="logo" />
-          </div>
-          <div className="menu-right">
-            <div className="profile-icon">
-              <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-                <path d="M23.3333 24.5V22.1667C23.3333 20.9906 22.8609 19.862 22.0103 19.0114C21.1597 18.1609 20.0311 17.6875 18.8542 17.6875H9.14583C7.96875 17.6875 6.8401 18.1609 5.9895 19.0114C5.13891 19.862 4.66667 20.9906 4.66667 22.1667V24.5" stroke="black" strokeOpacity="0.8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                <path d="M14 14C16.5773 14 18.6667 11.9106 18.6667 9.33333C18.6667 6.75609 16.5773 4.66667 14 4.66667C11.4228 4.66667 9.33333 6.75609 9.33333 9.33333C9.33333 11.9106 11.4228 14 14 14Z" stroke="black" strokeOpacity="0.8" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </div>
-          </div>
-        </div>
+    <>
+      {console.log("Products rendered")}
+      {console.log("Selected products:", selectedProducts)}
 
-        {/* Filters and Search */}
-        <div className="products-filters-section">
-          <div className="filter-buttons">
-            <button className="filter-btn">
-              Category
-              <svg width="7" height="12" viewBox="0 0 7 12" fill="none">
-                <path d="M1 1L6 6L1 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-            <button className="filter-btn">
-              Sub Cat
-              <svg width="7" height="12" viewBox="0 0 7 12" fill="none">
-                <path d="M1 1L6 6L1 11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-            <button className="filter-btn active">
-              Rooms
-              <svg width="7" height="12" viewBox="0 0 7 12" fill="none">
-                <path d="M1 1L6 6L1 11" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-            <button className="filter-btn active">
-              Styles
-              <svg width="7" height="12" viewBox="0 0 7 12" fill="none">
-                <path d="M1 1L6 6L1 11" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-          </div>
-
-          <div className="search-bar">
-            <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
-              <path d="M6.5 11.5C9.26142 11.5 11.5 9.26142 11.5 6.5C11.5 3.73858 9.26142 1.5 6.5 1.5C3.73858 1.5 1.5 3.73858 1.5 6.5C1.5 9.26142 3.73858 11.5 6.5 11.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M13.5 13.5L10.1 10.1" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            <input type="text" placeholder="Search" />
-          </div>
-        </div>
-
-        {/* Active Filters */}
-        <div className="active-filters">
-          {activeFilters.map((filter, index) => (
-            <div key={index} className="filter-chip">
-              <span>{filter}</span>
-              <button onClick={() => removeFilter(filter)}>
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M12 4L4 12M4 4L12 12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                </svg>
-              </button>
+      <div className="products-container">
+        <div className="products-filters-container">
+          {/* Filters and Search */}
+          <div className="products-filters-section">
+            <div className="filter-buttons">
+              <FilterButton
+                label="Category"
+                options={categoryOptions}
+                selectedValues={filterState.selectedCategories}
+                onSelectionChange={(values) => {
+                  const newState = {
+                    ...filterState,
+                    page: 0,
+                    selectedCategories: values,
+                  };
+                  setFilterState(newState);
+                  //updateURL(newState);
+                }}
+                placeholder="Select categories..."
+              />
+              <FilterButton
+                label="Sub Category"
+                options={subCategoryOptions}
+                selectedValues={filterState.selectedSubCategories}
+                onSelectionChange={(values) => {
+                  const newState = {
+                    ...filterState,
+                    page: 0,
+                    selectedSubCategories: values,
+                  };
+                  setFilterState(newState);
+                  //updateURL(newState);
+                }}
+                placeholder="Select sub categories..."
+              />
             </div>
-          ))}
+
+            <div className="search-bar">
+              <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+                <path
+                  d="M6.5 11.5C9.26142 11.5 11.5 9.26142 11.5 6.5C11.5 3.73858 9.26142 1.5 6.5 1.5C3.73858 1.5 1.5 3.73858 1.5 6.5C1.5 9.26142 3.73858 11.5 6.5 11.5Z"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+                <path
+                  d="M13.5 13.5L10.1 10.1"
+                  stroke="currentColor"
+                  strokeWidth="1.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+              <input
+                type="text"
+                placeholder="Search"
+                onChange={(e) => {
+                  const newState = {
+                    ...filterState,
+                    page: 0,
+                    searchQuery:
+                      e.target.value.length < 3 ? "" : e.target.value,
+                  };
+                  setFilterState(newState);
+                  //updateURL(newState);
+                }}
+              />
+            </div>
+          </div>
+          {/* Active Filters */}
+          <div className="active-filters">
+            {renderFiltersByName("selectedCategories", filterState)}
+            {renderFiltersByName("selectedSubCategories", filterState)}
+          </div>
         </div>
 
         {/* Products Grid */}
         <div className="products-grid-container">
           <div className="products-grid">
             {products.map((product) => (
-              <div key={product.id} className="product-card">
+              <div key={product.productId} className="product-card">
                 <div className="product-image-container">
-                  <img src={product.image} alt={product.name} className="product-image" />
-                  
+                  <img
+                    src={product.images[1] || "/assets/product-placeholder.png"}
+                    alt={product.name}
+                    className="product-image"
+                  />
+
                   {/* Product Actions (Visible on hover) */}
                   <div className="product-actions">
                     <button className="action-btn wishlist">
-                      <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-                        <path d="M15.75 3.375C14.625 2.25 12.75 2.0625 11.25 2.8125C10.5 3.1875 9.75 3.9375 9 4.875C8.25 3.9375 7.5 3.1875 6.75 2.8125C5.25 2.0625 3.375 2.25 2.25 3.375C0.75 4.875 0.75 7.3125 2.25 8.8125L9 15.5625L15.75 8.8125C17.25 7.3125 17.25 4.875 15.75 3.375Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                      <svg
+                        width="18"
+                        height="18"
+                        viewBox="0 0 18 18"
+                        fill="none"
+                      >
+                        <path
+                          d="M15.75 3.375C14.625 2.25 12.75 2.0625 11.25 2.8125C10.5 3.1875 9.75 3.9375 9 4.875C8.25 3.9375 7.5 3.1875 6.75 2.8125C5.25 2.0625 3.375 2.25 2.25 3.375C0.75 4.875 0.75 7.3125 2.25 8.8125L9 15.5625L15.75 8.8125C17.25 7.3125 17.25 4.875 15.75 3.375Z"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     </button>
                     <button className="action-btn quick-view">
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M10 7.5C8.625 7.5 7.5 8.625 7.5 10C7.5 11.375 8.625 12.5 10 12.5C11.375 12.5 12.5 11.375 12.5 10C12.5 8.625 11.375 7.5 10 7.5Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
-                        <path d="M2.5 10C2.5 10 5 5 10 5C15 5 17.5 10 17.5 10C17.5 10 15 15 10 15C5 15 2.5 10 2.5 10Z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                      >
+                        <path
+                          d="M10 7.5C8.625 7.5 7.5 8.625 7.5 10C7.5 11.375 8.625 12.5 10 12.5C11.375 12.5 12.5 11.375 12.5 10C12.5 8.625 11.375 7.5 10 7.5Z"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinejoin="round"
+                        />
+                        <path
+                          d="M2.5 10C2.5 10 5 5 10 5C15 5 17.5 10 17.5 10C17.5 10 15 15 10 15C5 15 2.5 10 2.5 10Z"
+                          stroke="currentColor"
+                          strokeWidth="1.5"
+                          strokeLinejoin="round"
+                        />
                       </svg>
                     </button>
-                    <button 
-                      className="action-btn variants" 
+                    <button
+                      className="action-btn variants"
                       onClick={() => handleAddToCart(product)}
                     >
-                      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                        <path d="M10 5C10.5523 5 11 4.55228 11 4C11 3.44772 10.5523 3 10 3C9.44772 3 9 3.44772 9 4C9 4.55228 9.44772 5 10 5Z" fill="currentColor" />
-                        <path d="M10 11C10.5523 11 11 10.5523 11 10C11 9.44772 10.5523 9 10 9C9.44772 9 9 9.44772 9 10C9 10.5523 9.44772 11 10 11Z" fill="currentColor" />
-                        <path d="M10 17C10.5523 17 11 16.5523 11 16C11 15.4477 10.5523 15 10 15C9.44772 15 9 15.4477 9 16C9 16.5523 9.44772 17 10 17Z" fill="currentColor" />
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                      >
+                        <path
+                          d="M10 5C10.5523 5 11 4.55228 11 4C11 3.44772 10.5523 3 10 3C9.44772 3 9 3.44772 9 4C9 4.55228 9.44772 5 10 5Z"
+                          fill="currentColor"
+                        />
+                        <path
+                          d="M10 11C10.5523 11 11 10.5523 11 10C11 9.44772 10.5523 9 10 9C9.44772 9 9 9.44772 9 10C9 10.5523 9.44772 11 10 11Z"
+                          fill="currentColor"
+                        />
+                        <path
+                          d="M10 17C10.5523 17 11 16.5523 11 16C11 15.4477 10.5523 15 10 15C9.44772 15 9 15.4477 9 16C9 16.5523 9.44772 17 10 17Z"
+                          fill="currentColor"
+                        />
                       </svg>
                     </button>
                   </div>
                 </div>
-                
+
                 <div className="product-info">
                   <div className="product-details">
-                    <p className="product-code">Code: {product.code}</p>
+                    <p className="product-code">
+                      Code: {product.productId.substring(0, 3) || product.code}
+                    </p>
                     <h3 className="product-name">{product.name}</h3>
-                    <p className="product-price">${product.price}</p>
+                    <p className="p-product-price">${product.price}</p>
                   </div>
-                  <button 
-                    className="add-to-cart-btn"
-                    onClick={() => handleAddToCart(product)}
-                  >
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      <path d="M10 5V15M5 10H15" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </button>
+                  {/* Seçili ürün kontrolü */}
+                  {getProductQuantity(product.productId) > 0 ? (
+                    <div className="p-quantity-control">
+                      <button
+                        className="p-quantity-btn"
+                        onClick={() =>
+                          removeProductFromSelection(product.productId, 1)
+                        }
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                        >
+                          <path
+                            d="M4 8H12"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                      <span className="p-quantity">
+                        {getProductQuantity(product.productId)}
+                      </span>
+                      <button
+                        className="p-quantity-btn"
+                        onClick={() => addProductToSelection(product, 1)}
+                      >
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                        >
+                          <path
+                            d="M8 4V12M4 8H12"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    </div>
+                  ) : (
+                    <button
+                      className="add-to-cart-btn"
+                      onClick={() => handleAddToCart(product)}
+                    >
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                      >
+                        <path
+                          d="M10 5V15M5 10H15"
+                          stroke="white"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    </button>
+                  )}
                 </div>
               </div>
             ))}
           </div>
 
           {/* View All Products Button */}
+          <div
+            ref={sentinelRef}
+            style={{ height: "1px", width: "100%", display: "block" }}
+          >
+            {" "}
+          </div>
           <button className="view-all-btn">View all products</button>
         </div>
+        <button className="generate-design-btn" onClick={handleGenerateDesign}>
+          Generate
+        </button>
       </div>
 
       {/* Variant Modal */}
       {showVariantModal && (
         <>
-          <div className="modal-backdrop" onClick={() => setShowVariantModal(false)} />
+          <div
+            className="modal-backdrop"
+            onClick={() => setShowVariantModal(false)}
+          />
           <div className="variant-modal">
             <div className="modal-header">
               <h2>Portofino Bar 75 Variants</h2>
-              <button className="close-btn" onClick={() => setShowVariantModal(false)}>
+              <button
+                className="close-btn"
+                onClick={() => setShowVariantModal(false)}
+              >
                 <svg width="21" height="21" viewBox="0 0 21 21" fill="none">
-                  <path d="M16 5L5 16M5 5L16 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  <path
+                    d="M16 5L5 16M5 5L16 16"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
                 </svg>
               </button>
             </div>
@@ -232,29 +698,60 @@ export default function Products() {
               {variants.map((variant) => {
                 const currentQuantity = variantQuantities[variant.id] || 0;
                 return (
-                  <div key={variant.id} className={`variant-item ${currentQuantity > 0 ? 'in-stock' : ''}`}>
+                  <div
+                    key={variant.id}
+                    className={`variant-item ${
+                      currentQuantity > 0 ? "in-stock" : ""
+                    }`}
+                  >
                     <div className="variant-image-container">
-                      <img src={variant.image} alt={variant.name} className="variant-image" />
+                      <img
+                        src={variant.image}
+                        alt={variant.name}
+                        className="variant-image"
+                      />
                     </div>
                     <p className="variant-title">Portofino Bar 75</p>
                     <p className="variant-color">{variant.name}</p>
                     <div className="quantity-control">
-                      <button 
+                      <button
                         className="quantity-btn"
                         onClick={() => handleQuantityChange(variant.id, -1)}
                         disabled={currentQuantity === 0}
                       >
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                          <path d="M4 8H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                        >
+                          <path
+                            d="M4 8H12"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
                         </svg>
                       </button>
                       <span className="quantity">{currentQuantity}</span>
-                      <button 
+                      <button
                         className="quantity-btn"
                         onClick={() => handleQuantityChange(variant.id, 1)}
                       >
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                          <path d="M8 4V12M4 8H12" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+                        <svg
+                          width="16"
+                          height="16"
+                          viewBox="0 0 16 16"
+                          fill="none"
+                        >
+                          <path
+                            d="M8 4V12M4 8H12"
+                            stroke="currentColor"
+                            strokeWidth="1.5"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
                         </svg>
                       </button>
                     </div>
@@ -267,6 +764,6 @@ export default function Products() {
           </div>
         </>
       )}
-    </div>
+    </>
   );
 }

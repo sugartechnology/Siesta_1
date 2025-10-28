@@ -1,39 +1,42 @@
-import React, { useState } from 'react';
-import InputMask from 'react-input-mask';
-import LocationMapModal from './LocationMapModal';
-import './NewProjectModal.css';
+import React, { useState } from "react";
+import { IMaskInput } from "react-imask";
+import LocationMapModal from "./LocationMapModal";
+import { createProject } from "../api/Api";
+import "./NewProjectModal.css";
 
 export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
-    projectName: '',
-    sectionName: '',
-    countryCode: '+1',
-    phoneNumber: '',
-    location: '',
+    projectName: "",
+    sectionName: "",
+    countryCode: "+1",
+    phoneNumber: "",
+    location: "",
     locationCoords: null,
-    additionalInfo: ''
+    additionalInfo: "",
   });
 
   const [showMapModal, setShowMapModal] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState(null);
 
   const countryCodes = [
-    { code: '+1', country: 'USA/Canada', flag: '🇺🇸' },
-    { code: '+44', country: 'UK', flag: '🇬🇧' },
-    { code: '+90', country: 'Turkey', flag: '🇹🇷' },
-    { code: '+49', country: 'Germany', flag: '🇩🇪' },
-    { code: '+33', country: 'France', flag: '🇫🇷' },
-    { code: '+39', country: 'Italy', flag: '🇮🇹' },
-    { code: '+34', country: 'Spain', flag: '🇪🇸' },
-    { code: '+81', country: 'Japan', flag: '🇯🇵' },
-    { code: '+86', country: 'China', flag: '🇨🇳' },
-    { code: '+91', country: 'India', flag: '🇮🇳' }
+    { code: "+1", country: "USA/Canada", flag: "🇺🇸" },
+    { code: "+44", country: "UK", flag: "🇬🇧" },
+    { code: "+90", country: "Turkey", flag: "🇹🇷" },
+    { code: "+49", country: "Germany", flag: "🇩🇪" },
+    { code: "+33", country: "France", flag: "🇫🇷" },
+    { code: "+39", country: "Italy", flag: "🇮🇹" },
+    { code: "+34", country: "Spain", flag: "🇪🇸" },
+    { code: "+81", country: "Japan", flag: "🇯🇵" },
+    { code: "+86", country: "China", flag: "🇨🇳" },
+    { code: "+91", country: "India", flag: "🇮🇳" },
   ];
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -42,33 +45,99 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
   };
 
   const handleLocationSelect = (location, coords) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
       location: location,
-      locationCoords: coords
+      locationCoords: coords,
     }));
     setShowMapModal(false);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Form submitted:', formData);
-    // Navigate to Camera page with project data
-    if (typeof onSubmit === 'function') {
-      onSubmit(formData);
+    setIsSubmitting(true);
+    setSubmitError(null);
+
+    try {
+      // Prepare project data for API (ProjectDTO format)
+      const projectData = {
+        name: formData.projectName,
+        details: formData.additionalInfo,
+        mobilePhone: `${formData.countryCode}${formData.phoneNumber}`,
+        address: {
+          line1: formData.location,
+          line2: "",
+          district: "",
+          city: "",
+          state: "",
+          postalCode: "",
+          countryCode: "",
+          lat: formData.locationCoords?.lat || null,
+          lon: formData.locationCoords?.lng || null,
+          placeId: "",
+          timeZone: "",
+          formatted: formData.location,
+        },
+        // Create initial section with sectionName
+        sections: [
+          {
+            title: formData.sectionName,
+            content: "",
+            type: null,
+            style: null,
+            rootImageUrl: null,
+            resultImageUrl: null,
+            thumbnailUrl: null,
+            designs: [],
+            productIds: [],
+            status: null,
+          },
+        ],
+        // Optional fields that can be set later
+        rootImageUrl: null,
+        resultImageUrl: null,
+        thumbnailUrl: null,
+        type: null,
+        style: null,
+      };
+
+      // Create project via API
+      const createdProject = await createProject(projectData);
+      console.log("Project created successfully:", createdProject);
+
+      // Call parent onSubmit with the created project data
+      if (typeof onSubmit === "function") {
+        onSubmit(createdProject);
+      }
+
+      // Reset form and close modal
+      setFormData({
+        projectName: "",
+        sectionName: "",
+        countryCode: "+1",
+        phoneNumber: "",
+        location: "",
+        locationCoords: null,
+        additionalInfo: "",
+      });
+      onClose();
+    } catch (error) {
+      console.error("Error creating project:", error);
+      setSubmitError("Failed to create project. Please try again.");
+    } finally {
+      setIsSubmitting(false);
     }
-    onClose();
   };
 
   const handleCancel = () => {
     setFormData({
-      projectName: '',
-      sectionName: '',
-      countryCode: '+1',
-      phoneNumber: '',
-      location: '',
+      projectName: "",
+      sectionName: "",
+      countryCode: "+1",
+      phoneNumber: "",
+      location: "",
       locationCoords: null,
-      additionalInfo: ''
+      additionalInfo: "",
     });
     onClose();
   };
@@ -79,11 +148,17 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
     <>
       <div className="modal-backdrop" onClick={handleCancel} />
       <div className="new-project-modal">
-        <div className="modal-header">
+        <div className="new-modal-header">
           <h2>New Project</h2>
           <button className="close-btn" onClick={handleCancel}>
             <svg width="21" height="21" viewBox="0 0 21 21" fill="none">
-              <path d="M16 5L5 16M5 5L16 16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+              <path
+                d="M16 5L5 16M5 5L16 16"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
             </svg>
           </button>
         </div>
@@ -133,11 +208,12 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
                     </option>
                   ))}
                 </select>
-                <InputMask
-                  mask="(999) 999-9999"
-                  name="phoneNumber"
+                <IMaskInput
+                  mask="(000) 000-0000"
                   value={formData.phoneNumber}
-                  onChange={handleInputChange}
+                  onAccept={(value, mask) => {
+                    setFormData({ ...formData, phoneNumber: value });
+                  }}
                   placeholder="(555) 123-4567"
                   className="phone-input"
                   required
@@ -161,14 +237,26 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
                   className="location-input"
                   required
                 />
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   className="map-icon-btn"
                   onClick={handleLocationClick}
                 >
                   <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path d="M10 10C11.1046 10 12 9.10457 12 8C12 6.89543 11.1046 6 10 6C8.89543 6 8 6.89543 8 8C8 9.10457 8.89543 10 10 10Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-                    <path d="M10 2C7.87827 2 5.84344 2.84285 4.34315 4.34315C2.84285 5.84344 2 7.87827 2 10C2 11.892 2.402 13.13 3.5 14.5L10 22L16.5 14.5C17.598 13.13 18 11.892 18 10C18 7.87827 17.1571 5.84344 15.6569 4.34315C14.1566 2.84285 12.1217 2 10 2Z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+                    <path
+                      d="M10 10C11.1046 10 12 9.10457 12 8C12 6.89543 11.1046 6 10 6C8.89543 6 8 6.89543 8 8C8 9.10457 8.89543 10 10 10Z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <path
+                      d="M10 2C7.87827 2 5.84344 2.84285 4.34315 4.34315C2.84285 5.84344 2 7.87827 2 10C2 11.892 2.402 13.13 3.5 14.5L10 22L16.5 14.5C17.598 13.13 18 11.892 18 10C18 7.87827 17.1571 5.84344 15.6569 4.34315C14.1566 2.84285 12.1217 2 10 2Z"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </svg>
                 </button>
               </div>
@@ -189,12 +277,23 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
             </div>
           </div>
 
+          {submitError && <div className="error-message">{submitError}</div>}
+
           <div className="form-actions">
-            <button type="button" className="cancel-btn" onClick={handleCancel}>
+            <button
+              type="button"
+              className="cancel-btn"
+              onClick={handleCancel}
+              disabled={isSubmitting}
+            >
               Cancel
             </button>
-            <button type="submit" className="submit-btn">
-              Create Project
+            <button
+              type="submit"
+              className="submit-btn"
+              disabled={isSubmitting}
+            >
+              {isSubmitting ? "Creating..." : "Create Project"}
             </button>
           </div>
         </form>
@@ -211,4 +310,3 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
     </>
   );
 }
-

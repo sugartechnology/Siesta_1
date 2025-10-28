@@ -1,24 +1,9 @@
-.room-type-container {
-  width: 100vw;
-  height: 100vh;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f0f0f0;
-  overflow: hidden;
-}
-
 .room-type-content-wrapper {
-  width: 1366px;
-  height: 1024px;
-  background: linear-gradient(to right, #ffffff 39.074%, #d2d2d2 126.77%);
-  border-radius: 30px;
-  box-shadow: 0px 9px 15px 0px rgba(0, 0, 0, 0.35);
   display: flex;
   flex-direction: column;
-  padding: 44px 31px 31px;
-  box-sizing: border-box;
   position: relative;
+  width: 100%;
+  height: 100%;
 }
 
 /* Top Menu - Similar to other pages */
@@ -58,7 +43,7 @@
 }
 
 .room-type-top-menu .menu-item {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 17px;
   font-weight: 300;
   line-height: 24px;
@@ -113,14 +98,10 @@
 .room-types-grid {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(4, 240px);
-  grid-template-rows: repeat(2, 320px);
+  grid-template-columns: repeat(4, 307px);
+  grid-template-rows: repeat(2, 392px);
   gap: 25px;
-  padding: 20px 50px;
-  margin-bottom: 80px;
   overflow-y: auto;
-  justify-content: center;
-  align-content: center;
 }
 
 .room-type-card {
@@ -166,9 +147,9 @@
 
 .room-name-vertical {
   position: absolute;
-  left: 25px;
-  bottom: 20px;
-  font-family: 'Poppins', sans-serif;
+  left: 0px;
+  bottom: 28px;
+  font-family: "Poppins", sans-serif;
   font-size: 50px;
   font-weight: 700;
   color: white;
@@ -178,8 +159,7 @@
   pointer-events: none;
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
   letter-spacing: -1px;
-  transform: rotate(90deg);
-  transform-origin: left bottom;
+  transform: translate(-50%, 50%) rotate(270deg) translate(50%, 50%);
 }
 
 /* Next Button */
@@ -194,7 +174,7 @@
   background: #000;
   border: none;
   border-radius: 40px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.16px;
@@ -213,18 +193,7 @@
 
 /* Responsive adjustments */
 @media (max-width: 1400px) {
-  .room-type-content-wrapper {
-    width: 95vw;
-    height: 95vh;
-    padding: 30px 20px 20px;
-  }
-
   .room-types-grid {
-    grid-template-columns: repeat(4, 220px);
-    grid-template-rows: repeat(2, 293px);
-    gap: 20px;
-    padding: 15px 30px;
-    margin-bottom: 60px;
   }
 
   .room-type-card {
@@ -232,9 +201,9 @@
   }
 
   .room-name-vertical {
-    font-size: 45px;
+    /*font-size: 45px;
     left: 22px;
-    bottom: 18px;
+    bottom: 18px;*/
   }
 
   .next-button-bottom {
@@ -247,14 +216,6 @@
 }
 
 @media (max-width: 1024px) {
-  .room-type-content-wrapper {
-    width: 100%;
-    height: 100%;
-    border-radius: 0;
-    box-shadow: none;
-    padding: 20px 15px 15px;
-  }
-
   .room-type-top-menu {
     margin-bottom: 20px;
   }
@@ -297,10 +258,6 @@
 }
 
 @media (max-width: 768px) {
-  .room-type-content-wrapper {
-    padding: 15px 10px 10px;
-  }
-
   .room-type-top-menu {
     flex-wrap: wrap;
     justify-content: center;

@@ -23,8 +23,12 @@
   left: 0;
   height: 100%;
   overflow: hidden;
+  border-right: solid 5px;
+  border-color: white;
 }
-
+.splash-bg-image {
+  transform: scaleX(-1);
+}
 .splash-image-left .splash-bg-image {
   position: absolute;
   top: 0;
@@ -56,15 +60,15 @@
 /* Text Overlay on Left */
 .splash-text-overlay {
   position: absolute;
-  top: 50%;
+  top: 10%;
   left: 80px;
-  transform: translateY(-50%);
+  /*transform: translateY(-50%);*/
   z-index: 10;
   pointer-events: none;
 }
 
 .splash-heading {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 51.826px;
   font-weight: 400;
   color: #000;
@@ -75,7 +79,7 @@
 }
 
 .splash-brand-name {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 82.922px;
   font-weight: 400;
   color: #000;
@@ -126,6 +130,9 @@
   height: 99px;
   transition: all 0.3s ease;
   position: relative;
+  background: white;
+  border-radius: 50%;
+  padding: 10px;
 }
 
 .slider-icon-img {

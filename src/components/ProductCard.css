@@ -97,10 +97,10 @@
   margin: 0 0 8px 0;
 }
 
-.product-price {
+.p-product-price {
   font-size: 20px;
   font-weight: 700;
-  color: #8B7355;
+  color: #8b7355;
   margin: 0;
 }
 
@@ -108,7 +108,7 @@
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: #8B7355;
+  background: #8b7355;
   color: white;
   border: none;
   font-size: 20px;
@@ -122,6 +122,3 @@
 .add-to-cart-btn:hover {
   background: #6f5a43;
 }
-
-
-

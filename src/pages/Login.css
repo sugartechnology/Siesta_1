@@ -38,8 +38,8 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 30px;
-  padding: 40px;
+  /*gap: 30px;
+  padding: 40px;*/
 }
 
 /* Logo */
@@ -61,7 +61,7 @@
 }
 
 .welcome-subtitle {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 28.623px;
   font-weight: 400;
   color: #d8d8d8;
@@ -70,7 +70,7 @@
 }
 
 .welcome-title {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 45.797px;
   font-weight: 400;
   color: #d8d8d8;
@@ -81,7 +81,7 @@
 
 /* Page Title - Outside Card */
 .login-page-title {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 17px;
   font-weight: 500;
   color: #d1d1d1;
@@ -92,7 +92,7 @@
 
 /* Login Card */
 .login-card {
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(10px);
   border-radius: 30px;
   padding: 40px 35px;
@@ -116,22 +116,38 @@
 }
 
 .input-label {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 17px;
   font-weight: 200;
   color: #636363;
   margin: 0;
 }
+input[type="text"] {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
 
 .input-field {
-  font-family: 'Poppins', sans-serif;
+  background-color: transparent !important;
+  background: none !important;
+  border: none; /* isteğe bağlı */
+  box-shadow: none !important;
+  outline: none;
+  -webkit-appearance: none !important; /* Safari / iOS */
+  -moz-appearance: none; /* Firefox */
+  appearance: none; /* Modern browsers */
+  font-family: "Poppins", sans-serif;
   font-size: 17px;
   font-weight: 400;
   color: #000;
   padding: 12px 0;
-  border: none;
   border-bottom: 1px solid rgba(0, 0, 0, 0.5);
-  background: transparent;
   outline: none;
   transition: border-color 0.3s ease;
 }
@@ -147,7 +163,7 @@
 
 .forgot-password-btn {
   align-self: flex-start;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 17px;
   font-weight: 400;
   color: #000;
@@ -164,7 +180,7 @@
 }
 
 .sign-in-btn {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 16px;
   font-weight: 700;
   color: #fff;
@@ -198,7 +214,7 @@
 }
 
 .divider-text {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 14px;
   font-weight: 500;
   color: #000;
@@ -239,7 +255,7 @@
 
 /* Sign Up Link */
 .signup-link {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 17px;
   font-weight: 400;
   color: #666666;
@@ -266,7 +282,7 @@
 }
 
 .continue-link {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 15px;
   font-weight: 400;
   color: #666666;
@@ -285,7 +301,7 @@
 
 /* Error Messages */
 .error-message {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 14px;
   font-weight: 400;
   color: #d32f2f;
@@ -297,7 +313,7 @@
 }
 
 .field-error {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 13px;
   font-weight: 400;
   color: #d32f2f;
@@ -316,8 +332,8 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .login-content {
-    padding: 20px;
-    gap: 20px;
+    /*padding: 20px;
+    gap: 20px;*/
   }
 
   .login-logo {
@@ -379,3 +395,15 @@
   }
 }
 
+/* 2) Chrome/Safari autofill boyasını söndür */
+.login-form input.input-field:-webkit-autofill,
+.login-form input.input-field:-webkit-autofill:hover,
+.login-form input.input-field:-webkit-autofill:focus,
+.login-form input.input-field:-webkit-autofill:active {
+  background: transparent !important;
+  background-color: transparent !important;
+  background-image: none !important;
+
+  /* Chrome'un autofill "fade-in" animasyonunu öldürme hack'i */
+  transition: background-color 9999s ease-out 0s, color 9999s ease-out 0s !important;
+}

@@ -1,6 +1,6 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import './SplashScreen.css';
+import { useState, useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import "./SplashScreen.css";
 
 const SplashScreen = () => {
   const navigate = useNavigate();
@@ -11,10 +11,10 @@ const SplashScreen = () => {
   const animationRef = useRef(null);
 
   // Figma images
-  const imgBackground = "http://localhost:3845/assets/d768a7a251075cf13c0d907658d5ea975fba9acb.png"; // Same image for both sides initially
-  const imgBackground2 = "http://localhost:3845/assets/ae25a4843c5bd7005f0c41828da7a5456c4b59be.png"; // Second image revealed by slider
-  const imgLogo = "http://localhost:3845/assets/56b68463c1acec5ac9da8e728326a8fb6cf8482d.png";
-  const imgSliderIcon = "http://localhost:3845/assets/82ba8b157643e9384321e0e4dd74d303c9c2cb00.svg";
+  const imgBackground = "/assets/slider_background_generated.jpg"; // Same image for both sides initially
+  const imgBackground2 = "/assets/slider_background_blank.jpg"; // Second image revealed by slider
+  const imgLogo = "/assets/logo_big.png";
+  const imgSliderIcon = "/assets/slider.svg";
 
   // Automatic slider animation from left to right
   useEffect(() => {
@@ -24,12 +24,13 @@ const SplashScreen = () => {
     const animate = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
-      
+
       // Ease-in-out animation
-      const easeProgress = progress < 0.5
-        ? 2 * progress * progress
-        : 1 - Math.pow(-2 * progress + 2, 2) / 2;
-      
+      const easeProgress =
+        progress < 0.5
+          ? 2 * progress * progress
+          : 1 - Math.pow(-2 * progress + 2, 2) / 2;
+
       const newPosition = easeProgress * 100;
       setSlidePosition(newPosition);
 
@@ -38,7 +39,7 @@ const SplashScreen = () => {
       } else {
         // After animation completes, redirect to login
         setTimeout(() => {
-          navigate('/login');
+          navigate("/login");
         }, 500);
       }
     };
@@ -60,11 +61,15 @@ const SplashScreen = () => {
   const handleMove = (clientX) => {
     if (!isDragging) return;
 
-    const containerWidth = containerRef.current?.offsetWidth || window.innerWidth;
+    const containerWidth =
+      containerRef.current?.offsetWidth || window.innerWidth;
     const diff = clientX - startX.current;
     const deltaPercent = (diff / containerWidth) * 100;
-    const newPosition = Math.max(0, Math.min(100, slidePosition + deltaPercent));
-    
+    const newPosition = Math.max(
+      0,
+      Math.min(100, slidePosition + deltaPercent)
+    );
+
     setSlidePosition(newPosition);
     startX.current = clientX;
   };
@@ -101,16 +106,16 @@ const SplashScreen = () => {
 
   useEffect(() => {
     if (isDragging) {
-      document.addEventListener('mousemove', handleMouseMove);
-      document.addEventListener('mouseup', handleMouseUp);
-      document.addEventListener('touchmove', handleTouchMove);
-      document.addEventListener('touchend', handleTouchEnd);
+      document.addEventListener("mousemove", handleMouseMove);
+      document.addEventListener("mouseup", handleMouseUp);
+      document.addEventListener("touchmove", handleTouchMove);
+      document.addEventListener("touchend", handleTouchEnd);
 
       return () => {
-        document.removeEventListener('mousemove', handleMouseMove);
-        document.removeEventListener('mouseup', handleMouseUp);
-        document.removeEventListener('touchmove', handleTouchMove);
-        document.removeEventListener('touchend', handleTouchEnd);
+        document.removeEventListener("mousemove", handleMouseMove);
+        document.removeEventListener("mouseup", handleMouseUp);
+        document.removeEventListener("touchmove", handleTouchMove);
+        document.removeEventListener("touchend", handleTouchEnd);
       };
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -121,14 +126,18 @@ const SplashScreen = () => {
       {/* Background Images Container */}
       <div className="splash-images-container">
         {/* Left Image (Same background initially) */}
-        <div 
+        <div
           className="splash-image-left"
           style={{
-            width: `${slidePosition}%`
+            width: `${slidePosition}%`,
           }}
         >
-          <img src={imgBackground} alt="Outdoor Space" className="splash-bg-image" />
-          
+          <img
+            src={imgBackground}
+            alt="Outdoor Space"
+            className="splash-bg-image"
+          />
+
           {/* Text Overlay on Left */}
           <div className="splash-text-overlay">
             <h2 className="splash-heading">Design Spaces With</h2>
@@ -137,19 +146,27 @@ const SplashScreen = () => {
         </div>
 
         {/* Right Image (Same background, reveals second image) */}
-        <div 
+        <div
           className="splash-image-right"
           style={{
             width: `${100 - slidePosition}%`,
-            left: `${slidePosition}%`
+            left: `${slidePosition}%`,
           }}
         >
           {slidePosition > 0 ? (
-             <img src={imgBackground} alt="Outdoor Space" className="splash-bg-image" />
+            <img
+              src={imgBackground2}
+              alt="Outdoor Space"
+              className="splash-bg-image"
+            />
           ) : (
-            <img src={imgBackground2} alt="Interior Space" className="splash-bg-image" />
+            <img
+              src={imgBackground2}
+              alt="Interior Space"
+              className="splash-bg-image"
+            />
           )}
-          
+
           {/* Logo in Bottom Right */}
           <div className="splash-logo-bottom">
             <img src={imgLogo} alt="Siesta Exclusive" className="siesta-logo" />
@@ -158,7 +175,7 @@ const SplashScreen = () => {
       </div>
 
       {/* Slider Control */}
-      <div 
+      <div
         className="splash-slider-control"
         style={{ left: `${slidePosition}%` }}
         onMouseDown={handleMouseDown}
@@ -167,7 +184,7 @@ const SplashScreen = () => {
         <div className="slider-button">
           <img src={imgSliderIcon} alt="Slider" className="slider-icon-img" />
         </div>
-        
+
         {/* Vertical Line */}
         <div className="slider-vertical-line"></div>
       </div>

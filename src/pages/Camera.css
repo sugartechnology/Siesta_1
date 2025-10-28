@@ -54,7 +54,7 @@
 }
 
 .camera-top-menu .menu-item {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 17px;
   font-weight: 300;
   line-height: 24px;
@@ -114,7 +114,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 36px;
   position: relative;
   min-height: 400px;
 }
@@ -152,7 +152,7 @@
 }
 
 .placeholder-title {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 18px;
   font-weight: 700;
   color: #262628;
@@ -161,7 +161,7 @@
 }
 
 .placeholder-description {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 14px;
   font-weight: 400;
   line-height: 20px;
@@ -190,11 +190,13 @@
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .camera-loading-box p {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 15px;
   color: #262628;
   margin: 0;
@@ -290,18 +292,32 @@
   background: rgba(231, 76, 60, 0.9);
   border-radius: 8px;
   color: white;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 14px;
   font-weight: 500;
 }
 
 /* Sample Rooms Container */
 .sample-rooms-container {
-  margin-bottom: 80px;
+  /*margin-bottom: 80px;*/
+  min-height: 325px;
+}
+
+.sample-rooms-container-absolute {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  z-index: 100;
+  padding: 30px 30px 0px 30px;
+  border-top-right-radius: 15px;
+  border-top-left-radius: 15px;
+  box-shadow: 0 5px 17px rgba(0, 0, 0, 1);
+  min-height: 350px;
 }
 
 .sample-rooms-heading {
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 15px;
   font-weight: 500;
   color: #000;
@@ -372,7 +388,7 @@
   background: #000;
   border: none;
   border-radius: 40px;
-  font-family: 'Poppins', sans-serif;
+  font-family: "Poppins", sans-serif;
   font-size: 16px;
   font-weight: 700;
   letter-spacing: 0.16px;
@@ -386,6 +402,13 @@
   background: #1a1a1a;
   transform: translateX(-50%) translateY(-2px);
   box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.3);
+}
+
+.camera-main-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
 /* Responsive */
