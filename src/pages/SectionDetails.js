@@ -174,7 +174,16 @@ const SectionDetails = () => {
 
   const handleRegenerate = () => {
     console.log("Regenerating design...");
-    generateDesignForSection(section.id);
+    generateDesignForSection(section.id).then((response) => {
+      console.log("Response:", response);
+      section.design.status = section.design
+        ? "PROCESSING"
+        : { status: "PROCESSING" };
+      NavigationState.section.design.status = NavigationState.section.design
+        ? "PROCESSING"
+        : { status: "PROCESSING" };
+      setSection({ ...section });
+    });
   };
 
   const updateProducts = (sectionSelected) => {
@@ -258,6 +267,7 @@ const SectionDetails = () => {
   };
 
   const roomType = getRoomType(section);
+  const desabled = section.design && section.design.status === "PROCESSING";
 
   return (
     <div className="section-details-container">
@@ -442,7 +452,11 @@ const SectionDetails = () => {
               <p className="sd-info-description">
                 The photo you uploaded to begin your project.
               </p>
-              <button className="change-btn" onClick={handleChangeReference}>
+              <button
+                className="change-btn"
+                onClick={handleChangeReference}
+                disabled={desabled}
+              >
                 Change
               </button>
             </div>
@@ -465,14 +479,18 @@ const SectionDetails = () => {
               <p className="sd-info-description">
                 The room type you selected for the project.
               </p>
-              <button className="change-btn" onClick={handleChangeRoomType}>
+              <button
+                className="change-btn"
+                onClick={handleChangeRoomType}
+                disabled={desabled}
+              >
                 Change
               </button>
             </div>
           </div>
           <div className="info-divider"></div>
 
-          {/* Project Details */}
+          {/* Project Details 
           <div className="project-details-box">
             <textarea
               className="project-details-textarea"
@@ -481,12 +499,16 @@ const SectionDetails = () => {
               placeholder="Enter project details..."
             />
           </div>
-          <div className="info-divider"></div>
+          <div className="info-divider"></div>*/}
 
           {/* Last Generated */}
           <div className="info-item">
             <img
-              src={section.resultImageUrl || "/assets/logo_big.png"}
+              src={
+                section.resultImageUrl ||
+                (section.design && section.design.resultImageUrl) ||
+                "/assets/logo_big.png"
+              }
               alt="Last Generated"
               className="info-thumbnail"
               onError={(e) => {
@@ -499,7 +521,11 @@ const SectionDetails = () => {
               <p className="sd-info-description">
                 Preview of your most recently generated design.
               </p>
-              <button className="change-btn" onClick={handleRegenerate}>
+              <button
+                className="change-btn"
+                onClick={handleRegenerate}
+                disabled={desabled}
+              >
                 Regenerate
               </button>
             </div>
