@@ -549,3 +549,18 @@
 .info-panel::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.5);
 }
+
+/* Clickable image styles */
+.clickable-image {
+  cursor: pointer;
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.clickable-image:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+
+.clickable-image:active {
+  transform: scale(0.98);
+}

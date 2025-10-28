@@ -9,6 +9,7 @@ import {
 } from "../api/Api";
 import EditableTitle from "../components/EditableTitle";
 import SectionThumbnail from "../components/SectionThumbnail";
+import FullscreenImagePopup from "../components/FullscreenImagePopup";
 import {
   base64ToFile,
   getMimeTypeFromBase64,
@@ -67,6 +68,8 @@ const SectionDetails = () => {
 
   const [products, setProducts] = useState(initialSection?.productIds || []);
   const [projectDetails, setProjectDetails] = useState();
+  const [isFullscreenPopupVisible, setIsFullscreenPopupVisible] =
+    useState(false);
 
   useEffect(() => {
     console.log("useEffect", section.id);
@@ -509,7 +512,11 @@ const SectionDetails = () => {
                 "/assets/logo_big.png"
               }
               alt="Last Generated"
-              className="info-thumbnail"
+              className="info-thumbnail clickable-image"
+              onClick={() => {
+                setIsFullscreenPopupVisible(true);
+                console.log("Fullscreen image clicked");
+              }}
               onError={(e) => {
                 console.log("Last generated image error:", e.target.src);
                 e.target.src = "/assets/logo_big.png";
@@ -531,6 +538,17 @@ const SectionDetails = () => {
           </div>
         </div>
       </div>
+
+      {/* Fullscreen Image Popup */}
+      <FullscreenImagePopup
+        imageUrl={
+          section.resultImageUrl ||
+          (section.design && section.design.resultImageUrl) ||
+          "/assets/logo_big.png"
+        }
+        isVisible={isFullscreenPopupVisible}
+        onClose={() => setIsFullscreenPopupVisible(false)}
+      />
     </div>
   );
 };

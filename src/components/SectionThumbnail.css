@@ -23,6 +23,7 @@
   border: 3px solid rgba(255, 255, 255, 0.8);
   border-radius: 50%;
   animation: pressPulse 0.5s ease-out;
+  opacity: 0;
 }
 
 @keyframes pressPulse {
