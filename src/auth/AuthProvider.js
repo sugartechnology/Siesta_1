@@ -13,9 +13,9 @@ export function AuthProvider({ children }) {
   const { setToken, token } = useAuthToken("local");
 
   useEffect(() => {
-    //checkSession();
-    //navigate("/home");
-    setLoading(false);
+    checkSession();
+    navigate("/home");
+    //setLoading(false);
   }, []);
 
   async function checkSession() {
