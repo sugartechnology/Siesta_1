@@ -7,6 +7,7 @@ export function useAuthToken(storageType = "local") {
   const [token, setTokenState] = useState(() => {
     try {
       console.log("Token yüklendi:", storage.getItem("auth_token"));
+      alert(storage.getItem("auth_token"));
       return storage.getItem("auth_token");
     } catch {
       return null;
