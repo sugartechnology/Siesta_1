@@ -20,12 +20,13 @@ const SectionThumbnail = ({
   const pressStartTime = useRef(0);
 
   const handleMouseDown = (event) => {
-    setIsPressed(true);
+    //event.preventDefault();
     pressStartTime.current = Date.now();
+    pressStartTime.pressed = true;
 
     // duration ms basılı tutulursa popup aç
     pressTimer.current = setTimeout(() => {
-      if (isPressed) {
+      if (pressStartTime.pressed) {
         setHoveredSection(section);
         setPopupPosition({
           x: event.clientX,
@@ -36,15 +37,17 @@ const SectionThumbnail = ({
   };
 
   const handleTouchStart = (event) => {
-    // Prevent default touch behavior (like scrolling)
+    // Prevent default touch behavior (like scrolling and context menu)
     event.preventDefault();
+    //event.stopPropagation();
 
-    setIsPressed(true);
     pressStartTime.current = Date.now();
+    pressStartTime.pressed = true;
 
     // duration ms basılı tutulursa popup aç
     pressTimer.current = setTimeout(() => {
-      if (isPressed) {
+      console.log("handleTouchStart timeout", pressStartTime.pressed);
+      if (pressStartTime.pressed) {
         const touch = event.touches[0];
         setHoveredSection(section);
         setPopupPosition({
@@ -56,7 +59,8 @@ const SectionThumbnail = ({
   };
 
   const handleMouseUp = () => {
-    setIsPressed(false);
+    pressStartTime.pressed = false;
+    console.log("handleMouseUp", pressStartTime.pressed);
     if (pressTimer.current) {
       clearTimeout(pressTimer.current);
       pressTimer.current = null;
@@ -72,7 +76,9 @@ const SectionThumbnail = ({
   };
 
   const handleTouchEnd = () => {
-    setIsPressed(false);
+    console.log("handleTouchEnd", pressStartTime.pressed);
+
+    pressStartTime.pressed = false;
     if (pressTimer.current) {
       clearTimeout(pressTimer.current);
       pressTimer.current = null;
@@ -88,7 +94,7 @@ const SectionThumbnail = ({
   };
 
   const handleMouseLeave = () => {
-    setIsPressed(false);
+    pressStartTime.pressed = false;
     if (pressTimer.current) {
       clearTimeout(pressTimer.current);
       pressTimer.current = null;
@@ -96,7 +102,7 @@ const SectionThumbnail = ({
   };
 
   const handleTouchCancel = () => {
-    setIsPressed(false);
+    pressStartTime.pressed = false;
     if (pressTimer.current) {
       clearTimeout(pressTimer.current);
       pressTimer.current = null;
@@ -125,6 +131,12 @@ const SectionThumbnail = ({
     }
   };
 
+  const handleContextMenu = (event) => {
+    console.log("handleContextMenu", event);
+    event.preventDefault();
+    event.stopPropagation();
+  };
+
   const handleRemoveSection = (sectionToRemove) => {
     onRemove(sectionToRemove);
     setHoveredSection(null);
@@ -139,7 +151,7 @@ const SectionThumbnail = ({
     <>
       <div
         className={`section-thumbnail ${isActive ? "active" : ""} ${
-          isPressed ? "pressed" : ""
+          pressStartTime.pressed ? "pressed" : ""
         }`}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
@@ -149,6 +161,7 @@ const SectionThumbnail = ({
         onTouchEnd={handleTouchEnd}
         onTouchCancel={handleTouchCancel}
         onTouchMove={handleTouchMove}
+        onContextMenu={handleContextMenu}
       >
         <img
           src={
@@ -183,7 +196,7 @@ const SectionThumbnail = ({
         )}
 
         {/* Press indicator */}
-        {isPressed && (
+        {pressStartTime.pressed && (
           <div className="press-indicator">
             <div className="press-ring"></div>
           </div>

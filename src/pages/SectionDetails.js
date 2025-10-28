@@ -190,7 +190,6 @@ const SectionDetails = () => {
     getProductsByIds(
       sectionSelected.productIds.map((product) => product.productId)
     ).then((newProducts) => {
-      console.log("newProducts", newProducts);
       sectionSelected.productIds = newProducts.map((newProduct) => {
         const existingProduct = sectionSelected.productIds.find(
           (product) => product.productId === newProduct.productId
