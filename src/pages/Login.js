@@ -27,7 +27,7 @@ const Login = () => {
   });
 
   const imgLogo = "/assets/logo_big.png";
-  const imgBackground = "/assets/login_background.png";
+  const imgBackground = "/assets/login_background.jpg";
   const imgFacebook =
     "http://localhost:3845/assets/88b63fe33fffe95c43e282e2280b18c129842d26.svg";
   const imgGoogle =
