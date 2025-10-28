@@ -20,8 +20,8 @@ import "./App.css";
 function PrivateRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
   if (loading) return null;
-  //return isAuthenticated ? children : <Login />;
-  return children;
+  return isAuthenticated ? children : <Login />;
+  //return children;
 }
 
 function NotFound() {
@@ -37,8 +37,8 @@ function AppChrome() {
   const { user } = useAuth();
   return (
     <div className="App">
-      {/*user && <TopMenu />*/}
-      <TopMenu />
+      {user && <TopMenu />}
+      {/*<TopMenu />*/}
       <div className="app-content">
         <AppRoutes />
       </div>
