@@ -99,6 +99,7 @@ const SectionDetails = () => {
 
     // Get section by id
     if (NavigationState.sectionMode === "update-section") {
+      setContextSection(section);
       updateSection(section);
       NavigationState.sectionMode = undefined;
     }
@@ -201,10 +202,9 @@ const SectionDetails = () => {
       section.design.status = section.design
         ? "PROCESSING"
         : { status: "PROCESSING" };
-      NavigationState.section.design.status = NavigationState.section.design
-        ? "PROCESSING"
-        : { status: "PROCESSING" };
-      setSection({ ...section });
+      const newSection = { ...section };
+      setContextSection(newSection);
+      setSection(newSection);
     });
   };
 
@@ -278,7 +278,6 @@ const SectionDetails = () => {
   };
 
   const getRoomType = (section) => {
-    console.log("getRoomType", section.id, section.type);
     if (section.type) {
       return roomTypes.find((rt) => rt.name === section.type);
     }
@@ -311,7 +310,7 @@ const SectionDetails = () => {
           {orderedSections.map((sectionItem, index) => (
             <>
               <SectionThumbnail
-                key={sectionItem.id}
+                key={index}
                 section={sectionItem}
                 index={index}
                 isActive={index === 0}

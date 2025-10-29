@@ -107,9 +107,10 @@ export const clearNavigationState = () => {
 export const setContextSection = (section) => {
   console.log("setContextSection", section);
   NavigationState.section = section;
-  NavigationState.project.sections
-    .filter((s) => s.id !== section.id)
-    .push(section);
+  NavigationState.project.sections = NavigationState.project.sections.filter(
+    (s) => s.id !== section.id
+  );
+  NavigationState.project.sections.push(section);
 };
 
 // Yeni section akışı başlat
@@ -121,7 +122,7 @@ export const startNewSectionFlow = (project, section) => {
   if (section) NavigationState.section = section;
   else section = { ...DefaultNavigationState.section };
 
-  /*if (!project.sections.includes(section)) project.sections.push(section);*/
+  setContextSection(section);
 
   NavigationState.flowType = "new";
   NavigationState.sectionMode = "update-section";

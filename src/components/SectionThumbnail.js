@@ -5,6 +5,7 @@ import "./SectionThumbnail.css";
 import LoadingSpinner from "./LoadingSpinner";
 
 const SectionThumbnail = ({
+  key,
   section,
   index,
   isActive,
@@ -151,6 +152,7 @@ const SectionThumbnail = ({
   return (
     <>
       <div
+        id={key}
         className={`section-thumbnail ${isActive ? "active" : ""} ${
           pressStartTime.pressed ? "pressed" : ""
         }`}
@@ -176,7 +178,6 @@ const SectionThumbnail = ({
         )}
         <img
           src={
-            section.thumbnailUrl ||
             section.resultImageUrl ||
             section.rootImageUrl ||
             "/assets/logo_big.png"

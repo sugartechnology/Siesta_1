@@ -86,6 +86,7 @@ const ProjectDetails = () => {
                   <img
                     src={
                       section.thumbnailUrl ||
+                      section.resultImageUrl ||
                       section.rootImageUrl ||
                       "/assets/logo_big.png"
                     }
