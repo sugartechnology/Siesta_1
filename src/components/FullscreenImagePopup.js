@@ -1,4 +1,4 @@
-import React from "react";
+import { useEffect } from "react";
 import "./FullscreenImagePopup.css";
 
 const FullscreenImagePopup = ({ imageUrl, isVisible, onClose }) => {
@@ -14,7 +14,7 @@ const FullscreenImagePopup = ({ imageUrl, isVisible, onClose }) => {
     }
   };
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (isVisible) {
       document.addEventListener("keydown", handleKeyDown);
       document.body.style.overflow = "hidden"; // Prevent background scrolling

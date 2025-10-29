@@ -25,11 +25,15 @@ import {
   startNewSectionFlow,
 } from "../utils/NavigationState";
 import "./SectionDetails.css";
+import { FullscreenLoadingSpinner } from "../components/FullscreenLoadingSpinner";
 
 const SectionDetails = () => {
   const navigate = useNavigate();
   const pollRef = useRef(null);
-
+  const [
+    isFullscreenLoadingSpinnerVisible,
+    setIsFullscreenLoadingSpinnerVisible,
+  ] = useState(false);
   // NavigationState parametrelerini section'a aktar ve temizle
   const initialSection = NavigationState.section || {
     rootImageUrl: "",
@@ -41,7 +45,6 @@ const SectionDetails = () => {
   // NavigationState'den gelen verileri section'a aktar
   if (NavigationState.image) {
     initialSection.rootImageUrl = NavigationState.image;
-    initialSection.thumbnailUrl = NavigationState.image;
     NavigationState.image = "";
   }
 
@@ -66,7 +69,7 @@ const SectionDetails = () => {
   // All sections for the project
   const allSections = project ? project.sections : [];
   const orderedSections = allSections
-    ? [section, ...allSections.filter((s) => !s.id || s.id !== section.id)]
+    ? [section, ...allSections.filter((s) => s.id !== section.id)]
     : [];
 
   const [products, setProducts] = useState(initialSection?.productIds || []);
@@ -76,26 +79,45 @@ const SectionDetails = () => {
 
   const callInterval = () => {
     pollRef.current = setTimeout(() => {
-      getSectionById(section.id).then((newSection) => {
-        console.log("Response:", newSection);
-        setContextSection(newSection);
-        setSection(newSection);
+      if (section.id) {
+        getSectionById(section.id)
+          .then((newSection) => {
+            // pollRef null ise component unmount olmuş, state set etme
+            if (!pollRef.current) {
+              return;
+            }
+            console.log("Response:", newSection);
+            setContextSection(newSection);
+            setSection(newSection);
+            callInterval();
+          })
+          .catch((error) => {
+            console.error("Polling error:", error);
+            // Hata durumunda da polling'i devam ettir (eğer mount durumundaysa)
+            if (pollRef.current) {
+              callInterval();
+            }
+          });
+      } else {
         callInterval();
-      });
+      }
     }, 20000);
   };
+
   useEffect(() => {
     callInterval();
 
     return () => {
+      // Component unmount olduğunda timeout'u temizle ve pollRef'i null yap
       if (pollRef.current) {
-        clearInterval(pollRef.current);
+        clearTimeout(pollRef.current);
+        pollRef.current = null;
       }
     };
   }, []);
 
   useEffect(() => {
-    console.log("useEffect", section.id);
+    //
 
     // Get section by id
     if (NavigationState.sectionMode === "update-section") {
@@ -111,6 +133,7 @@ const SectionDetails = () => {
   }, [project]);
 
   const updateSection = async (section) => {
+    setIsFullscreenLoadingSpinnerVisible(true);
     const image = section.rootImageUrl;
 
     const updateSectionData = { ...section };
@@ -134,14 +157,23 @@ const SectionDetails = () => {
       imageFile = base64ToFile(image, `section-image.${extension}`);
     }
 
-    addSectionToProject(project.id, updateSectionData, imageFile).then(
-      (response) => {
+    const replaceSection = section;
+    addSectionToProject(project.id, updateSectionData, imageFile)
+      .then((response) => {
         console.log("Response:", response);
-        setContextSection(response);
+
+        setContextSection(response, replaceSection);
         setSection(response);
-      }
-    );
+      })
+      .finally(() => {
+        setIsFullscreenLoadingSpinnerVisible(false);
+      });
   };
+
+  useEffect(() => {
+    clearTimeout(pollRef.current);
+    callInterval();
+  }, [section]);
 
   const handleQuantityChange = async (productIdd, change) => {
     // Önce local state'i güncelle
@@ -197,11 +229,14 @@ const SectionDetails = () => {
 
   const handleRegenerate = () => {
     console.log("Regenerating design...");
+    clearTimeout(pollRef.current);
     generateDesignForSection(section.id).then((response) => {
       console.log("Response:", response);
-      section.design.status = section.design
-        ? "PROCESSING"
-        : { status: "PROCESSING" };
+      if (!section.design) {
+        section.design = { status: "PROCESSING" };
+      }
+      section.design.status = "PROCESSING";
+
       const newSection = { ...section };
       setContextSection(newSection);
       setSection(newSection);
@@ -243,7 +278,6 @@ const SectionDetails = () => {
   };
 
   const handleAddNewSection = () => {
-    NavigationState.sectionMode = "update-section";
     startNewSectionFlow(project);
     navigate(getNextPage("*", { sectionMode: "update-section" }));
   };
@@ -285,7 +319,10 @@ const SectionDetails = () => {
   };
 
   const roomType = getRoomType(section);
-  const desabled = section.design && section.design.status === "PROCESSING";
+  const desabled =
+    section.design &&
+    section.design.status &&
+    section.design.status !== "COMPLETED";
 
   return (
     <div className="section-details-container">
@@ -578,6 +615,7 @@ const SectionDetails = () => {
         isVisible={isFullscreenPopupVisible}
         onClose={() => setIsFullscreenPopupVisible(false)}
       />
+      <FullscreenLoadingSpinner isVisible={isFullscreenLoadingSpinnerVisible} />
     </div>
   );
 };

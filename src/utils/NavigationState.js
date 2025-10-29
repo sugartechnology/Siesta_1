@@ -104,13 +104,22 @@ export const clearNavigationState = () => {
   Object.assign(NavigationState, DefaultNavigationState);
 };
 
-export const setContextSection = (section) => {
+export const setContextSection = (section, replaceSection = undefined) => {
   console.log("setContextSection", section);
   NavigationState.section = section;
+  if (replaceSection) {
+    NavigationState.project.sections = NavigationState.project.sections.filter(
+      (s) => s != replaceSection
+    );
+  }
   NavigationState.project.sections = NavigationState.project.sections.filter(
     (s) => s.id !== section.id
   );
   NavigationState.project.sections.push(section);
+  console.log(
+    "NavigationState.project.sections",
+    NavigationState.project.sections.map((s) => s.id)
+  );
 };
 
 // Yeni section akışı başlat
@@ -122,6 +131,8 @@ export const startNewSectionFlow = (project, section) => {
   if (section) NavigationState.section = section;
   else section = { ...DefaultNavigationState.section };
 
+  NavigationState.section = section;
+  NavigationState.project = project;
   setContextSection(section);
 
   NavigationState.flowType = "new";
