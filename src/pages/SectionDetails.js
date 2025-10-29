@@ -1,31 +1,33 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
-  addSectionToProject,
-  getProductsByIds,
   addProductToSection,
+  addSectionToProject,
   deleteSection,
   generateDesignForSection,
+  getProductsByIds,
   getSectionById,
+  createProject,
 } from "../api/Api";
 import EditableTitle from "../components/EditableTitle";
-import SectionThumbnail from "../components/SectionThumbnail";
 import FullscreenImagePopup from "../components/FullscreenImagePopup";
+import { FullscreenLoadingSpinner } from "../components/FullscreenLoadingSpinner";
+import SectionThumbnail from "../components/SectionThumbnail";
 import {
   base64ToFile,
   getMimeTypeFromBase64,
   isValidBase64Image,
 } from "../utils/ImageUtils";
 import {
-  NavigationState,
-  setContextSection,
   getNextPage,
+  NavigationState,
   roomTypes,
+  setContextSection,
   startExistingSectionFlow,
   startNewSectionFlow,
+  DefaultNavigationState,
 } from "../utils/NavigationState";
 import "./SectionDetails.css";
-import { FullscreenLoadingSpinner } from "../components/FullscreenLoadingSpinner";
 
 const SectionDetails = () => {
   const navigate = useNavigate();
@@ -118,11 +120,26 @@ const SectionDetails = () => {
 
   useEffect(() => {
     //
-
+    console.log("NavigationState", NavigationState);
     // Get section by id
     if (NavigationState.sectionMode === "update-section") {
-      setContextSection(section);
-      updateSection(section);
+      if (!NavigationState.project || !NavigationState.project.id) {
+        createProject({
+          ...DefaultNavigationState.project,
+        }).then((project) => {
+          section.projectId = project.id;
+          project.sections = [section];
+          NavigationState.project = project;
+          NavigationState.section = section;
+          setContextSection(section);
+          setProject(project);
+          updateSection(section, project.id);
+        });
+      } else {
+        setContextSection(section);
+        updateSection(section);
+      }
+
       NavigationState.sectionMode = undefined;
     }
 
@@ -130,10 +147,11 @@ const SectionDetails = () => {
       updateProducts(section);
     }
     //
-  }, [project]);
+  }, []);
 
-  const updateSection = async (section) => {
+  const updateSection = async (section, projectId = undefined) => {
     setIsFullscreenLoadingSpinnerVisible(true);
+    clearTimeout(pollRef.current);
     const image = section.rootImageUrl;
 
     const updateSectionData = { ...section };
@@ -158,12 +176,11 @@ const SectionDetails = () => {
     }
 
     const replaceSection = section;
-    addSectionToProject(project.id, updateSectionData, imageFile)
+    addSectionToProject(projectId || project.id, updateSectionData, imageFile)
       .then((response) => {
-        console.log("Response:", response);
-
         setContextSection(response, replaceSection);
         setSection(response);
+        callInterval();
       })
       .finally(() => {
         setIsFullscreenLoadingSpinnerVisible(false);

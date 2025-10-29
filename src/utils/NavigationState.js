@@ -1,5 +1,5 @@
 // Navigation ve Section işlemleri için state management
-const DefaultNavigationState = {
+export const DefaultNavigationState = {
   // Mevcut section ID (varsa)
   section: {
     title: "New Section",

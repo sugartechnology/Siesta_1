@@ -416,9 +416,6 @@ export default function Products() {
 
   return (
     <>
-      {console.log("Products rendered")}
-      {console.log("Selected products:", selectedProducts)}
-
       <div className="products-container">
         <div className="products-filters-container">
           {/* Filters and Search */}

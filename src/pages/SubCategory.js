@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { NavigationState } from "../utils/NavigationState";
+import { NavigationState, startNewSectionFlow } from "../utils/NavigationState";
 import "./SubCategory.css";
 
 export default function SubCategory() {
@@ -60,8 +60,7 @@ export default function SubCategory() {
   ];
 
   const handleCategoryClick = (category) => {
-    NavigationState.project = undefined;
-    NavigationState.section = undefined;
+    startNewSectionFlow();
     navigate(category.path);
   };
 
