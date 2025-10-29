@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   addSectionToProject,
@@ -6,6 +6,7 @@ import {
   addProductToSection,
   deleteSection,
   generateDesignForSection,
+  getSectionById,
 } from "../api/Api";
 import EditableTitle from "../components/EditableTitle";
 import SectionThumbnail from "../components/SectionThumbnail";
@@ -17,6 +18,7 @@ import {
 } from "../utils/ImageUtils";
 import {
   NavigationState,
+  setContextSection,
   getNextPage,
   roomTypes,
   startExistingSectionFlow,
@@ -26,6 +28,7 @@ import "./SectionDetails.css";
 
 const SectionDetails = () => {
   const navigate = useNavigate();
+  const pollRef = useRef(null);
 
   // NavigationState parametrelerini section'a aktar ve temizle
   const initialSection = NavigationState.section || {
@@ -71,6 +74,26 @@ const SectionDetails = () => {
   const [isFullscreenPopupVisible, setIsFullscreenPopupVisible] =
     useState(false);
 
+  const callInterval = () => {
+    pollRef.current = setTimeout(() => {
+      getSectionById(section.id).then((newSection) => {
+        console.log("Response:", newSection);
+        setContextSection(newSection);
+        setSection(newSection);
+        callInterval();
+      });
+    }, 20000);
+  };
+  useEffect(() => {
+    callInterval();
+
+    return () => {
+      if (pollRef.current) {
+        clearInterval(pollRef.current);
+      }
+    };
+  }, []);
+
   useEffect(() => {
     console.log("useEffect", section.id);
 
@@ -113,11 +136,7 @@ const SectionDetails = () => {
     addSectionToProject(project.id, updateSectionData, imageFile).then(
       (response) => {
         console.log("Response:", response);
-        const newSections = NavigationState.project.sections.filter(
-          (s) => s.id !== section.id
-        );
-        newSections.push(response);
-        NavigationState.project.sections = newSections;
+        setContextSection(response);
         setSection(response);
       }
     );
@@ -202,10 +221,7 @@ const SectionDetails = () => {
           : newProduct;
       });
       setProducts(sectionSelected.productIds);
-      NavigationState.project.sections
-        .filter((s) => s.id !== sectionSelected.id)
-        .push(sectionSelected);
-      NavigationState.section = sectionSelected;
+      setContextSection(sectionSelected);
       setSection(sectionSelected);
     });
   };
@@ -216,6 +232,7 @@ const SectionDetails = () => {
 
   const handleTitleChange = (newTitle) => {
     section.title = newTitle;
+    setContextSection(section);
     setSection({ ...section });
     updateSection(section);
   };
@@ -292,19 +309,32 @@ const SectionDetails = () => {
       <div className="sections-list-container">
         <div className="sections-list">
           {orderedSections.map((sectionItem, index) => (
-            <SectionThumbnail
-              key={sectionItem.id}
-              section={sectionItem}
-              index={index}
-              isActive={index === 0}
-              onSectionClick={handleSectionClick}
-              onTitleChange={handleTitleChange}
-              onRemove={handleRemoveSection}
-              onViewDetails={handleSectionClick}
-            />
+            <>
+              <SectionThumbnail
+                key={sectionItem.id}
+                section={sectionItem}
+                index={index}
+                isActive={index === 0}
+                onSectionClick={handleSectionClick}
+                onTitleChange={handleTitleChange}
+                onRemove={handleRemoveSection}
+                onViewDetails={handleSectionClick}
+              />
+            </>
           ))}
         </div>
-        <div className="add-section-thumbnail" onClick={handleAddNewSection}>
+        <div
+          className="add-section-thumbnail"
+          onClick={handleAddNewSection}
+          style={{
+            backgroundImage: "url(/assets/small_chair.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+            backgroundBlendMode: "multiply",
+            backgroundColor: "rgba(0, 0, 0, 0.5)",
+          }}
+        >
           <div className="add-section-icon">
             <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
               <path

@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import EditableTitle from "./EditableTitle";
 import SectionPopup from "./SectionPopup";
 import "./SectionThumbnail.css";
+import LoadingSpinner from "./LoadingSpinner";
 
 const SectionThumbnail = ({
   section,
@@ -163,6 +164,16 @@ const SectionThumbnail = ({
         onTouchMove={handleTouchMove}
         onContextMenu={handleContextMenu}
       >
+        {section.design && section.design.status === "PROCESSING" && (
+          <LoadingSpinner
+            style={{
+              position: "absolute",
+              top: "50%",
+              left: "50%",
+              transform: "translate(-50%, -50%)",
+            }}
+          />
+        )}
         <img
           src={
             section.thumbnailUrl ||

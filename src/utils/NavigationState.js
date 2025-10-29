@@ -104,6 +104,14 @@ export const clearNavigationState = () => {
   Object.assign(NavigationState, DefaultNavigationState);
 };
 
+export const setContextSection = (section) => {
+  console.log("setContextSection", section);
+  NavigationState.section = section;
+  NavigationState.project.sections
+    .filter((s) => s.id !== section.id)
+    .push(section);
+};
+
 // Yeni section akışı başlat
 export const startNewSectionFlow = (project, section) => {
   clearNavigationState();
