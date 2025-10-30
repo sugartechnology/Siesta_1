@@ -120,7 +120,6 @@ const SectionDetails = () => {
 
   useEffect(() => {
     //
-    console.log("NavigationState", NavigationState);
     // Get section by id
     if (NavigationState.sectionMode === "update-section") {
       if (!NavigationState.project || !NavigationState.project.id) {

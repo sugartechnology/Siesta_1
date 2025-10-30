@@ -105,7 +105,6 @@ export const clearNavigationState = () => {
 };
 
 export const setContextSection = (section, replaceSection = undefined) => {
-  console.log("setContextSection", section);
   NavigationState.section = section;
   if (replaceSection) {
     NavigationState.project.sections = NavigationState.project.sections.filter(
@@ -116,10 +115,6 @@ export const setContextSection = (section, replaceSection = undefined) => {
     (s) => s.id !== section.id
   );
   NavigationState.project.sections.push(section);
-  console.log(
-    "NavigationState.project.sections",
-    NavigationState.project.sections.map((s) => s.id)
-  );
 };
 
 // Yeni section akışı başlat
