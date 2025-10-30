@@ -68,12 +68,12 @@ function AppRoutes() {
     { path: "/camera", element: <Camera /> },
     { path: "/photograph", element: <Photograph /> },
     { path: "/room-type", element: <RoomType /> },
-    { path: "/login", element: <Login /> },
   ];
 
   return (
     <Routes>
       <Route path="/" element={<SplashScreen />} />
+      <Route path="/login" element={<Login />} />
       {privateRoutes.map(({ path, element }) => (
         <Route
           key={path}

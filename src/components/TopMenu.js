@@ -1,8 +1,16 @@
 import "./TopMenu.css";
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { useAuth } from "../auth/useAuth";
 
 const TopMenu = () => {
   const navigate = useNavigate();
+  const [profileOpen, setProfileOpen] = useState(false);
+  const auth = useAuth();
+  const handleLogout = () => {
+    setProfileOpen(false);
+    auth.logout();
+  };
   return (
     <div className="top-menu">
       <div className="menu-section">
@@ -48,7 +56,11 @@ const TopMenu = () => {
       </div>
 
       <div className="menu-actions">
-        <div className="profile-icon">
+        <div
+          className="profile-icon"
+          style={{ position: "relative" }}
+          onClick={() => setProfileOpen((o) => !o)}
+        >
           <svg
             width="28"
             height="28"
@@ -68,6 +80,34 @@ const TopMenu = () => {
               /* stroke-width="1.5"*/
             />
           </svg>
+          {profileOpen && (
+            <div
+              style={{
+                position: "absolute",
+                top: "36px",
+                right: 0,
+                background: "#fff",
+                border: "1px solid #e5e7eb",
+                borderRadius: "8px",
+                padding: "8px 0",
+                zIndex: 1000,
+                minWidth: "140px",
+              }}
+            >
+              <button
+                onClick={handleLogout}
+                style={{
+                  width: "100%",
+                  textAlign: "left",
+                  padding: "10px 14px",
+                  border: "none",
+                  cursor: "pointer",
+                }}
+              >
+                Logout
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>

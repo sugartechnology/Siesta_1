@@ -62,10 +62,11 @@ export function AuthProvider({ children }) {
   }
 
   async function logout() {
-    await fetch(API_URL + "/auth/logout", {
+    fetch(API_URL + "/auth/logout", {
       method: "POST",
       credentials: "include",
     });
+    setToken(null);
     setUser(null);
   }
 
