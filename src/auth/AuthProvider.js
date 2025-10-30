@@ -28,8 +28,9 @@ export function AuthProvider({ children }) {
         setUser({ id: "data.id", name: "data.name", email: "" });
         navigate("/home");
       } else {
-        navigate("/login");
         setUser(null);
+        setToken(null);
+        navigate("/login");
       }
     } catch (error) {
       console.error("Session check failed:", error);
@@ -55,19 +56,20 @@ export function AuthProvider({ children }) {
       credentials: "include",
     });
     if (!res.ok) throw new Error("Giriş başarısız");
-    res.json().then(async (data) => {
+    res.json().then((data) => {
+      setUser({ id: "data.id", name: "data.name", email: "" });
       setToken(data.accessToken);
-      await checkSession();
     });
   }
 
   async function logout() {
-    fetch(API_URL + "/auth/logout", {
+    /*fetch(API_URL + "/auth/logout", {
       method: "POST",
       credentials: "include",
-    });
+    });*/
     setToken(null);
     setUser(null);
+    navigate("/login");
   }
 
   const value = { user, loading, login, logout, isAuthenticated: !!user };
