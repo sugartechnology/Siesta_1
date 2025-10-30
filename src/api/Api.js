@@ -48,6 +48,21 @@ export const fetchProducts = async (
   }
 };
 
+export const fetchProductVariants = async (name) => {
+  try {
+    const url =
+      process.env.REACT_APP_API_URL + `/projects/products/variants/${name}`;
+
+    console.log("url", url);
+    const response = await postData(url);
+    console.log(JSON.stringify(response.data), "Response");
+    return response;
+  } catch (error) {
+    console.error("Fetch error:", error);
+    throw error;
+  }
+};
+
 // ===== PROJECT MANAGEMENT API =====
 
 // Get user's projects (summary)

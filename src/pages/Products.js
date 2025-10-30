@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { fetchProducts } from "../api/Api";
+import { fetchProducts, fetchProductVariants } from "../api/Api";
 import FilterButton from "../components/FilterButton";
 import { getNextPage, NavigationState } from "../utils/NavigationState";
 import "./Products.css";
@@ -138,7 +138,7 @@ export default function Products() {
     6: 0, // Marsala
   });
 
-  const variants = [
+  const [variants, setVariants] = useState([
     { id: 1, name: "Black", stock: 2, image: "/assets/variant-black.png" },
     { id: 2, name: "White", stock: 0, image: "/assets/variant-white.png" },
     {
@@ -155,7 +155,7 @@ export default function Products() {
       image: "/assets/variant-dark-grey.png",
     },
     { id: 6, name: "Marsala", stock: 0, image: "/assets/variant-marsala.png" },
-  ];
+  ]);
 
   const removeFilter = (filterType, filter) => {
     setFilterState((prev) => {
@@ -268,13 +268,8 @@ export default function Products() {
   };
 
   const handleAddToCart = (product) => {
-    if (product.hasVariants) {
-      setSelectedProduct(product);
-      setShowVariantModal(true);
-    } else {
-      addProductToSelection(product, 1);
-      console.log("Product added to selection:", product);
-    }
+    addProductToSelection(product, 1);
+    console.log("Product added to selection:", product);
   };
 
   const getFilter = () => {
@@ -378,6 +373,18 @@ export default function Products() {
         [variantId]: newQty,
       };
     });
+  };
+
+  const handleProductClick = (product) => {
+    console.log("product", product);
+    setSelectedProduct(product);
+    fetchProductVariants(product.name ? product.name.toLowerCase() : "").then(
+      (variants) => {
+        setVariants(variants);
+        console.log("variants", variants);
+        setShowVariantModal(true);
+      }
+    );
   };
 
   const handleGenerateDesign = () => {
@@ -498,14 +505,17 @@ export default function Products() {
           <div className="products-grid">
             {products.map((product) => (
               <div key={product.productId} className="product-card">
-                <div className="product-image-container">
+                <div
+                  className="product-image-container"
+                  onClick={() => handleProductClick(product)}
+                >
                   <img
                     src={product.images[1] || "/assets/product-placeholder.png"}
                     alt={product.name}
                     className="product-image"
                   />
 
-                  {/* Product Actions (Visible on hover) */}
+                  {/* Product Actions (Visible on hover) 
                   <div className="product-actions">
                     <button className="action-btn wishlist">
                       <svg
@@ -567,7 +577,7 @@ export default function Products() {
                         />
                       </svg>
                     </button>
-                  </div>
+                  </div> */}
                 </div>
 
                 <div className="product-info">
@@ -674,7 +684,7 @@ export default function Products() {
           />
           <div className="variant-modal">
             <div className="modal-header">
-              <h2>Portofino Bar 75 Variants</h2>
+              <h2>{selectedProduct.name} Variants</h2>
               <button
                 className="close-btn"
                 onClick={() => setShowVariantModal(false)}
@@ -703,17 +713,17 @@ export default function Products() {
                   >
                     <div className="variant-image-container">
                       <img
-                        src={variant.image}
+                        src={variant.thumbnail}
                         alt={variant.name}
                         className="variant-image"
                       />
                     </div>
-                    <p className="variant-title">Portofino Bar 75</p>
-                    <p className="variant-color">{variant.name}</p>
-                    <div className="quantity-control">
+                    <p className="variant-title">{variant.name}</p>
+                    {/*<p className="variant-color">{variant.name}</p>*/}
+                    <div className="p-quantity-control">
                       <button
                         className="quantity-btn"
-                        onClick={() => handleQuantityChange(variant.id, -1)}
+                        onClick={() => addProductToSelection(variant, -1)}
                         disabled={currentQuantity === 0}
                       >
                         <svg
@@ -731,10 +741,12 @@ export default function Products() {
                           />
                         </svg>
                       </button>
-                      <span className="quantity">{currentQuantity}</span>
+                      <span className="quantity">
+                        {getProductQuantity(variant.productId)}
+                      </span>
                       <button
                         className="quantity-btn"
-                        onClick={() => handleQuantityChange(variant.id, 1)}
+                        onClick={() => addProductToSelection(variant, 1)}
                       >
                         <svg
                           width="16"
@@ -757,7 +769,12 @@ export default function Products() {
               })}
             </div>
 
-            <button className="add-to-design-btn">Add to Design</button>
+            <button
+              className="add-to-design-btn"
+              onClick={() => setShowVariantModal(false)}
+            >
+              Add to Design
+            </button>
           </div>
         </>
       )}
