@@ -58,7 +58,7 @@ export const applyImageTransformations = (
         ctx.restore();
 
         // Get processed image
-        const processedImage = canvas.toDataURL("image/png");
+        const processedImage = canvas.toDataURL("image/jpeg");
         resolve(processedImage);
       } catch (error) {
         reject(error);

@@ -159,8 +159,8 @@ const SectionDetails = () => {
       quantity: product.quantity,
     }));
 
-    updateSection.rootImageUrl = undefined;
-    updateSection.thumbnailUrl = undefined;
+    updateSectionData.rootImageUrl = undefined;
+    updateSectionData.thumbnailUrl = undefined;
     // Base64 image'ı File objesine dönüştür
     let imageFile = null;
     if (isValidBase64Image(image)) {
