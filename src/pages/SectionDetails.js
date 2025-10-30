@@ -8,6 +8,8 @@ import {
   getProductsByIds,
   getSectionById,
   createProject,
+  updateProjectName,
+  updateSectionName,
 } from "../api/Api";
 import EditableTitle from "../components/EditableTitle";
 import FullscreenImagePopup from "../components/FullscreenImagePopup";
@@ -74,6 +76,7 @@ const SectionDetails = () => {
     ? [section, ...allSections.filter((s) => s.id !== section.id)]
     : [];
 
+  console.log("orderedSections", orderedSections);
   const [products, setProducts] = useState(initialSection?.productIds || []);
   const [projectDetails, setProjectDetails] = useState();
   const [isFullscreenPopupVisible, setIsFullscreenPopupVisible] =
@@ -281,16 +284,23 @@ const SectionDetails = () => {
     updateProducts(sectionSelected);
   };
 
-  const handleTitleChange = (newTitle) => {
+  const handleSectionTitleChange = (newTitle) => {
     section.title = newTitle;
     setContextSection(section);
     setSection({ ...section });
-    updateSection(section);
+    updateSectionName(section.id, newTitle).then((nsection) => {
+      console.log("Section updated successfully:", nsection);
+      setSection(nsection);
+    });
   };
 
   const handleProjectTitleChange = (newTitle) => {
     NavigationState.project.name = newTitle;
     setProject({ ...NavigationState.project });
+    updateProjectName(project.id, newTitle).then((nproject) => {
+      console.log("Project updated successfully:", nproject);
+      setProject(nproject);
+    });
   };
 
   const handleAddNewSection = () => {
@@ -368,7 +378,7 @@ const SectionDetails = () => {
                 index={index}
                 isActive={index === 0}
                 onSectionClick={handleSectionClick}
-                onTitleChange={handleTitleChange}
+                onTitleChange={handleSectionTitleChange}
                 onRemove={handleRemoveSection}
                 onViewDetails={handleSectionClick}
               />

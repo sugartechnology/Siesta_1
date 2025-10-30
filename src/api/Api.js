@@ -101,6 +101,17 @@ export const createProject = async (projectData) => {
   return await postData(endpoint, projectData);
 };
 
+// Create new project
+export const updateProjectName = async (projectId, projectName) => {
+  const endpoint = `${process.env.REACT_APP_API_URL}/projects/${projectId}/update-name/${projectName}`;
+  return await postData(endpoint);
+};
+
+export const updateSectionName = async (sectionId, sectionName) => {
+  const endpoint = `${process.env.REACT_APP_API_URL}/projects/sections/${sectionId}/update-name/${sectionName}`;
+  return await postData(endpoint);
+};
+
 // Add section to project
 export const addSectionToProject = async (
   projectId,
