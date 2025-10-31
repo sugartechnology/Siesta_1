@@ -120,12 +120,8 @@ export default function Camera() {
     if (file) {
       const reader = new FileReader();
       reader.onload = (event) => {
-        navigate("/photograph", {
-          state: {
-            project,
-            image: event.target.result,
-          },
-        });
+        NavigationState.image = event.target.result;
+        navigate("/photograph");
       };
       reader.readAsDataURL(file);
     }
