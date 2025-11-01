@@ -70,7 +70,7 @@ const SectionThumbnail = ({
     // Kısa tıklama ise normal click
     const pressDuration = Date.now() - pressStartTime.current;
     if (pressDuration < duration && !hoveredSection) {
-      if (index !== 0) {
+      if (!isActive) {
         onSectionClick(section);
       }
     }
@@ -86,7 +86,7 @@ const SectionThumbnail = ({
     // Kısa tıklama ise normal click
     const pressDuration = Date.now() - pressStartTime.current;
     if (pressDuration < duration && !hoveredSection) {
-      if (index !== 0) {
+      if (!isActive) {
         //onSectionClick(section);
       }
     }
@@ -187,7 +187,7 @@ const SectionThumbnail = ({
           className="section-thumbnail-image"
         />
         <div className="section-thumbnail-overlay"></div>
-        {index === 0 ? (
+        {isActive ? (
           <EditableTitle
             style={{
               position: "absolute",

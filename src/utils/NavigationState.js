@@ -106,15 +106,14 @@ export const clearNavigationState = () => {
 
 export const setContextSection = (section, replaceSection = undefined) => {
   NavigationState.section = section;
-  if (replaceSection) {
-    NavigationState.project.sections = NavigationState.project.sections.filter(
-      (s) => s != replaceSection
-    );
-  }
-  NavigationState.project.sections = NavigationState.project.sections.filter(
-    (s) => s.id !== section.id
+  const index = NavigationState.project.sections.findIndex((s) =>
+    replaceSection ? replaceSection == s : s.id === section.id
   );
-  NavigationState.project.sections.push(section);
+  if (index !== -1) {
+    NavigationState.project.sections[index] = section;
+  } else {
+    NavigationState.project.sections.push(section);
+  }
 };
 
 // Yeni section akışı başlat

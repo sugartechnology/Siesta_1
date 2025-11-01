@@ -75,9 +75,9 @@ const SectionDetails = () => {
 
   // All sections for the project
   const allSections = project ? project.sections : [];
-  const orderedSections = allSections
+  /*const orderedSections = allSections
     ? [section, ...allSections.filter((s) => s.id !== section.id)]
-    : [];
+    : [];*/
 
   //console.log("orderedSections", orderedSections);
   const [products, setProducts] = useState(initialSection?.productIds || []);
@@ -292,6 +292,7 @@ const SectionDetails = () => {
   };
 
   const handleSectionClick = (sectionSelected) => {
+    console.log("handleSectionClick sectionSelected", sectionSelected.id);
     setContextSection(sectionSelected);
     setSection(sectionSelected);
 
@@ -386,12 +387,12 @@ const SectionDetails = () => {
       {/* Sections List */}
       <div className="sections-list-container">
         <SliderComponent>
-          {orderedSections.map((sectionItem, index) => (
+          {allSections.map((sectionItem, index) => (
             <SectionThumbnail
               key={index}
               section={sectionItem}
               index={index}
-              isActive={index === 0}
+              isActive={sectionItem.id === section.id}
               onSectionClick={handleSectionClick}
               onTitleChange={handleSectionTitleChange}
               onRemove={handleRemoveSection}
