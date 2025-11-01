@@ -366,7 +366,6 @@ const SectionDetails = () => {
     section.design.status !== "FAILED" &&
     section.design.status !== "MOCKED";
 
-  console.log("section", section.design.status, desabled);
   return (
     <div className="section-details-container">
       {/* Project Name Title */}
