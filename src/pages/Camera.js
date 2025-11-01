@@ -308,7 +308,7 @@ export default function Camera() {
           ))}
         </div>
         <button className="skip-btn-bottom" onClick={handleSkip}>
-          Skip
+          Next
         </button>
         <input
           ref={fileInputRef}

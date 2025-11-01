@@ -30,6 +30,9 @@ import {
   DefaultNavigationState,
 } from "../utils/NavigationState";
 import "./SectionDetails.css";
+import SliderComponent from "../components/SliderComponent";
+
+const POLL_INTERVAL = 20000;
 
 const SectionDetails = () => {
   const navigate = useNavigate();
@@ -76,42 +79,55 @@ const SectionDetails = () => {
     ? [section, ...allSections.filter((s) => s.id !== section.id)]
     : [];
 
-  console.log("orderedSections", orderedSections);
+  //console.log("orderedSections", orderedSections);
   const [products, setProducts] = useState(initialSection?.productIds || []);
   const [projectDetails, setProjectDetails] = useState();
   const [isFullscreenPopupVisible, setIsFullscreenPopupVisible] =
     useState(false);
 
   const callInterval = () => {
+    clearTimeout(pollRef.current);
+    //console.log("callInterval section.id called", section.id);
+    const sectionId = section.id;
     pollRef.current = setTimeout(() => {
-      if (section.id) {
-        getSectionById(section.id)
+      //console.log("callInterval section.id timeout", section.id);
+      if (sectionId) {
+        getSectionById(sectionId)
           .then((newSection) => {
             // pollRef null ise component unmount olmuş, state set etme
             if (!pollRef.current) {
               return;
             }
-            console.log("Response:", newSection);
-            setContextSection(newSection);
-            setSection(newSection);
-            callInterval();
+            //console.log("--------------------------------");
+            //console.log("check sectionId:", sectionId, newSection.id);
+            // Eğer sectionId değişmediyse state'i güncelle
+            /*if (NavigationState.section.id !== newSection.id) {
+              console.log(
+                "sectionId changed:",
+                NavigationState.section.id,
+                newSection.id
+              );
+            }*/
+
+            if (newSection.id === NavigationState.section.id) {
+              setContextSection(newSection);
+              setSection(newSection);
+            }
           })
           .catch((error) => {
-            console.error("Polling error:", error);
+            //console.error("Polling error:", error);
             // Hata durumunda da polling'i devam ettir (eğer mount durumundaysa)
             if (pollRef.current) {
-              callInterval();
+              //callInterval();
             }
           });
       } else {
-        callInterval();
+        //callInterval();ƒ
       }
-    }, 20000);
+    }, POLL_INTERVAL);
   };
 
   useEffect(() => {
-    callInterval();
-
     return () => {
       // Component unmount olduğunda timeout'u temizle ve pollRef'i null yap
       if (pollRef.current) {
@@ -120,6 +136,11 @@ const SectionDetails = () => {
       }
     };
   }, []);
+
+  useEffect(() => {
+    //console.log("useEffect section called", section.id);
+    callInterval();
+  }, [section]);
 
   useEffect(() => {
     //
@@ -153,7 +174,6 @@ const SectionDetails = () => {
 
   const updateSection = async (section, projectId = undefined) => {
     setIsFullscreenLoadingSpinnerVisible(true);
-    clearTimeout(pollRef.current);
     const image = section.rootImageUrl;
 
     const updateSectionData = { ...section };
@@ -182,17 +202,11 @@ const SectionDetails = () => {
       .then((response) => {
         setContextSection(response, replaceSection);
         setSection(response);
-        callInterval();
       })
       .finally(() => {
         setIsFullscreenLoadingSpinnerVisible(false);
       });
   };
-
-  useEffect(() => {
-    clearTimeout(pollRef.current);
-    callInterval();
-  }, [section]);
 
   const handleQuantityChange = async (productIdd, change) => {
     // Önce local state'i güncelle
@@ -216,7 +230,7 @@ const SectionDetails = () => {
           productId: productIdd,
           quantity: change, // Pozitif veya negatif değer olabilir
         });
-        console.log(`Product ${productIdd} quantity changed by ${change}`);
+        //console.log(`Product ${productIdd} quantity changed by ${change}`);
       } catch (error) {
         console.error("Error updating product quantity:", error);
         // Hata durumunda local state'i geri al
@@ -247,8 +261,7 @@ const SectionDetails = () => {
   };
 
   const handleRegenerate = () => {
-    console.log("Regenerating design...");
-    clearTimeout(pollRef.current);
+    //console.log("Regenerating design...");
     generateDesignForSection(section.id).then((response) => {
       console.log("Response:", response);
       if (!section.design) {
@@ -275,12 +288,13 @@ const SectionDetails = () => {
           : newProduct;
       });
       setProducts(sectionSelected.productIds);
-      setContextSection(sectionSelected);
-      setSection(sectionSelected);
     });
   };
 
   const handleSectionClick = (sectionSelected) => {
+    setContextSection(sectionSelected);
+    setSection(sectionSelected);
+
     updateProducts(sectionSelected);
   };
 
@@ -348,7 +362,9 @@ const SectionDetails = () => {
   const desabled =
     section.design &&
     section.design.status &&
-    section.design.status !== "COMPLETED";
+    (section.design.status !== "COMPLETED" ||
+      section.design.status !== "FAILED" ||
+      section.design.status !== "MOCKED");
 
   return (
     <div className="section-details-container">
@@ -369,22 +385,20 @@ const SectionDetails = () => {
 
       {/* Sections List */}
       <div className="sections-list-container">
-        <div className="sections-list">
+        <SliderComponent>
           {orderedSections.map((sectionItem, index) => (
-            <>
-              <SectionThumbnail
-                key={index}
-                section={sectionItem}
-                index={index}
-                isActive={index === 0}
-                onSectionClick={handleSectionClick}
-                onTitleChange={handleSectionTitleChange}
-                onRemove={handleRemoveSection}
-                onViewDetails={handleSectionClick}
-              />
-            </>
+            <SectionThumbnail
+              key={index}
+              section={sectionItem}
+              index={index}
+              isActive={index === 0}
+              onSectionClick={handleSectionClick}
+              onTitleChange={handleSectionTitleChange}
+              onRemove={handleRemoveSection}
+              onViewDetails={handleSectionClick}
+            />
           ))}
-        </div>
+        </SliderComponent>
         <div
           className="add-section-thumbnail"
           onClick={handleAddNewSection}

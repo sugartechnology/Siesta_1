@@ -671,7 +671,7 @@ export default function Products() {
           <button className="view-all-btn">View all products</button>
         </div>
         <button className="generate-design-btn" onClick={handleGenerateDesign}>
-          Generate
+          Add To Design
         </button>
       </div>
 

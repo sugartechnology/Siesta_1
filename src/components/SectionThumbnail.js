@@ -62,7 +62,6 @@ const SectionThumbnail = ({
 
   const handleMouseUp = () => {
     pressStartTime.pressed = false;
-    console.log("handleMouseUp", pressStartTime.pressed);
     if (pressTimer.current) {
       clearTimeout(pressTimer.current);
       pressTimer.current = null;
@@ -78,8 +77,6 @@ const SectionThumbnail = ({
   };
 
   const handleTouchEnd = () => {
-    console.log("handleTouchEnd", pressStartTime.pressed);
-
     pressStartTime.pressed = false;
     if (pressTimer.current) {
       clearTimeout(pressTimer.current);
@@ -90,7 +87,7 @@ const SectionThumbnail = ({
     const pressDuration = Date.now() - pressStartTime.current;
     if (pressDuration < duration && !hoveredSection) {
       if (index !== 0) {
-        onSectionClick(section);
+        //onSectionClick(section);
       }
     }
   };
