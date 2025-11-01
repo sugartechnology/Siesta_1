@@ -362,11 +362,11 @@ const SectionDetails = () => {
   const roomType = getRoomType(section);
   const desabled =
     section.design &&
-    section.design.status &&
-    (section.design.status !== "COMPLETED" ||
-      section.design.status !== "FAILED" ||
-      section.design.status !== "MOCKED");
+    section.design.status !== "COMPLETED" &&
+    section.design.status !== "FAILED" &&
+    section.design.status !== "MOCKED";
 
+  console.log("section", section.design.status, desabled);
   return (
     <div className="section-details-container">
       {/* Project Name Title */}
