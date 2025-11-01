@@ -175,6 +175,9 @@ const SectionThumbnail = ({
         )}
         <img
           src={
+            (section.design && section.design.thumbnailUrl) ||
+            (section.design && section.design.resultImageUrl) ||
+            section.thumbnailUrl ||
             section.resultImageUrl ||
             section.rootImageUrl ||
             "/assets/logo_big.png"
