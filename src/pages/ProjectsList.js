@@ -70,7 +70,12 @@ const ProjectsList = () => {
             >
               <div className="project-item-image-container">
                 <img
-                  src={project.rootImageUrl || "/assets/logo_big.png"}
+                  src={
+                    project.thumbnailUrl ||
+                    project.resultImageUrl ||
+                    project.rootImageUrl ||
+                    "/assets/logo_big.png"
+                  }
                   alt={project.name}
                   className="project-item-image"
                   onError={(e) => {
