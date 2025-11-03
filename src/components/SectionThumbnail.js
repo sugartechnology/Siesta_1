@@ -22,7 +22,9 @@ const SectionThumbnail = ({
   const pressStartTime = useRef(0);
 
   const handleMouseDown = (event) => {
-    //event.preventDefault();
+    event.preventDefault();
+    event.stopPropagation();
+
     pressStartTime.current = Date.now();
     pressStartTime.pressed = true;
 
@@ -41,7 +43,7 @@ const SectionThumbnail = ({
   const handleTouchStart = (event) => {
     // Prevent default touch behavior (like scrolling and context menu)
     event.preventDefault();
-    //event.stopPropagation();
+    event.stopPropagation();
 
     pressStartTime.current = Date.now();
     pressStartTime.pressed = true;
@@ -93,41 +95,27 @@ const SectionThumbnail = ({
   };
 
   const handleMouseLeave = () => {
-    pressStartTime.pressed = false;
-    if (pressTimer.current) {
-      clearTimeout(pressTimer.current);
-      pressTimer.current = null;
-    }
+    cancelHover();
   };
 
   const handleTouchCancel = () => {
+    cancelHover();
+  };
+
+  const handleMouseMove = (event) => {
+    cancelHover();
+  };
+
+  const cancelHover = () => {
     pressStartTime.pressed = false;
     if (pressTimer.current) {
       clearTimeout(pressTimer.current);
       pressTimer.current = null;
-    }
-  };
-
-  const handleMouseMove = (event) => {
-    if (hoveredSection) {
-      setPopupPosition({
-        x: event.clientX,
-        y: event.clientY,
-      });
     }
   };
 
   const handleTouchMove = (event) => {
-    if (hoveredSection) {
-      // Prevent scrolling when popup is open
-      event.preventDefault();
-
-      const touch = event.touches[0];
-      setPopupPosition({
-        x: touch.clientX,
-        y: touch.clientY,
-      });
-    }
+    cancelHover();
   };
 
   const handleContextMenu = (event) => {
