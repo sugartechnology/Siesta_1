@@ -16,9 +16,16 @@ const SectionPopup = ({
       className="section-popup"
       style={{
         position: "fixed",
-        left: position.x + 10,
-        top: position.y - 10,
+        left: 0,
+        top: 0,
         zIndex: 1000,
+        width: "100vw",
+        height: "100vh",
+        background: "#0000004a",
+        display: "flex",
+        alignContent: "center",
+        justifyContent: "center",
+        alignItems: "center",
       }}
     >
       <div className="popup-content">

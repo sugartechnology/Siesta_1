@@ -129,33 +129,9 @@ export default function Products() {
     },
   ];
 
-  const [variantQuantities, setVariantQuantities] = useState({
-    1: 2, // Black
-    2: 0, // White
-    3: 1, // Olive Green
-    4: 0, // Taupe
-    5: 1, // Dark Grey
-    6: 0, // Marsala
-  });
+  const [variantQuantities, setVariantQuantities] = useState({});
 
-  const [variants, setVariants] = useState([
-    { id: 1, name: "Black", stock: 2, image: "/assets/variant-black.png" },
-    { id: 2, name: "White", stock: 0, image: "/assets/variant-white.png" },
-    {
-      id: 3,
-      name: "Olive Green",
-      stock: 1,
-      image: "/assets/variant-olive-green.png",
-    },
-    { id: 4, name: "Taupe", stock: 0, image: "/assets/variant-taupe.png" },
-    {
-      id: 5,
-      name: "Dark Grey",
-      stock: 1,
-      image: "/assets/variant-dark-grey.png",
-    },
-    { id: 6, name: "Marsala", stock: 0, image: "/assets/variant-marsala.png" },
-  ]);
+  const [variants, setVariants] = useState([]);
 
   const removeFilter = (filterType, filter) => {
     setFilterState((prev) => {
