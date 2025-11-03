@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import "./HoverThumbnailButton.css";
 import LoadingSpinner from "./LoadingSpinner";
+import EditableTitle from "./EditableTitle";
 
 const HoverThumbnailButton = ({
   id,
@@ -15,11 +16,18 @@ const HoverThumbnailButton = ({
   children,
   actions = [], // Array of { label: string, action: function, icon?: string }
   showPopup = true,
+  // EditableTitle props
+  editable = false, // Title editable olsun mu?
+  onTitleChange, // Title değiştiğinde callback
+  titlePlaceholder = "Click to edit",
+  titleStyle = {}, // EditableTitle için custom style
+  titleClassName = "", // EditableTitle için custom className
   ...props
 }) => {
   const [hovered, setHovered] = useState(false);
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   const [isPressed, setIsPressed] = useState(false);
+  const [confirmationDialog, setConfirmationDialog] = useState(null); // { message, onConfirm, onCancel }
   const pressTimer = useRef(null);
   const pressStartTime = useRef({ time: 0, pressed: false });
 
@@ -34,11 +42,26 @@ const HoverThumbnailButton = ({
     // duration ms basılı tutulursa popup aç
     pressTimer.current = setTimeout(() => {
       if (pressStartTime.current.pressed) {
-        setHovered(true);
-        setPopupPosition({
-          x: event.clientX,
-          y: event.clientY,
-        });
+        // Eğer tek action varsa ve requireConfirmation true ise direkt confirmation göster
+        if (actions.length === 1 && actions[0].requireConfirmation) {
+          setConfirmationDialog({
+            message: actions[0].confirmationMessage || "Are you sure?",
+            onConfirm: () => {
+              actions[0].action();
+              setConfirmationDialog(null);
+            },
+            onCancel: () => {
+              setConfirmationDialog(null);
+            },
+          });
+        } else {
+          // Normal popup menü göster
+          setHovered(true);
+          setPopupPosition({
+            x: event.clientX,
+            y: event.clientY,
+          });
+        }
         // onPress callback varsa çağır
         if (onPress) {
           onPress(event);
@@ -58,12 +81,28 @@ const HoverThumbnailButton = ({
     // duration ms basılı tutulursa popup aç
     pressTimer.current = setTimeout(() => {
       if (pressStartTime.current.pressed) {
-        const touch = event.touches[0];
-        setHovered(true);
-        setPopupPosition({
-          x: touch.clientX,
-          y: touch.clientY,
-        });
+        // Eğer tek action varsa ve requireConfirmation true ise direkt confirmation göster
+        if (actions.length === 1 && actions[0].requireConfirmation) {
+          const touch = event.touches[0];
+          setConfirmationDialog({
+            message: actions[0].confirmationMessage || "Emin misiniz?",
+            onConfirm: () => {
+              actions[0].action();
+              setConfirmationDialog(null);
+            },
+            onCancel: () => {
+              setConfirmationDialog(null);
+            },
+          });
+        } else {
+          // Normal popup menü göster
+          const touch = event.touches[0];
+          setHovered(true);
+          setPopupPosition({
+            x: touch.clientX,
+            y: touch.clientY,
+          });
+        }
         // onPress callback varsa çağır
         if (onPress) {
           onPress(event);
@@ -136,10 +175,30 @@ const HoverThumbnailButton = ({
     event.stopPropagation();
   };
 
-  const handleAction = (action) => {
-    if (action && typeof action === "function") {
-      action();
+  const handleAction = (actionItem) => {
+    if (!actionItem || typeof actionItem.action !== "function") {
+      setHovered(false);
+      return;
     }
+
+    // Confirmation gerekiyorsa custom dialog göster
+    if (actionItem.requireConfirmation) {
+      setHovered(false); // Action popup'ını kapat
+      setConfirmationDialog({
+        message: actionItem.confirmationMessage || "Emin misiniz?",
+        onConfirm: () => {
+          actionItem.action();
+          setConfirmationDialog(null);
+        },
+        onCancel: () => {
+          setConfirmationDialog(null);
+        },
+      });
+      return;
+    }
+
+    // Action'ı direkt çalıştır
+    actionItem.action();
     setHovered(false);
   };
 
@@ -183,13 +242,34 @@ const HoverThumbnailButton = ({
           />
         )}
         <div className="hover-thumbnail-overlay"></div>
-        {title && <span className="hover-thumbnail-name">{title}</span>}
+        {title && (
+          <>
+            {editable && onTitleChange ? (
+              <EditableTitle
+                value={title}
+                onChange={onTitleChange}
+                placeholder={titlePlaceholder}
+                className={titleClassName}
+                style={{
+                  position: "absolute",
+                  left: "20px",
+                  top: isActive ? "20px" : "auto",
+                  bottom: isActive ? "auto" : "20px",
+                  ...titleStyle,
+                }}
+                autoFocus={false}
+              />
+            ) : (
+              <span className={titleClassName}>{title}</span>
+            )}
+          </>
+        )}
         {children}
 
         {/* Press indicator */}
         {isPressed && (
-          <div className="press-indicator">
-            <div className="press-ring"></div>
+          <div className="hover-thumbnail-press-indicator">
+            <div className="hover-thumbnail-press-ring"></div>
           </div>
         )}
       </div>
@@ -217,7 +297,7 @@ const HoverThumbnailButton = ({
                 <button
                   key={index}
                   className="hover-thumbnail-popup-action"
-                  onClick={() => handleAction(actionItem.action)}
+                  onClick={() => handleAction(actionItem)}
                 >
                   {actionItem.icon && (
                     <span className="hover-thumbnail-popup-icon">
@@ -227,6 +307,37 @@ const HoverThumbnailButton = ({
                   {actionItem.label}
                 </button>
               ))}
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* Confirmation Dialog */}
+      {confirmationDialog && (
+        <>
+          <div
+            className="hover-thumbnail-confirmation-backdrop"
+            onClick={confirmationDialog.onCancel}
+          />
+          <div className="hover-thumbnail-confirmation-dialog">
+            <div className="hover-thumbnail-confirmation-content">
+              <p className="hover-thumbnail-confirmation-message">
+                {confirmationDialog.message}
+              </p>
+              <div className="hover-thumbnail-confirmation-buttons">
+                <button
+                  className="hover-thumbnail-confirmation-button cancel"
+                  onClick={confirmationDialog.onCancel}
+                >
+                  Cancel
+                </button>
+                <button
+                  className="hover-thumbnail-confirmation-button confirm"
+                  onClick={confirmationDialog.onConfirm}
+                >
+                  Confirm
+                </button>
+              </div>
             </div>
           </div>
         </>
