@@ -661,7 +661,9 @@ export default function Products() {
                   >
                     <div className="variant-image-container">
                       <img
-                        src={variant.thumbnail}
+                        src={
+                          variant.images[1] || "/assets/product-placeholder.png"
+                        }
                         alt={variant.name}
                         className="variant-image"
                       />
