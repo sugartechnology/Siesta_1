@@ -63,8 +63,11 @@ export default function SliderComponent(props) {
     };
     sliderRef.current.requestAnimationFrameInstance =
       requestAnimationFrame(swipe);
-    return () =>
-      cancelAnimationFrame(sliderRef.current.requestAnimationFrameInstance);
+    return () => {
+      if (sliderRef.current) {
+        cancelAnimationFrame(sliderRef.current.requestAnimationFrameInstance);
+      }
+    };
   }, [children]); // children değiştiğinde swipe yeniden oluşturulsun
 
   const handleMouseDownCapture = () => {

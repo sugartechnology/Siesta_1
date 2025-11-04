@@ -145,30 +145,6 @@ export default function Products() {
   };
 
   // URL'i güncelle
-  const updateURL = (newFilterState, selectedProductsToUpdate = null) => {
-    const params = new URLSearchParams();
-
-    if (newFilterState.searchQuery) {
-      params.set("search", newFilterState.searchQuery);
-    }
-    if (newFilterState.selectedCategories.length > 0) {
-      params.set("category", newFilterState.selectedCategories[0]);
-    }
-    if (newFilterState.selectedSubCategories.length > 0) {
-      params.set("subCategory", newFilterState.selectedSubCategories[0]);
-    }
-
-    // Seçili ürünleri URL'e ekle
-    const productsToSave = selectedProductsToUpdate || selectedProducts;
-    if (productsToSave.length > 0) {
-      params.set(
-        "selectedProducts",
-        encodeURIComponent(JSON.stringify(productsToSave))
-      );
-    }
-
-    setSearchParams(params);
-  };
 
   // Ürün ekleme/çıkarma fonksiyonları
   const addProductToSelection = (product, quantity = 1) => {
@@ -340,24 +316,20 @@ export default function Products() {
     return () => io.unobserve(el);
   }, [loading, hasMore]);
 
-  const handleQuantityChange = (variantId, delta) => {
-    setVariantQuantities((prev) => {
-      const currentQty = prev[variantId] || 0;
-      const newQty = Math.max(0, currentQty + delta); // Don't allow negative quantities
-      return {
-        ...prev,
-        [variantId]: newQty,
-      };
-    });
-  };
-
   const handleProductClick = (product) => {
     console.log("product", product);
     setSelectedProduct(product);
     fetchProductVariants(product.name ? product.name.toLowerCase() : "").then(
       (variants) => {
-        setVariants(variants);
-        console.log("variants", variants);
+        const v = variants.reduce((acc, variant) => {
+          const f = acc.find((v) => v.sku === variant.sku);
+          if (!f) {
+            acc.push(variant);
+          }
+          return acc;
+        }, []);
+        setVariants(v);
+        console.log("variants", v);
         setShowVariantModal(true);
       }
     );
