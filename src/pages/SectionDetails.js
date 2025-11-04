@@ -638,7 +638,9 @@ const SectionDetails = () => {
                 onClick={handleRegenerate}
                 disabled={desabled}
               >
-                Regenerate
+                {section.design && section.design.resultImageUrl
+                  ? "Regenerate"
+                  : "Generate"}
               </button>
             </div>
           </div>
