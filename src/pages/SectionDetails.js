@@ -437,10 +437,10 @@ const SectionDetails = () => {
                   <div className="sc-product-info">
                     <img
                       src={
+                        (product.images && product.images.length > 1
+                          ? product.images[1]
+                          : "") ||
                         product.thumbnail ||
-                        (product.images && product.images.length > 0
-                          ? product.images[0]
-                          : null) ||
                         "/assets/logo_big.png"
                       }
                       alt={product.name}
