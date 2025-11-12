@@ -224,47 +224,6 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="location">Location</label>
-              <div className="location-input-wrapper">
-                <input
-                  type="text"
-                  id="location"
-                  name="location"
-                  value={formData.location}
-                  readOnly
-                  placeholder="Click to select location on map"
-                  onClick={handleLocationClick}
-                  className="location-input"
-                  required
-                />
-                <button
-                  type="button"
-                  className="map-icon-btn"
-                  onClick={handleLocationClick}
-                >
-                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                    <path
-                      d="M10 10C11.1046 10 12 9.10457 12 8C12 6.89543 11.1046 6 10 6C8.89543 6 8 6.89543 8 8C8 9.10457 8.89543 10 10 10Z"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <path
-                      d="M10 2C7.87827 2 5.84344 2.84285 4.34315 4.34315C2.84285 5.84344 2 7.87827 2 10C2 11.892 2.402 13.13 3.5 14.5L10 22L16.5 14.5C17.598 13.13 18 11.892 18 10C18 7.87827 17.1571 5.84344 15.6569 4.34315C14.1566 2.84285 12.1217 2 10 2Z"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
-          </div>
-
-          <div className="form-row">
-            <div className="form-group">
               <label htmlFor="additionalInfo">Additional Info</label>
               <textarea
                 id="additionalInfo"

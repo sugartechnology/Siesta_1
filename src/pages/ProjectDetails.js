@@ -152,25 +152,6 @@ const ProjectDetails = () => {
           <p className="info-phone">
             {project ? project.mobilePhone : "Loading..."}
           </p>
-
-          {/* Map */}
-          <div className="map-container">
-            <div className="map-placeholder">
-              <svg
-                className="map-pin"
-                width="40"
-                height="60"
-                viewBox="0 0 40 60"
-                fill="none"
-              >
-                <path
-                  d="M20 0C12.268 0 6 6.268 6 14C6 23.5 20 60 20 60C20 60 34 23.5 34 14C34 6.268 27.732 0 20 0Z"
-                  fill="#000"
-                />
-                <circle cx="20" cy="14" r="6" fill="white" />
-              </svg>
-            </div>
-          </div>
         </div>
 
         <div className="add-section-card" onClick={handleAddNewSection}>
