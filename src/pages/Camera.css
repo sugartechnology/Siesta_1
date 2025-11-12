@@ -398,6 +398,56 @@
   z-index: 200;
 }
 
+/* Fullscreen camera layout when camera is active */
+.camera-main-container.fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  background: #000;
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  padding: 0;
+}
+
+.camera-main-container.fullscreen .camera-page-content {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0;
+}
+
+.camera-main-container.fullscreen .main-camera-area {
+  flex: 1;
+  margin-bottom: 0;
+  border-radius: 0;
+  min-height: auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.camera-main-container.fullscreen .camera-video-box {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+}
+
+.camera-main-container.fullscreen .video-stream {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.camera-main-container.fullscreen .sample-rooms-container,
+.camera-main-container.fullscreen .sample-rooms-container-absolute {
+  display: none !important;
+}
+
 .skip-btn-bottom:hover {
   background: #1a1a1a;
   transform: translateX(-50%) translateY(-2px);

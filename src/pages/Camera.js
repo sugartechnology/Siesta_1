@@ -19,6 +19,7 @@ export default function Camera() {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const fileInputRef = useRef(null);
+  const mainContainerRef = useRef(null);
 
   // Sample rooms with images from Figma
   const [sampleRooms, setSampleRooms] = useState([]);
@@ -72,6 +73,24 @@ export default function Camera() {
     };
   }, [stream]);
 
+  // Keep track of fullscreen state so we can apply CSS and exit when needed
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+  // Sync state when user presses ESC or browser changes fullscreen state
+  useEffect(() => {
+    const handler = () => {
+      const fullscreenElement = document.fullscreenElement || document.webkitFullscreenElement;
+      setIsFullscreen(!!fullscreenElement);
+    };
+
+    document.addEventListener("fullscreenchange", handler);
+    document.addEventListener("webkitfullscreenchange", handler);
+    return () => {
+      document.removeEventListener("fullscreenchange", handler);
+      document.removeEventListener("webkitfullscreenchange", handler);
+    };
+  }, []);
+
   const requestCameraPermission = async () => {
     console.log("🎥 Starting camera permission request...");
     setIsRequestingPermission(true);
@@ -90,6 +109,9 @@ export default function Camera() {
       setStream(mediaStream);
       setHasPermission(true);
       setIsRequestingPermission(false);
+
+      // Enter fullscreen view for the camera area when permission is granted
+      enterFullscreen();
 
       console.log("🎥 Video ref current:", videoRef.current);
       console.log("ℹ️ Stream will be connected after video element renders");
@@ -111,6 +133,38 @@ export default function Camera() {
     }
   };
 
+  const enterFullscreen = async () => {
+    try {
+      const el = mainContainerRef.current || document.documentElement;
+      if (el.requestFullscreen) {
+        await el.requestFullscreen();
+      } else if (el.webkitRequestFullscreen) {
+        await el.webkitRequestFullscreen();
+      }
+      setIsFullscreen(true);
+    } catch (err) {
+      // Non-fatal: continue without native fullscreen but apply CSS fullscreen class
+      console.warn("Could not enter native fullscreen:", err);
+      setIsFullscreen(true);
+    }
+  };
+
+  const exitFullscreen = async () => {
+    try {
+      if (document.fullscreenElement || document.webkitFullscreenElement) {
+        if (document.exitFullscreen) {
+          await document.exitFullscreen();
+        } else if (document.webkitExitFullscreen) {
+          await document.webkitExitFullscreen();
+        }
+      }
+    } catch (err) {
+      console.warn("Could not exit native fullscreen:", err);
+    } finally {
+      setIsFullscreen(false);
+    }
+  };
+
   const handleGalleryAccess = () => {
     fileInputRef.current?.click();
   };
@@ -128,26 +182,31 @@ export default function Camera() {
   };
 
   const capturePhoto = () => {
-    if (videoRef.current && canvasRef.current) {
-      const video = videoRef.current;
-      const canvas = canvasRef.current;
+    (async () => {
+      if (videoRef.current && canvasRef.current) {
+        const video = videoRef.current;
+        const canvas = canvasRef.current;
 
-      canvas.width = video.videoWidth;
-      canvas.height = video.videoHeight;
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
 
-      const context = canvas.getContext("2d");
-      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const context = canvas.getContext("2d");
+        context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
-      const imageData = canvas.toDataURL("image/png");
+        const imageData = canvas.toDataURL("image/png");
 
-      if (stream) {
-        stream.getTracks().forEach((track) => track.stop());
-        setStream(null);
+        // Exit fullscreen before navigating away so the app restores correctly
+        await exitFullscreen();
+
+        if (stream) {
+          stream.getTracks().forEach((track) => track.stop());
+          setStream(null);
+        }
+
+        NavigationState.image = imageData;
+        navigate("/photograph");
       }
-
-      NavigationState.image = imageData;
-      navigate("/photograph");
-    }
+    })();
   };
 
   const handleSampleSelect = async (sample) => {
@@ -173,12 +232,16 @@ export default function Camera() {
   };
 
   const handleSkip = () => {
-    if (stream) {
-      stream.getTracks().forEach((track) => track.stop());
-      setStream(null);
-    }
+    (async () => {
+      await exitFullscreen();
 
-    navigate("/room-type", { state: { project } });
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+        setStream(null);
+      }
+
+      navigate("/room-type", { state: { project } });
+    })();
   };
 
   const handleAddPhoto = () => {
@@ -194,7 +257,10 @@ export default function Camera() {
   };
 
   return (
-    <div className="camera-main-container">
+    <div
+      className={`camera-main-container ${isFullscreen ? "fullscreen" : ""}`}
+      ref={mainContainerRef}
+    >
       <div className="main-camera-area">
         {!hasPermission && !isRequestingPermission && (
           <div className="camera-placeholder-box" onClick={handleAddPhoto}>
@@ -293,9 +359,8 @@ export default function Camera() {
           {sampleRooms.map((sample) => (
             <div
               key={sample.id}
-              className={`sample-room-item ${
-                selectedSample?.id === sample.id ? "selected" : ""
-              }`}
+              className={`sample-room-item ${selectedSample?.id === sample.id ? "selected" : ""
+                }`}
               onClick={() => handleSampleSelect(sample)}
             >
               <img
