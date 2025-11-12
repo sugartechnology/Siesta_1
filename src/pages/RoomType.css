@@ -192,9 +192,8 @@
 }
 
 /* Responsive adjustments */
-@media (max-width: 1400px) {
-  .room-types-grid {
-  }
+@media (max-width: 1200px) {
+  .room-types-grid {}
 
   .room-type-card {
     border-radius: 35px;
@@ -213,6 +212,14 @@
     min-width: 200px;
     font-size: 15px;
   }
+
+  .room-types-grid {
+    grid-template-columns: repeat(4, 255px);
+    grid-template-rows: auto;
+    gap: 15px;
+    padding: 10px 20px;
+    margin-bottom: 50px;
+  }
 }
 
 @media (max-width: 1024px) {
@@ -230,9 +237,9 @@
   }
 
   .room-types-grid {
-    grid-template-columns: repeat(3, 200px);
+    grid-template-columns: repeat(4, 210px);
     grid-template-rows: auto;
-    gap: 15px;
+    gap: 20px;
     padding: 10px 20px;
     margin-bottom: 50px;
   }

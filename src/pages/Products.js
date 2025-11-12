@@ -655,9 +655,8 @@ export default function Products() {
                 return (
                   <div
                     key={variant.id}
-                    className={`variant-item ${
-                      currentQuantity > 0 ? "in-stock" : ""
-                    }`}
+                    className={`variant-item ${currentQuantity > 0 ? "in-stock" : ""
+                      }`}
                   >
                     <div className="variant-image-container">
                       <img

@@ -136,6 +136,11 @@
   flex: 1;
 }
 
+.nav-links {
+  font-weight: 5;
+
+}
+
 .section-thumbnail {
   position: relative;
   flex-shrink: 0;
@@ -147,8 +152,8 @@
 }
 
 .section-thumbnail.active {
-  width: 620px;
-  height: 320px;
+  width: 50vw;
+  height: 21vw;
 }
 
 .section-thumbnail.active:hover {
@@ -160,7 +165,7 @@
   height: 320px;
 }
 
-.section-thumbnail:not(.active) > .section-thumbnail-overlay {
+.section-thumbnail:not(.active)>.section-thumbnail-overlay {
   background: rgb(255 255 255 / 44%);
 }
 
@@ -212,8 +217,8 @@
 .add-section-thumbnail {
   position: relative;
   flex-shrink: 0;
-  width: 200px;
-  height: 320px;
+  width: 17vw;
+  height: 22vw;
   border-radius: 30px;
   overflow: hidden;
   cursor: pointer;
@@ -279,7 +284,7 @@
 
 /* Left Panel - Products List */
 .products-panel {
-  width: 548px;
+  width: 44vw;
   border-radius: 30px 30px 30px 88px;
   padding: 26px 39px 60px 39px;
   display: flex;
@@ -307,8 +312,8 @@
 }
 
 .sc-product-image {
-  width: 102px;
-  height: 102px;
+  width: 7vw;
+  height: 7vw;
   border-radius: 4px;
   object-fit: contain;
   background: white;
@@ -443,8 +448,8 @@
 }
 
 .info-thumbnail {
-  width: 194px;
-  height: 150px;
+  width: 16vw;
+  height: 11vw;
   border-radius: 10px;
   object-fit: cover;
   flex-shrink: 0;
@@ -453,7 +458,7 @@
 .info-content {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 5%;
   flex: 1;
 }
 
@@ -467,7 +472,7 @@
 
 .sd-info-description {
   font-family: "Poppins", sans-serif;
-  font-size: 13px;
+  font-size: 1vw;
   font-weight: 400;
   margin: 0;
   line-height: 1.6;
@@ -475,8 +480,8 @@
 }
 
 .change-btn {
-  margin-top: 23px;
-  padding: 10px 35px;
+  margin-top: 3vw;
+  padding: 12px 35px;
   background: rgba(0, 0, 0, 0.1);
   border: 1px solid rgb(5, 5, 5);
   border-radius: 80px;
@@ -488,6 +493,17 @@
   align-self: flex-start;
   min-width: 199px;
   text-align: center;
+}
+
+/* Responsive adjustments */
+@media (max-width: 1024px) {
+  .change-btn {
+    margin-top: 1.5dvw;
+    font-size: 14px;
+    font-weight: 500;
+    min-width: 150px;
+
+  }
 }
 
 .change-btn:hover {

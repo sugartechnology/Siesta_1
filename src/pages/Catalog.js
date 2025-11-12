@@ -9,7 +9,7 @@ export default function Catalog() {
       id: 1,
       name: "Contract",
       value: "contract",
-      image: "/assets/catalog-contract.png",
+      image: "/assets/catalog-garden.png",
       path: "/subcategory?category=contract",
     },
     {
@@ -23,7 +23,7 @@ export default function Catalog() {
       id: 3,
       name: "Garden",
       value: "garden",
-      image: "/assets/catalog-garden.png",
+      image: "/assets/catalog-contract.png",
       path: "/subcategory?category=garden",
     },
   ];
