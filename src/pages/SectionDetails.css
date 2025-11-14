@@ -161,7 +161,7 @@
 
 .section-thumbnail:not(.active) {
   width: 200px;
-  height: 320px;
+  height: 28vh;
 }
 
 .section-thumbnail:not(.active)>.section-thumbnail-overlay {

@@ -192,8 +192,8 @@ const SectionDetails = () => {
       const extension = mimeType.includes("png")
         ? "png"
         : mimeType.includes("webp")
-        ? "webp"
-        : "jpg";
+          ? "webp"
+          : "jpg";
       imageFile = base64ToFile(image, `section-image.${extension}`);
     }
 
@@ -209,35 +209,33 @@ const SectionDetails = () => {
   };
 
   const handleQuantityChange = async (productIdd, change) => {
-    // Önce local state'i güncelle
-    const updatedProducts = products.map((product) => {
-      if (product.productId === productIdd) {
-        const newQuantity = Math.max(0, product.quantity + change);
-        return { ...product, quantity: newQuantity };
-      }
-      return product;
-    });
+    const updatedProducts = products
+      .map((product) => {
+        if (product.productId === productIdd) {
+          const newQuantity = Math.max(0, product.quantity + change);
+          return { ...product, quantity: newQuantity };
+        }
+        return product;
+      })
+      // 🔥 این خط باعث حذف محصولاتی می‌شود که quantity آنها صفر است
+      .filter((product) => product.quantity > 0);
 
     NavigationState.section.productIds = updatedProducts;
     setProducts(updatedProducts);
 
-    // Backend'e quantity güncelleme isteği gönder
     if (section.id) {
       try {
-        // addProductToSection kullanarak quantity değişikliğini gönder
-        // Backend'te bu metod zaten mevcut quantity ile yeni quantity'yi topluyor
         await addProductToSection(section.id, {
           productId: productIdd,
-          quantity: change, // Pozitif veya negatif değer olabilir
+          quantity: change,
         });
-        //console.log(`Product ${productIdd} quantity changed by ${change}`);
       } catch (error) {
         console.error("Error updating product quantity:", error);
-        // Hata durumunda local state'i geri al
-        setProducts(products);
+        setProducts(products); // rollback local state
       }
     }
   };
+
 
   const handleAddNewProduct = () => {
     // Navigate to products page to add new product
