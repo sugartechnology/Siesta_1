@@ -193,7 +193,6 @@
 /* Responsive adjustments */
 @media (max-width: 1400px) {
   .home-content {
-    /*width: 95vw;*/
     height: auto;
     aspect-ratio: 1366 / 1024;
   }
@@ -228,5 +227,45 @@
   .logo {
     width: 80px;
     height: 80px;
+  }
+}
+
+@media (orientation: portrait) {
+  .hero-title {
+    margin-left: 0;
+    margin-top: 0;
+    font-size: 3vh;
+  }
+
+  .hero-content {
+    padding: 2vh 5vw;
+  }
+
+  .hero-description {
+    display: none;
+  }
+
+  .hero-card {
+    border-radius: 20px;
+  }
+
+  .hero-button {
+    width: 35vw;
+    height: 5vh;
+    margin-bottom: 5vh;
+    font-size: 2vh;
+  }
+
+  .hero-section {
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  .hero-card:first-child {
+    border-bottom-right-radius: 45px;
+  }
+
+  .hero-card:last-child {
+    border-top-right-radius: 45px;
   }
 }

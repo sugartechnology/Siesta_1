@@ -42,6 +42,9 @@ function AppChrome() {
       <div className="app-content">
         <AppRoutes />
       </div>
+      <div className="portrate-menu">
+
+      </div>
     </div>
   );
 }

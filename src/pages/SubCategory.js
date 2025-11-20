@@ -17,6 +17,7 @@ export default function SubCategory() {
         image: "/assets/subcategory-chairs.png",
         path: `/products?category=${category}&subCategory=chairs`,
         multiline: false,
+        gridArea: "row-column-span-3",
       },
 
       {
@@ -40,6 +41,7 @@ export default function SubCategory() {
           "sunlounger & lounge"
         )}`,
         multiline: true,
+        gridArea: "row-column-span-3",
       },
       {
         id: 2,
@@ -48,6 +50,7 @@ export default function SubCategory() {
         image: "/assets/subcategory-lighting.png",
         path: `/products?category=${category}&subCategory=lighting`,
         multiline: false,
+        gridArea: "row-column-span-3",
       },
       {
         id: 5,
@@ -56,6 +59,7 @@ export default function SubCategory() {
         image: "/assets/subcategory-tables.png",
         path: `/products?category=${category}&subCategory=tables`,
         multiline: false,
+        gridArea: "row-column-span-3",
       },
     ],
 
@@ -180,9 +184,8 @@ export default function SubCategory() {
         >
           <div className="sub-category-overlay"></div>
           <p
-            className={`sub-category-name ${
-              category.multiline ? "multiline" : ""
-            }`}
+            className={`sub-category-name ${category.multiline ? "multiline" : ""
+              }`}
           >
             {category.name}
           </p>

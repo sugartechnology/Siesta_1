@@ -108,3 +108,43 @@
     height: 80px;
   }
 }
+
+@media (orientation: portrait) {
+
+  .category-card:first-child {
+
+    border-bottom-right-radius: 45px;
+  }
+
+
+  .category-card:nth-child(2) {
+
+    border-bottom-right-radius: 45px;
+    border-top-right-radius: 45px;
+  }
+
+  .category-card:last-child {
+
+    border-top-right-radius: 45px;
+  }
+
+  .catalog-categories {
+    gap: 1vh;
+    flex-direction: column;
+  }
+
+  .category-label {
+    writing-mode: horizontal-tb;
+    rotate: 180deg;
+    margin-left: 10vw;
+    top: -15vh
+  }
+
+  .category-name {
+
+    font-size: 6vh;
+    letter-spacing: -1px;
+
+
+  }
+}

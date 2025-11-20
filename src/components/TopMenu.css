@@ -84,5 +84,20 @@
   cursor: pointer;
 }
 
-.profile-icon:hover {
+.profile-icon:hover {}
+
+@media (orientation: portrait) {
+  .logo {
+    width: 90px;
+    height: 90px;
+  }
+
+  .nav-links {
+    display: none;
+  }
+
+  .top-menu {
+    padding: 7px 20px;
+  }
+
 }

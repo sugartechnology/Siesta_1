@@ -45,20 +45,53 @@ code {
   overflow: scroll;
 }
 
-/* Responsive adjustments */
-@media (max-width: 1400px) {
-  .app-content {
-    /*width: 95vw;
-    height: auto;
-    aspect-ratio: 1366 / 1024;*/
-  }
+.portrate-menu {
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 10px 16px;
+  height: 7%;
+  width: 100%;
+  box-sizing: border-box;
+  background-color: rgb(210, 210, 210);
+  color: #fff;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+
 }
 
-@media (max-width: 768px) {
+/* Responsive adjustments */
+@media (max-width: 1400px) {
+  .app-content {}
+}
+
+
+
+@media (orientation: portrait) {
+  .App {
+    padding: 5% 1% 6% 1%;
+    background: linear-gradient(to top, #d2d2d2 0%, #ffffff 75%);
+  }
+
   .app-content {
     border-radius: 20px;
     padding: 24px 16px;
   }
+
+  .app-content {
+    padding-top: 10px;
+    padding-bottom: 40px;
+  }
+
+  .portrate-menu {
+    display: flex;
+
+
+  }
+
 }
 
 #root {
