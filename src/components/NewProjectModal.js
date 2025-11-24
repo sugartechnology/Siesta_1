@@ -179,6 +179,7 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
             </div>
 
             <div className="form-group">
+
               <label htmlFor="sectionName">Section Name</label>
               <input
                 type="text"

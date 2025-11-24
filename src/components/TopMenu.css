@@ -97,7 +97,12 @@
   }
 
   .top-menu {
-    padding: 7px 20px;
+    padding: 7px 5vw;
   }
 
+
+  .profile-svg {
+    width: 8vw;
+    height: 3vh;
+  }
 }

@@ -96,9 +96,7 @@ export default function Projects() {
       <div className="recent-projects-section">
         <div className="recent-projects-header">
           <h2 className="recent-projects-title">
-            Recent
-            <br />
-            Projects
+            Recent Projects
           </h2>
           <button
             className="projects-page-btn"

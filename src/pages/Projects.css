@@ -285,7 +285,10 @@
   margin: 0;
   text-align: center;
   white-space: nowrap;
-  background: rgba(240, 240, 240, 0.9);
+  /* Semi-transparent background with backdrop blur for a frosted-glass effect */
+  background: rgba(255, 255, 255, 0.45);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
   padding: 5px 15px;
   border-radius: 10px;
 }
@@ -392,4 +395,65 @@
 
 .slick-slide:focus {
   outline: none;
+}
+
+@media (orientation: portrait) {
+
+  .recent-projects-section {
+    height: 110vw;
+    gap: 0.1vw;
+    border-radius: 20px 20px 70px 20px;
+    flex-direction: column;
+  }
+
+  .projects-page-content {
+    gap: 0.1vw;
+  }
+
+  .recent-projects-title {
+    font-size: 7.5vw;
+    font-weight: 500;
+    width: auto;
+    letter-spacing: 1.5px;
+
+  }
+
+  .new-project-title {
+    font-size: 10vw;
+    backdrop-filter: blur(3px);
+    padding: 1vh 7vw;
+    border-radius: 8px;
+  }
+
+  .new-project-bg {
+    filter: blur(1px);
+  }
+
+  .new-project-content {
+    gap: 3vw;
+  }
+
+  .projects-page-btn {
+    padding: 1vh 11vw;
+    height: 5.5vh;
+    width: 70vw;
+    font-size: 4vw;
+    font-weight: 500;
+    margin-top: 4vw;
+    margin-left: -2vw;
+
+  }
+
+  .project-card {
+    height: 60vw;
+    width: 100%;
+    border-radius: 20px 20px 60px 20px;
+  }
+
+  .slick-initialized .slick-slide {
+
+    width: 60vw;
+  }
+
+
 }

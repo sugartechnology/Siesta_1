@@ -267,3 +267,43 @@
     width: 100%;
   }
 }
+
+
+@media (orientation: portrait) {
+
+  .new-project-modal .new-modal-header h2 {
+    font-size: 6vw;
+  }
+
+  .form-group label {
+    display: none;
+  }
+
+  .form-group:first-line {
+    border: 1px solid #000000;
+    border-radius: 20px;
+  }
+
+  .cancel-btn {
+    font-size: 3.5vw;
+    font-weight: 400;
+  }
+
+  .submit-btn {
+    font-size: 3vw;
+    font-weight: 400;
+  }
+
+  .phone-input-container {
+    flex-direction: row;
+  }
+
+  .country-code-select {
+    width: 18vw;
+    padding: 12px 5px;
+  }
+
+
+
+
+}

@@ -355,14 +355,11 @@
 
 /* Responsive */
 @media (max-width: 1400px) {
-  .photograph-page-content {
-  }
+  .photograph-page-content {}
 
-  .image-with-grid {
-  }
+  .image-with-grid {}
 
-  .corner-marker {
-  }
+  .corner-marker {}
 
   .control-btn {
     width: 60px;
@@ -392,11 +389,9 @@
     height: 80px;
   }
 
-  .image-editor-container {
-  }
+  .image-editor-container {}
 
-  .image-with-grid {
-  }
+  .image-with-grid {}
 
   .corner-marker {
     width: 40px;
@@ -450,4 +445,43 @@
   .no-image-state p {
     font-size: 14px;
   }
+}
+
+
+@media (orientation: portrait) {
+
+  .image-display-wrapper {
+    border-radius: 20px;
+    height: 50%;
+    margin-top: 35%;
+  }
+
+
+  .grid-overlay {
+    display: none;
+  }
+
+  .image-controls {
+
+    padding: 0 0px;
+
+  }
+
+  .controls-left,
+  .controls-right {
+    display: none;
+  }
+
+  .next-btn-bottom {
+    width: 90vw;
+
+  }
+
+  .edited-image {
+    object-fit: cover;
+  }
+
+
+
+
 }

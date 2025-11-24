@@ -332,3 +332,38 @@
 .room-types-grid::-webkit-scrollbar-thumb:hover {
   background: rgba(0, 0, 0, 0.3);
 }
+
+
+@media (orientation: portrait) {
+
+  .room-types-grid {
+    grid-template-columns: repeat(1, 80vw);
+    grid-template-rows: auto;
+    gap: 8px;
+    padding: 10px;
+    margin-bottom: 5px;
+  }
+
+
+  .room-type-card {
+    height: 30vw;
+    border-radius: 15px;
+  }
+
+  .room-name-vertical {
+    font-size: 2em;
+    left: 10px;
+    top: 5px;
+    writing-mode: horizontal-tb;
+    transform: none;
+    white-space: nowrap;
+  }
+
+  .next-button-bottom {
+
+    display: none;
+  }
+
+
+
+}
