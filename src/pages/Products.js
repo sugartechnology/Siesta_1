@@ -129,8 +129,6 @@ export default function Products() {
     },
   ];
 
-  const [variantQuantities, setVariantQuantities] = useState({});
-
   const [variants, setVariants] = useState([]);
 
   const removeFilter = (filterType, filter) => {
@@ -159,14 +157,14 @@ export default function Products() {
         updated = [...prev];
         updated[existingIndex] = {
           ...updated[existingIndex],
-          quantity: updated[existingIndex].quantity + quantity,
+          quantity: Math.max(0, updated[existingIndex].quantity + quantity),
         };
       } else {
         // Yeni ürün ekle
         updated = [
           ...prev,
           {
-            quantity: quantity,
+            quantity: Math.max(0, quantity),
             productId: product.productId,
             baseName: product.name,
             description: product.description,
@@ -531,7 +529,7 @@ export default function Products() {
                 <div className="product-info">
                   <div className="product-details">
                     <p className="product-code">
-                      Code: {product.productId.substring(0, 3) || product.code}
+                      Code: {product.code || product.productId.substring(0, 3)}
                     </p>
                     <h3 className="product-name">{product.name}</h3>
                     <p className="p-product-price">${product.price}</p>
@@ -651,12 +649,10 @@ export default function Products() {
 
             <div className="variants-grid">
               {variants.map((variant) => {
-                const currentQuantity = variantQuantities[variant.id] || 0;
                 return (
                   <div
                     key={variant.id}
-                    className={`variant-item ${currentQuantity > 0 ? "in-stock" : ""
-                      }`}
+                    className={`variant-item ${"in-stock"}`}
                   >
                     <div className="variant-image-container">
                       <img
@@ -671,9 +667,8 @@ export default function Products() {
                     {/*<p className="variant-color">{variant.name}</p>*/}
                     <div className="p-quantity-control">
                       <button
-                        className="quantity-btn"
+                        className="p-quantity-btn"
                         onClick={() => addProductToSelection(variant, -1)}
-                        disabled={currentQuantity === 0}
                       >
                         <svg
                           width="16"
@@ -694,7 +689,7 @@ export default function Products() {
                         {getProductQuantity(variant.productId)}
                       </span>
                       <button
-                        className="quantity-btn"
+                        className="p-quantity-btn"
                         onClick={() => addProductToSelection(variant, 1)}
                       >
                         <svg

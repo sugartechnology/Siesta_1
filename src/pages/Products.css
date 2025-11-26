@@ -9,7 +9,6 @@
   flex-direction: column;
 }
 
-
 /* Top Menu - Same as Home/Catalog/SubCategory */
 .products-top-menu {
   display: flex;
@@ -379,6 +378,7 @@
   justify-content: center;
   cursor: pointer;
   transition: all 0.3s ease;
+  flex-shrink: 0;
 }
 
 .add-to-cart-btn:hover {
@@ -502,8 +502,6 @@
   overflow-y: auto;
 }
 
-
-
 .variant-item {
   display: flex;
   flex-direction: column;
@@ -615,11 +613,9 @@
 }
 
 @media (orientation: portrait) {
-
   .products-grid {
     grid-template-columns: repeat(3, 1fr);
     gap: 15px 15px;
-
   }
 
   .product-card {
@@ -628,12 +624,10 @@
   }
 
   .product-name {
-    font-size: 3.5vw;
+    font-size: 2.5vw;
   }
 
   @media (max-width: 500px) {
-
-
     .product-card {
       width: 40vw;
       height: 30vh;
@@ -648,11 +642,9 @@
       flex-direction: column;
       align-items: flex-start;
       gap: 10px;
-
     }
 
     .search-bar {
-
       order: -10;
     }
 
@@ -672,8 +664,5 @@
   }
 
   .generate-design-btn {
-    display: none;
   }
-
-
 }

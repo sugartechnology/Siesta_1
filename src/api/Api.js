@@ -14,7 +14,8 @@ export const loginUser = async (email, password) => {
 export const fetchProducts = async (
   defaultFilters,
   filter = undefined,
-  pageNumber = 0
+  pageNumber = 0,
+  sort = "baseName Asc" // Default: A'dan Z'ye
 ) => {
   try {
     const hasDefaultFilters = Boolean(
@@ -23,11 +24,11 @@ export const fetchProducts = async (
 
     const requestBody = filter
       ? hasDefaultFilters
-        ? { ...filter, defaultFilters }
-        : { ...filter }
+        ? { ...filter, defaultFilters, sort }
+        : { ...filter, sort }
       : hasDefaultFilters
-      ? { defaultFilters }
-      : {};
+      ? { defaultFilters, sort }
+      : { sort };
 
     const url =
       process.env.REACT_APP_SEARCY_API_URL +
