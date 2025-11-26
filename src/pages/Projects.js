@@ -34,29 +34,19 @@ export default function Projects() {
     fetchProjects();
   }, []);
 
+  const settingsSlidesToShow =
+    window.screen.width > 490 ? (window.screen.width > 1024 ? 3.2 : 2.2) : 1.2;
+
+  console.log("settingsSlidesToShow", settingsSlidesToShow);
   const settings = {
     dots: false,
     infinite: false,
     speed: 500,
-    slidesToShow: 3.2,
+    slidesToShow: settingsSlidesToShow,
     slidesToScroll: 1,
     arrows: false,
     swipeToSlide: true,
     draggable: true,
-    responsive: [
-      {
-        breakpoint: 1024,
-        settings: {
-          slidesToShow: 2,
-        },
-      },
-      {
-        breakpoint: 600,
-        settings: {
-          slidesToShow: 1,
-        },
-      },
-    ],
   };
 
   const handleProjectClick = (project) => {
@@ -95,9 +85,7 @@ export default function Projects() {
       {/* Recent Projects Section */}
       <div className="recent-projects-section">
         <div className="recent-projects-header">
-          <h2 className="recent-projects-title">
-            Recent Projects
-          </h2>
+          <h2 className="recent-projects-title">Recent Projects</h2>
           <button
             className="projects-page-btn"
             onClick={() => navigate("/projects-list")}
