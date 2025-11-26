@@ -1,21 +1,22 @@
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import "./App.css";
 import { AuthProvider } from "./auth/AuthProvider";
 import { useAuth } from "./auth/useAuth";
-import SplashScreen from "./pages/SplashScreen";
-import Login from "./pages/Login";
+import TopMenu from "./components/TopMenu";
+import BottomMenu from "./components/BottomMenu";
+import Camera from "./pages/Camera";
+import Catalog from "./pages/Catalog";
 import Home from "./pages/Home";
+import Login from "./pages/Login";
+import Photograph from "./pages/Photograph";
 import Products from "./pages/Products";
+import ProjectDetails from "./pages/ProjectDetails";
 import Projects from "./pages/Projects";
 import ProjectsList from "./pages/ProjectsList";
-import ProjectDetails from "./pages/ProjectDetails";
-import SectionDetails from "./pages/SectionDetails";
-import Catalog from "./pages/Catalog";
-import SubCategory from "./pages/SubCategory";
-import Camera from "./pages/Camera";
-import Photograph from "./pages/Photograph";
 import RoomType from "./pages/RoomType";
-import TopMenu from "./components/TopMenu";
-import "./App.css";
+import SectionDetails from "./pages/SectionDetails";
+import SplashScreen from "./pages/SplashScreen";
+import SubCategory from "./pages/SubCategory";
 
 function PrivateRoute({ children }) {
   const { isAuthenticated, loading } = useAuth();
@@ -42,9 +43,7 @@ function AppChrome() {
       <div className="app-content">
         <AppRoutes />
       </div>
-      <div className="portrate-menu">
-
-      </div>
+      {user && <BottomMenu />}
     </div>
   );
 }

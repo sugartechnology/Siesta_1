@@ -200,8 +200,6 @@
   gap: 25px;
   flex-shrink: 0;
   height: 38vh;
-  ;
-
 }
 
 /* Project Info Card */
@@ -267,7 +265,6 @@
 /* Add New Section Card */
 .add-section-card {
   width: 307px;
-  height: 387px;
   position: relative;
   border-radius: 44px;
   overflow: hidden;
@@ -331,6 +328,17 @@
   max-width: 200px;
 }
 
+.pd-add-section-text {
+  font-family: "Poppins", sans-serif;
+  font-size: 36px;
+  font-weight: 700;
+  color: white;
+  text-align: center;
+  margin: 0;
+  text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
+  max-width: 120px;
+}
+
 /* Scrollbar styling */
 .project-details-content-wrapper::-webkit-scrollbar {
   width: 8px;
@@ -391,16 +399,14 @@
 
   .add-section-card {
     width: 307px;
-    height: 387px;
   }
 
-  .add-section-text {
+  .pd-add-section-text {
     font-size: 32px;
   }
 
   .add-section-card {
     width: 20%;
-    height: 37vh;
   }
 
   .section-card {
@@ -457,7 +463,6 @@
 
   .add-section-card {
     width: 50%;
-    height: 37vh;
   }
 
   .section-card {
@@ -525,16 +530,18 @@
   }
 
   .add-section-card {
-    height: 280px;
   }
 
-  .add-section-text {
+  .pd-add-section-text {
     font-size: 28px;
   }
 }
 
-
 @media (orientation: portrait) {
+  .add-icon > svg {
+    width: 5vh;
+    height: 5vh;
+  }
 
   .project-title {
     font-size: 3vh;
@@ -545,7 +552,6 @@
     width: 100px;
     overflow-x: visible;
     border-radius: 5vw;
-
   }
 
   .bottom-section {
@@ -562,27 +568,14 @@
     width: 100%;
     border-radius: 30px;
     border-radius: 5vw;
-
   }
 
   .add-section-content {
     flex-direction: row;
   }
 
-  .add-icon {
-    width: 6vh;
-    height: 4vh;
-  }
-
-  svg {
-    width: 5vh;
-    height: 5vh;
-
-  }
-
-  .add-section-text {
+  .pd-add-section-text {
     font-size: 25px;
-
   }
 
   .project-details-content-wrapper {
@@ -596,8 +589,4 @@
   .project-info-card {
     border-radius: 5vw;
   }
-
-
-
-
 }

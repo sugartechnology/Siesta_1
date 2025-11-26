@@ -176,7 +176,7 @@ const ProjectDetails = () => {
                 />
               </svg>
             </div>
-            <h3 className="add-section-text">Add New Section</h3>
+            <h3 className="pd-add-section-text">Add New Section</h3>
           </div>
         </div>
       </div>

@@ -6,11 +6,11 @@
   cursor: pointer;
   transition: all 0.3s ease;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.15);
+  height: 100%;
 }
 
 .hover-thumbnail-button.active {
   width: 620px;
-  height: 320px;
 }
 
 .hover-thumbnail-button.active:hover {
@@ -19,7 +19,6 @@
 
 .hover-thumbnail-button:not(.active) {
   width: 200px;
-  height: 320px;
 }
 
 .hover-thumbnail-button:not(.active) > .hover-thumbnail-overlay {

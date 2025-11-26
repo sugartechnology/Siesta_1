@@ -258,7 +258,7 @@
 
   .hero-section {
     flex-direction: column;
-    gap: 7px;
+    gap: 16px;
   }
 
   .hero-card:first-child {
