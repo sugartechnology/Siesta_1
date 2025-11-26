@@ -168,7 +168,10 @@ export default function Products() {
             productId: product.productId,
             baseName: product.name,
             description: product.description,
-            url: product.images[0],
+            url:
+              product.images[1] ||
+              product.images[0] ||
+              "/assets/product-placeholder.png",
           },
         ];
       }
@@ -456,7 +459,11 @@ export default function Products() {
                   onClick={() => handleProductClick(product)}
                 >
                   <img
-                    src={product.images[1] || "/assets/product-placeholder.png"}
+                    src={
+                      product.images[1] ||
+                      product.images[0] ||
+                      "/assets/product-placeholder.png"
+                    }
                     alt={product.name}
                     className="product-image"
                   />
@@ -657,7 +664,9 @@ export default function Products() {
                     <div className="variant-image-container">
                       <img
                         src={
-                          variant.images[1] || "/assets/product-placeholder.png"
+                          variant.images[1] ||
+                          variant.images[0] ||
+                          "/assets/product-placeholder.png"
                         }
                         alt={variant.name}
                         className="variant-image"
