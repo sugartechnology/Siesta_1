@@ -190,3 +190,139 @@ export const roomTypes = [
   { id: 7, name: "Piknik", image: "/assets/product-09.png" },
   { id: 8, name: "Restaurant", image: "/assets/product-10.png" },*/
 ];
+
+export const categoriesMap = {
+  contract: [
+    {
+      id: 1,
+      name: "Chairs",
+      value: "chairs",
+      image: "/assets/subcategory-chairs.png",
+      multiline: false,
+      gridArea: "row-column-span-3",
+    },
+
+    {
+      id: 3,
+      name: "Stools &\nComplements",
+      value: "stools & complements",
+      image: "/assets/subcategory-stools.png",
+      multiline: true,
+      gridArea: "row-span-2",
+    },
+
+    {
+      id: 4,
+      name: "Sunlounger &\nLounge",
+      value: "sunlounger & lounge",
+      image: "/assets/subcategory-sunlounger.png",
+      multiline: true,
+      gridArea: "row-column-span-3",
+    },
+    {
+      id: 2,
+      name: "Lighting",
+      value: "lighting",
+      image: "/assets/subcategory-lighting.png",
+      multiline: false,
+      gridArea: "row-column-span-3",
+    },
+    {
+      id: 5,
+      name: "Tables",
+      value: "tables",
+      image: "/assets/subcategory-tables.png",
+      multiline: false,
+      gridArea: "row-column-span-3",
+    },
+  ],
+
+  garden: [
+    {
+      id: 1,
+      name: "Chairs",
+      value: "chairs",
+      image: "/assets/subcategory0-chairs.png",
+      gridArea: "",
+      multiline: false,
+    },
+    {
+      id: 3,
+      name: "Children Group",
+      value: "children group",
+      image: "/assets/subcategory0-children-group.jpg",
+
+      gridArea: "",
+      multiline: true,
+    },
+    {
+      id: 5,
+      name: "Tables",
+      value: "tables",
+      image: "/assets/subcategory0-tables.png",
+      gridArea: "",
+      multiline: false,
+    },
+    {
+      id: 2,
+      name: "Stools & Multi Purpose",
+      value: "stools & multi purpose",
+      image: "/assets/subcategory0-stool-multipurpose.jpg",
+
+      multiline: true,
+      gridArea: "column-span-3",
+    },
+
+    {
+      id: 4,
+      name: "Sunloungers",
+      value: "sunloungers",
+      image: "/assets/subcategory0-sunloungers.jpg",
+
+      gridArea: "column-span-3",
+      multiline: true,
+    },
+  ],
+
+  rattan: [
+    {
+      id: 1,
+      name: "Chairs",
+      value: "chairs",
+      image: "/assets/subcategory1-chairs.png",
+      gridArea: "",
+      multiline: false,
+    },
+    {
+      id: 5,
+      name: "Bar Stool",
+      value: "bar-stool",
+      image: "/assets/subcategory1-bar-stool.jpg",
+      multiline: false,
+    },
+    {
+      id: 2,
+      name: "Tables",
+      value: "tables",
+      image: "/assets/subcategory1-tables.png",
+      gridArea: "",
+      multiline: false,
+    },
+    {
+      id: 3,
+      name: "Lounge",
+      value: "lounge",
+      image: "/assets/subcategory1-lounge.png",
+      multiline: true,
+      gridArea: "column-span-3",
+    },
+    {
+      id: 4,
+      name: "Sunloungers",
+      value: "sunloungers",
+      image: "/assets/subcategory1-sunloungers.png",
+      multiline: true,
+      gridArea: "column-span-3",
+    },
+  ],
+};

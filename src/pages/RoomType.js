@@ -7,7 +7,6 @@ const RoomType = () => {
   const navigate = useNavigate();
 
   const handleRoomTypeClick = (roomType) => {
-    console.log("Room type selected:", roomType);
     // Navigate to products page with selected room type
     const nextPage = getNextPage("room-type", { roomType: roomType });
     navigate(nextPage);

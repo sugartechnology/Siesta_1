@@ -1,8 +1,11 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { fetchProducts, fetchProductVariants } from "../api/Api";
-import FilterButton from "../components/FilterButton";
-import { getNextPage, NavigationState } from "../utils/NavigationState";
+import {
+  getNextPage,
+  NavigationState,
+  categoriesMap,
+} from "../utils/NavigationState";
 import "./Products.css";
 
 export default function Products() {
@@ -76,58 +79,6 @@ export default function Products() {
   const sentinelRef = useRef(null);
 
   // Filter options
-  const categoryOptions = [
-    { value: "contract", label: "Contract" },
-    { value: "garden", label: "Garden" },
-    { value: "rattan", label: "Rattan" },
-  ];
-
-  const subCategoryOptions = [
-    {
-      value: "chairs",
-      label: "Chairs",
-    },
-    {
-      value: "tables",
-      label: "Tables",
-    },
-    {
-      value: "stools & complements",
-      label: "Stools & Complements",
-    },
-    {
-      value: "sunlounger & lounge",
-      label: "Sunlounger & Lounge",
-    },
-    {
-      value: "lounge",
-      label: "Lounge",
-    },
-    {
-      value: "li̇ghti̇ng",
-      label: "Lighting",
-    },
-    {
-      value: "stools & multi purpose",
-      label: "Stools & Multi Purpose",
-    },
-    {
-      value: "sunlounger",
-      label: "Sunlounger",
-    },
-    {
-      value: "children group",
-      label: "Children Group",
-    },
-    {
-      value: "sunloungers",
-      label: "Sunloungers",
-    },
-    {
-      value: "bar stool",
-      label: "Bar Stool",
-    },
-  ];
 
   const [variants, setVariants] = useState([]);
 
@@ -370,6 +321,10 @@ export default function Products() {
     );
   };
 
+  console.log(
+    "selectedCategory",
+    categoriesMap[filterState.selectedCategories[0]]
+  );
   return (
     <>
       <div className="products-container">
@@ -377,6 +332,61 @@ export default function Products() {
           {/* Filters and Search */}
           <div className="products-filters-section">
             <div className="filter-buttons">
+              <select
+                className="products-filter-select"
+                onChange={(e) => {
+                  console.log("values", e.target.value);
+                  const newState = {
+                    ...filterState,
+                    page: 0,
+                    selectedCategories: [e.target.value],
+                  };
+                  setFilterState(newState);
+                  //updateURL(newState);
+                }}
+              >
+                {Object.keys(categoriesMap).map((c) => {
+                  return (
+                    <option
+                      key={c}
+                      value={c}
+                      selected={c === filterState.selectedCategories[0]}
+                    >
+                      {c}
+                    </option>
+                  );
+                })}
+              </select>
+              <select
+                className="products-filter-select"
+                onChange={(e) => {
+                  console.log("values", e.target.value);
+                  const newState = {
+                    ...filterState,
+                    page: 0,
+                    selectedSubCategories: [e.target.value],
+                  };
+                  setFilterState(newState);
+                  //updateURL(newState);
+                }}
+              >
+                {categoriesMap[filterState.selectedCategories[0]]?.map((c) => {
+                  return (
+                    <option
+                      key={c.value}
+                      value={c.value}
+                      selected={
+                        c.value === filterState.selectedSubCategories[0]
+                      }
+                    >
+                      {c.name}
+                    </option>
+                  );
+                })}
+              </select>
+              {/*
+              
+
               <FilterButton
                 label="Category"
                 options={categoryOptions}
@@ -407,6 +417,7 @@ export default function Products() {
                 }}
                 placeholder="Select sub categories..."
               />
+              */}
             </div>
 
             <div className="search-bar">
@@ -442,11 +453,12 @@ export default function Products() {
               />
             </div>
           </div>
-          {/* Active Filters */}
+          {/* Active Filters
           <div className="active-filters">
             {renderFiltersByName("selectedCategories", filterState)}
             {renderFiltersByName("selectedSubCategories", filterState)}
           </div>
+           */}
         </div>
 
         {/* Products Grid */}

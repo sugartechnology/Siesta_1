@@ -367,6 +367,21 @@
   display: none;
 }
 
+.products-filter-select {
+  height: 50px;
+  background: white;
+  border-radius: 40px;
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 12px;
+  box-shadow: 0px 2px 8px rgba(0, 0, 0, 0.1);
+  font-family: "Poppins", sans-serif;
+  font-size: 16px;
+  letter-spacing: 1px;
+  color: #000;
+}
+
 .add-to-cart-btn {
   width: 36px;
   height: 36px;
