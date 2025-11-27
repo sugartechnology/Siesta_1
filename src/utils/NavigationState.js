@@ -178,14 +178,30 @@ export const roomTypes = [
   { id: 3, name: "Cafe", image: "/assets/product-04.png" },
   { id: 4, name: "Pool", image: "/assets/product-05.png" },
   /*{ id: 5, name: "Gazebo", image: "/assets/product-07.png" },*/
-  { id: 6, name: "Home", image: "/assets/product-09.png" },
-  { id: 7, name: "Office", image: "/assets/product-10.png" },
-  { id: 8, name: "Event", image: "/assets/product-11.png" },
-  { id: 9, name: "Wedding", image: "/assets/product-12.png" },
-  { id: 10, name: "Bar & Pub", image: "/assets/product-13.png" },
-  { id: 11, name: "Restaurant", image: "/assets/product-14.png" },
-  { id: 12, name: "Meeting Room", image: "/assets/product-15.png" },
-  { id: 13, name: "Mall & Food Court", image: "/assets/product-16.png" },
+  { id: 6, name: "Home", image: "/assets/image-thumb-1622812710-5680.jpg" },
+  { id: 7, name: "Office", image: "/assets/image-thumb-1567499374-3484.jpg" },
+  { id: 8, name: "Event", image: "/assets/image-thumb-1545207079-7219.jpg" },
+  { id: 9, name: "Wedding", image: "/assets/image-thumb-1544088234-7313.jpg" },
+  {
+    id: 10,
+    name: "Bar & Pub",
+    image: "/assets/image-thumb-1693477363-1427.jpg",
+  },
+  {
+    id: 11,
+    name: "Restaurant",
+    image: "/assets/image-thumb-1750429007-5791.jpg",
+  },
+  {
+    id: 12,
+    name: "Meeting Room",
+    image: "/assets/image-thumb-1563355985-8671.jpg",
+  },
+  {
+    id: 13,
+    name: "Mall & Food Court",
+    image: "/assets/image-thumb-1735136428-3878.jpg",
+  },
   /*{ id: 6, name: "Rattan", image: "/assets/product-08.png" },
   { id: 7, name: "Piknik", image: "/assets/product-09.png" },
   { id: 8, name: "Restaurant", image: "/assets/product-10.png" },*/
