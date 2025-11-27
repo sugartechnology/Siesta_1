@@ -173,12 +173,20 @@ export const getBackPage = (currentPage) => {
 
 // Room types for the project
 export const roomTypes = [
-  { id: 1, name: "Balcony", image: "/assets/product-02.png" },
+  { id: 1, name: "Balcony & Terrace", image: "/assets/product-02.png" },
   { id: 2, name: "Garden", image: "/assets/product-03.png" },
   { id: 3, name: "Cafe", image: "/assets/product-04.png" },
   { id: 4, name: "Pool", image: "/assets/product-05.png" },
-  { id: 5, name: "Gazebo", image: "/assets/product-07.png" },
-  { id: 6, name: "Rattan", image: "/assets/product-08.png" },
+  /*{ id: 5, name: "Gazebo", image: "/assets/product-07.png" },*/
+  { id: 6, name: "Home", image: "/assets/product-09.png" },
+  { id: 7, name: "Office", image: "/assets/product-10.png" },
+  { id: 8, name: "Event", image: "/assets/product-11.png" },
+  { id: 9, name: "Wedding", image: "/assets/product-12.png" },
+  { id: 10, name: "Bar & Pub", image: "/assets/product-13.png" },
+  { id: 11, name: "Restaurant", image: "/assets/product-14.png" },
+  { id: 12, name: "Meeting Room", image: "/assets/product-15.png" },
+  { id: 13, name: "Mall & Food Court", image: "/assets/product-16.png" },
+  /*{ id: 6, name: "Rattan", image: "/assets/product-08.png" },
   { id: 7, name: "Piknik", image: "/assets/product-09.png" },
-  { id: 8, name: "Restaurant", image: "/assets/product-10.png" },
+  { id: 8, name: "Restaurant", image: "/assets/product-10.png" },*/
 ];
