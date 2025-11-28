@@ -85,6 +85,9 @@ const ProjectsList = () => {
                 <div className="project-item-overlay"></div>
               </div>
               <div className="project-item-name">{project.name}</div>
+              <div className="project-item-created-date">
+                {project.createdDate}
+              </div>
             </div>
           ))
         ) : (
