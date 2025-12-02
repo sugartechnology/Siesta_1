@@ -16,8 +16,8 @@ export default function Products() {
 
   // URL parametrelerinden initial state oluştur
   const getInitialFilterState = () => {
-    const category = searchParams.get("category");
-    const subCategory = searchParams.get("subCategory");
+    const category = searchParams.get("category") ?? "contract";
+    const subCategory = searchParams.get("subCategory") ?? "chairs";
     const search = searchParams.get("search") || "";
 
     return {
