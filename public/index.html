@@ -20,5 +20,21 @@
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>
     <div id="root"></div>
+
+    <script>
+      var css =
+        "* { -webkit-user-select: none !important; user-select: none !important; }";
+      var style = document.createElement("style");
+      style.type = "text/css";
+      style.appendChild(document.createTextNode(css));
+      document.head.appendChild(style);
+
+      document.addEventListener("selectstart", function (e) {
+        e.preventDefault();
+      });
+      document.addEventListener("contextmenu", function (e) {
+        e.preventDefault();
+      });
+    </script>
   </body>
 </html>
