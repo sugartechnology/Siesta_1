@@ -20,7 +20,7 @@ const SectionThumbnail = ({
       action: () => onRemove(section),
       icon: "🗑️",
       requireConfirmation: true, // Emin misiniz sorusu sor
-      confirmationMessage: "Are you sure you want to remove this section?",
+      confirmationMessage: "Are you sure you want to remove?",
     },
   ];
 

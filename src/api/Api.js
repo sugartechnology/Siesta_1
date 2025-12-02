@@ -102,6 +102,12 @@ export const createProject = async (projectData) => {
   return await postData(endpoint, projectData);
 };
 
+// Remove project
+export const removeProject = async (projectId) => {
+  const endpoint = `${process.env.REACT_APP_API_URL}/projects/${projectId}`;
+  return await postData(endpoint, null, undefined, "DELETE");
+};
+
 // Create new project
 export const updateProjectName = async (projectId, projectName) => {
   const endpoint = `${process.env.REACT_APP_API_URL}/projects/${projectId}/update-name/${projectName}`;

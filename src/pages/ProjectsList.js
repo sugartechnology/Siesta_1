@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserProjects } from "../api/Api";
+import { getUserProjects, removeProject } from "../api/Api";
+import HoverThumbnailButton from "../components/HoverThumbnailButton";
 import "./ProjectsList.css";
 
 const ProjectsList = () => {
   const navigate = useNavigate();
+
   const [searchQuery, setSearchQuery] = useState("");
   const [projects, setProjects] = useState([]);
 
@@ -17,6 +19,14 @@ const ProjectsList = () => {
   const handleProjectClick = (project) => {
     // Navigate to project details page
     navigate(`/projects-details/${project.id}`);
+  };
+
+  const handleRemoveProject = async (project) => {
+    console.log("Remove project", project);
+    await removeProject(project.id);
+    setProjects((prevProjects) =>
+      prevProjects.filter((p) => p.id !== project.id)
+    );
   };
 
   const filteredProjects = projects.filter((project) =>
@@ -62,34 +72,44 @@ const ProjectsList = () => {
       {/* Projects Grid */}
       <div className="projects-grid">
         {filteredProjects.length > 0 ? (
-          filteredProjects.map((project) => (
-            <div
-              key={project.id}
-              className="project-item-card"
-              onClick={() => handleProjectClick(project)}
-            >
-              <div className="project-item-image-container">
-                <img
-                  src={
-                    project.thumbnailUrl ||
-                    project.resultImageUrl ||
-                    project.rootImageUrl ||
-                    "/assets/logo_big.png"
-                  }
-                  alt={project.name}
-                  className="project-item-image"
-                  onError={(e) => {
-                    e.target.src = "/assets/logo_big.png";
-                  }}
+          filteredProjects.map((project) => {
+            // Image URL'i belirle
+            const imageUrl =
+              project.thumbnailUrl ||
+              project.resultImageUrl ||
+              project.rootImageUrl ||
+              "/assets/logo_big.png";
+
+            return (
+              <div key={project.id} className="project-item-card">
+                <HoverThumbnailButton
+                  id={project.id}
+                  imageUrl={imageUrl}
+                  title={project.name}
+                  isActive={true}
+                  isLoading={false}
+                  onClick={() => handleProjectClick(project)}
+                  duration={500}
+                  actions={[
+                    {
+                      label: "Remove",
+                      action: () => handleRemoveProject(project),
+                      icon: "🗑️",
+                      requireConfirmation: true,
+                      confirmationMessage: "Are you sure you want to remove?",
+                    },
+                  ]}
+                  showPopup={false}
+                  titleClassName="project-item-name"
                 />
-                <div className="project-item-overlay"></div>
+                {project.createdDate && (
+                  <div className="project-item-created-date">
+                    {project.createdDate}
+                  </div>
+                )}
               </div>
-              <div className="project-item-name">{project.name}</div>
-              <div className="project-item-created-date">
-                {project.createdDate}
-              </div>
-            </div>
-          ))
+            );
+          })
         ) : (
           <div className="no-results-message">
             <svg width="64" height="64" viewBox="0 0 64 64" fill="none">
