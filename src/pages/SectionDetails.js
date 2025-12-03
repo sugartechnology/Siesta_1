@@ -192,8 +192,8 @@ const SectionDetails = () => {
       const extension = mimeType.includes("png")
         ? "png"
         : mimeType.includes("webp")
-          ? "webp"
-          : "jpg";
+        ? "webp"
+        : "jpg";
       imageFile = base64ToFile(image, `section-image.${extension}`);
     }
 
@@ -235,7 +235,6 @@ const SectionDetails = () => {
       }
     }
   };
-
 
   const handleAddNewProduct = () => {
     // Navigate to products page to add new product
@@ -647,11 +646,19 @@ const SectionDetails = () => {
 
       {/* Fullscreen Image Popup */}
       <FullscreenImagePopup
-        imageUrl={
+        images={[
+          // Reference image
+          // Result image
           section.resultImageUrl ||
-          (section.design && section.design.resultImageUrl) ||
-          "/assets/logo_big.png"
-        }
+            (section.design && section.design.resultImageUrl),
+          // Design images if available
+          ...(section.designs
+            ?.filter((design) => design.resultImageUrl)
+            .filter((design) => design.id !== section.design.id)
+            .sort((a, b) => b.createdDate - a.createdDate)
+            .map((design) => design.resultImageUrl) || []),
+        ].filter(Boolean)} // Remove null/undefined values
+        initialIndex={1} // Start with result image (index 1)
         isVisible={isFullscreenPopupVisible}
         onClose={() => setIsFullscreenPopupVisible(false)}
       />
