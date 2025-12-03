@@ -32,7 +32,7 @@ import {
 import "./SectionDetails.css";
 import SliderComponent from "../components/SliderComponent";
 
-const POLL_INTERVAL = 20000;
+const POLL_INTERVAL = 5000;
 
 const SectionDetails = () => {
   const navigate = useNavigate();
@@ -356,6 +356,17 @@ const SectionDetails = () => {
     return undefined;
   };
 
+  const getResultImageUrl = (section) => {
+    if (section.design && section.design.resultImageUrl) {
+      return section.design.resultImageUrl;
+    }
+    if (section.designs && section.designs.length > 0) {
+      return section.designs.find((design) => design.resultImageUrl)
+        ?.resultImageUrl;
+    }
+    return undefined;
+  };
+
   const roomType = getRoomType(section);
   const desabled =
     section.design &&
@@ -609,11 +620,7 @@ const SectionDetails = () => {
           {/* Last Generated */}
           <div className="info-item">
             <img
-              src={
-                section.resultImageUrl ||
-                (section.design && section.design.resultImageUrl) ||
-                "/assets/logo_big.png"
-              }
+              src={getResultImageUrl(section) || "/assets/logo_big.png"}
               alt="Last Generated"
               className="info-thumbnail clickable-image"
               onClick={() => {
