@@ -192,8 +192,8 @@ const SectionDetails = () => {
       const extension = mimeType.includes("png")
         ? "png"
         : mimeType.includes("webp")
-        ? "webp"
-        : "jpg";
+          ? "webp"
+          : "jpg";
       imageFile = base64ToFile(image, `section-image.${extension}`);
     }
 
@@ -581,7 +581,7 @@ const SectionDetails = () => {
 
           {/* Room Type */}
           <div className="info-item">
-            <img
+            {/*<img
               src={roomType?.image || "/assets/logo_big.png"}
               alt={roomType?.name}
               className="info-thumbnail"
@@ -590,13 +590,15 @@ const SectionDetails = () => {
                 console.log("Room type image error:", e.target.src);
               }}
             />
+            */}
             <div className="info-content">
-              <h3 className="sd-info-title">{roomType?.name}</h3>
+
               <p className="sd-info-description">
                 The room type you selected for the project.
               </p>
+              <h3 className="sd-info-title">{roomType?.name}</h3>
               <button
-                className="change-btn"
+                className="change-btn-roomtype"
                 onClick={handleChangeRoomType}
                 disabled={desabled}
               >
@@ -616,6 +618,21 @@ const SectionDetails = () => {
             />
           </div>
           <div className="info-divider"></div>*/}
+
+
+          {/* Promt Input */}
+          <div className="info-item">
+            <textarea
+              className="promt-textarea"
+              value={projectDetails}
+              onChange={(e) => setProjectDetails(e.target.value)}
+              placeholder="Enter any custom information ..."
+            />
+
+
+          </div>
+
+          <div className="info-divider"></div>
 
           {/* Last Generated */}
           <div className="info-item">
@@ -657,7 +674,7 @@ const SectionDetails = () => {
           // Reference image
           // Result image
           section.resultImageUrl ||
-            (section.design && section.design.resultImageUrl),
+          (section.design && section.design.resultImageUrl),
           // Design images if available
           ...(section.designs
             ?.filter((design) => design.resultImageUrl)

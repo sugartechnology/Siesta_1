@@ -603,7 +603,8 @@ export default function Products() {
                   ) : (
                     <button
                       className="add-to-cart-btn"
-                      onClick={() => handleAddToCart(product)}
+                      //onClick={() => handleAddToCart(product)}
+                      onClick={() => handleProductClick(product)}
                     >
                       <svg
                         width="20"
