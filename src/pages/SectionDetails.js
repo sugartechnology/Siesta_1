@@ -591,7 +591,7 @@ const SectionDetails = () => {
               }}
             />
             */}
-            <div className="info-content">
+            <div className="info-content-roomtype">
 
               <p className="sd-info-description">
                 The room type you selected for the project.

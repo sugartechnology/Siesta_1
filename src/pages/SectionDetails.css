@@ -441,7 +441,7 @@
 
 .info-item {
   display: flex;
-  gap: 24px;
+  justify-content: space-around;
   align-items: flex-start;
 }
 
@@ -458,6 +458,19 @@
   flex-direction: column;
   gap: 5%;
   flex: 1;
+  align-items: flex-end
+}
+
+.info-content-roomtype {
+  display: flex;
+  flex-direction: column;
+  gap: 5%;
+  flex: 1;
+}
+
+.info-thumbnail.clickable-image {
+  width: 25vw;
+  height: 18vh;
 }
 
 .sd-info-title {
@@ -479,7 +492,7 @@
 
 .change-btn-roomtype {
   margin-top: -4vh;
-  margin-left: 31vw;
+  align-self: flex-end;
   padding: 12px 35px;
   background: rgba(0, 0, 0, 0.1);
   border: 1px solid rgb(5, 5, 5);
@@ -496,6 +509,7 @@
 
 .change-btn {
   margin-top: 3vw;
+  align-items: flex-end;
   padding: 12px 35px;
   background: rgba(0, 0, 0, 0.1);
   border: 1px solid rgb(5, 5, 5);
@@ -505,7 +519,6 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  align-self: flex-start;
   min-width: 199px;
   text-align: center;
 }
@@ -615,7 +628,8 @@
 
   .change-btn-roomtype {
     margin-top: -5dvw;
-    margin-left: 28dvw;
+    align-self: flex-end;
+
     font-size: 14px;
     font-weight: 500;
     min-width: 150px;
@@ -654,7 +668,10 @@
 
 @media(orientation: portrait) {
 
-
+  .info-thumbnail.clickable-image {
+    width: 30vw;
+    height: 20vw;
+  }
 
   .section-details-main-content {
     flex-direction: column;
@@ -670,8 +687,8 @@
   }
 
   .change-btn-roomtype {
-    margin-top: -4vh;
-    margin-left: 65vw;
+    margin-top: 0;
+    align-self: flex-end;
     font-size: 14px;
     font-weight: 500;
     min-width: 150px;
@@ -679,8 +696,8 @@
 
 
   .change-btn {
-    margin-top: -4vh;
-    margin-left: 46vw;
+    margin-top: 10px;
+
     font-size: 14px;
     font-weight: 500;
     min-width: 150px;
@@ -712,24 +729,7 @@
     display: none;
   }
 
-  .change-btn {
-    margin-top: -3vh;
-    margin-left: 34vw;
-    font-size: 11px;
-    font-weight: 500;
-    min-width: 110px;
-    padding: 10px 20px;
-  }
 
-  .change-btn-roomtype {
-
-    margin-top: -3vh;
-    margin-left: 56vw;
-    font-size: 11px;
-    font-weight: 500;
-    min-width: 110px;
-    padding: 10px 20px;
-  }
 
 
 }
