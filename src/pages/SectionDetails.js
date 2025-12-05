@@ -487,8 +487,8 @@ const SectionDetails = () => {
                       disabled={product.quantity === 0}
                     >
                       <svg
-                        width="20"
-                        height="20"
+                        width="30"
+                        height="30"
                         viewBox="0 0 20 20"
                         fill="none"
                       >
@@ -514,8 +514,8 @@ const SectionDetails = () => {
                       onClick={() => handleQuantityChange(product.productId, 1)}
                     >
                       <svg
-                        width="20"
-                        height="20"
+                        width="30"
+                        height="30"
                         viewBox="0 0 20 20"
                         fill="none"
                       >

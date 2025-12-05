@@ -369,7 +369,7 @@
 .quantity-controls {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 22px;
 }
 
 .quantity-btn {
@@ -478,7 +478,7 @@
 }
 
 .change-btn-roomtype {
-  margin-top: -6vh;
+  margin-top: -4vh;
   margin-left: 31vw;
   padding: 12px 35px;
   background: rgba(0, 0, 0, 0.1);

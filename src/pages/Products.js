@@ -171,6 +171,49 @@ export default function Products() {
     return selected ? selected.quantity : 0;
   };
 
+  const setProductQuantity = (product, newQuantity) => {
+    const quantity = parseInt(newQuantity, 10);
+    if (isNaN(quantity)) return;
+
+    setSelectedProducts((prev) => {
+      const existingIndex = prev.findIndex(
+        (item) => item.productId === product.productId
+      );
+
+      let updated;
+      if (existingIndex >= 0) {
+        if (quantity <= 0) {
+          updated = prev.filter((item) => item.productId !== product.productId);
+        } else {
+          updated = [...prev];
+          updated[existingIndex] = {
+            ...updated[existingIndex],
+            quantity: quantity,
+          };
+        }
+      } else {
+        if (quantity > 0) {
+          updated = [
+            ...prev,
+            {
+              quantity: quantity,
+              productId: product.productId,
+              baseName: product.name,
+              description: product.description,
+              url:
+                product.images[1] ||
+                product.images[0] ||
+                "/assets/product-placeholder.png",
+            },
+          ];
+        } else {
+          updated = prev;
+        }
+      }
+      return updated;
+    });
+  };
+
   const handleAddToCart = (product) => {
     addProductToSelection(product, 1);
     console.log("Product added to selection:", product);
@@ -577,9 +620,14 @@ export default function Products() {
                           />
                         </svg>
                       </button>
-                      <span className="p-quantity">
-                        {getProductQuantity(product.productId)}
-                      </span>
+                      <input
+                        className="p-quantity"
+                        type="number"
+                        value={getProductQuantity(product.productId)}
+                        onChange={(e) =>
+                          setProductQuantity(product, e.target.value)
+                        }
+                      />
                       <button
                         className="p-quantity-btn"
                         onClick={() => addProductToSelection(product, 1)}
@@ -707,9 +755,14 @@ export default function Products() {
                           />
                         </svg>
                       </button>
-                      <span className="quantity">
-                        {getProductQuantity(variant.productId)}
-                      </span>
+                      <input
+                        className="p-quantity"
+                        type="number"
+                        value={getProductQuantity(variant.productId)}
+                        onChange={(e) =>
+                          setProductQuantity(variant, e.target.value)
+                        }
+                      />
                       <button
                         className="p-quantity-btn"
                         onClick={() => addProductToSelection(variant, 1)}
