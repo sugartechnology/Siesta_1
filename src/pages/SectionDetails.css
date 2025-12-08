@@ -502,7 +502,6 @@
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  align-self: flex-start;
   min-width: 199px;
   text-align: center;
 }
