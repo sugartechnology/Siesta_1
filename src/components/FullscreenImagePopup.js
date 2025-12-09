@@ -61,14 +61,48 @@ const FullscreenImagePopup = ({
     }
   };
 
-  const handleDownload = () => {
-    const link = document.createElement("a");
-    link.href = currentImageUrl; // آدرس مستقیم عکس
-    link.download = `image-${Date.now()}.jpg`; // نام فایل برای دانلود
-    link.target = "_blank"; // احتیاط: باز کردن در تب جدید
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleDownload = async () => {
+
+    try {
+
+      const response = await fetch(currentImageUrl);
+
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+
+
+      const blob = await response.blob();
+
+      const url = window.URL.createObjectURL(blob);
+
+
+
+      const link = document.createElement("a");
+
+      link.href = url;
+
+      link.download = `image-${currentIndex + 1}-${Date.now()}.jpg`;
+
+      document.body.appendChild(link);
+
+      link.click();
+
+      document.body.removeChild(link);
+
+
+
+      // Clean up the object URL
+
+      window.URL.revokeObjectURL(url);
+
+    } catch (error) {
+
+      console.error("Download failed:", error);
+
+      alert("Failed to download image. Please try again.");
+
+    }
+
   };
 
   // Pinch zoom for touch devices
