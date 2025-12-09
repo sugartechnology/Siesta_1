@@ -61,15 +61,23 @@ const FullscreenImagePopup = ({
     }
   };
 
-  const handleDownload = () => {
+  const handleDownload = async () => {
     try {
-      // ساده‌ترین روش: مستقیم از img tag دانلود کن
+      const response = await fetch(currentImageUrl);
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
       const link = document.createElement("a");
-      link.href = currentImageUrl;
+      link.href = url;
       link.download = `image-${currentIndex + 1}-${Date.now()}.jpg`;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+
+      // Clean up the object URL
+      window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error("Download failed:", error);
       alert("Failed to download image. Please try again.");
