@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   addProductToSection,
@@ -84,6 +84,20 @@ const SectionDetails = () => {
   const [projectDetails, setProjectDetails] = useState();
   const [isFullscreenPopupVisible, setIsFullscreenPopupVisible] =
     useState(false);
+
+  // useCallback to ensure handler is stable
+  const handleImageClick = useCallback(() => {
+    console.log("handleImageClick called, setting to true");
+    setIsFullscreenPopupVisible(prevState => {
+      console.log("State setter called, prev state:", prevState, "new state: true");
+      return true;
+    });
+  }, []);
+
+  // Monitor state changes
+  useEffect(() => {
+    console.log("isFullscreenPopupVisible changed to:", isFullscreenPopupVisible);
+  }, [isFullscreenPopupVisible]);
 
   const callInterval = () => {
     clearTimeout(pollRef.current);
@@ -640,10 +654,7 @@ const SectionDetails = () => {
               src={getResultImageUrl(section) || "/assets/logo_big.png"}
               alt="Last Generated"
               className="info-thumbnail clickable-image"
-              onClick={() => {
-                setIsFullscreenPopupVisible(true);
-                console.log("Fullscreen image clicked");
-              }}
+              onClick={handleImageClick}
               onError={(e) => {
                 console.log("Last generated image error:", e.target.src);
                 e.target.src = "/assets/logo_big.png";
@@ -682,7 +693,7 @@ const SectionDetails = () => {
             .sort((a, b) => b.createdDate - a.createdDate)
             .map((design) => design.resultImageUrl) || []),
         ].filter(Boolean)} // Remove null/undefined values
-        initialIndex={1} // Start with result image (index 1)
+        initialIndex={0} // Start with first image (index 0)
         isVisible={isFullscreenPopupVisible}
         onClose={() => setIsFullscreenPopupVisible(false)}
       />
