@@ -199,9 +199,11 @@ export const deleteSection = async (sectionId) => {
 };
 
 // Generate AI design for section
-export const generateDesignForSection = async (sectionId) => {
+export const generateDesignForSection = async (sectionId, prompt) => {
   const endpoint = `${process.env.REACT_APP_API_URL}/projects/sections/${sectionId}/generate-design`;
-  return await postData(endpoint, null);
+  const payload = new FormData();
+  payload.append("prompt", prompt);
+  return await postData(endpoint, payload);
 };
 
 // Get products by IDs

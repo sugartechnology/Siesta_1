@@ -273,7 +273,7 @@ const SectionDetails = () => {
 
   const handleRegenerate = () => {
     //console.log("Regenerating design...");
-    generateDesignForSection(section.id).then((response) => {
+    generateDesignForSection(section.id, projectDetails).then((response) => {
       console.log("Response:", response);
       if (!section.design) {
         section.design = { status: "PROCESSING" };
