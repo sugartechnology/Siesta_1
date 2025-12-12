@@ -6,10 +6,11 @@ const FullscreenImagePopup = ({
   images, // Birden fazla resim için array
   initialIndex = 0, // Başlangıç index'i
   isVisible,
-  onClose
+  onClose,
 }) => {
   // images array'i varsa onu kullan, yoksa imageUrl'i array'e çevir
-  const imageArray = images && images.length > 0 ? images : (imageUrl ? [imageUrl] : []);
+  const imageArray =
+    images && images.length > 0 ? images : imageUrl ? [imageUrl] : [];
   const [currentIndex, setCurrentIndex] = useState(initialIndex);
   const [zoomLevel, setZoomLevel] = useState(1); // Zoom state
   const [lastDistance, setLastDistance] = useState(0); // For pinch zoom tracking
@@ -62,47 +63,28 @@ const FullscreenImagePopup = ({
   };
 
   const handleDownload = async () => {
-
     try {
+      if (
+        window.webkit &&
+        window.webkit.messageHandlers &&
+        window.webkit.messageHandlers.downloadImage
+      ) {
+        window.webkit.messageHandlers.downloadImage.postMessage({
+          url: currentImageUrl,
+        });
+      } else {
+        // Fallback: eski yöntem (web tarayıcıda)
 
-      const response = await fetch(currentImageUrl);
-
-      if (!response.ok) throw new Error(`HTTP ${response.status}`);
-
-
-
-      const blob = await response.blob();
-
-      const url = window.URL.createObjectURL(blob);
-
-
-
-      const link = document.createElement("a");
-
-      link.href = url;
-
-      link.download = `image-${currentIndex + 1}-${Date.now()}.jpg`;
-
-      document.body.appendChild(link);
-
-      link.click();
-
-      document.body.removeChild(link);
-
-
-
-      // Clean up the object URL
-
-      window.URL.revokeObjectURL(url);
-
+        const link = document.createElement("a");
+        link.href = currentImageUrl;
+        link.download = `image-${currentIndex + 1}-${Date.now()}.jpg`;
+        link.click();
+      }
     } catch (error) {
-
       console.error("Download failed:", error);
 
       alert("Failed to download image. Please try again.");
-
     }
-
   };
 
   // Pinch zoom for touch devices
@@ -206,17 +188,36 @@ const FullscreenImagePopup = ({
       document.removeEventListener("mouseup", handleMouseUp);
       document.body.style.overflow = "unset";
     };
-  }, [isVisible, imageArray.length, isDragging, dragStartX, dragStartY, offsetX, offsetY, zoomLevel]);
+  }, [
+    isVisible,
+    imageArray.length,
+    isDragging,
+    dragStartX,
+    dragStartY,
+    offsetX,
+    offsetY,
+    zoomLevel,
+  ]);
 
   if (!isVisible || imageArray.length === 0) {
-    console.warn("FullscreenImagePopup: NOT RENDERING - isVisible =", isVisible, "imageArray.length =", imageArray.length);
+    console.warn(
+      "FullscreenImagePopup: NOT RENDERING - isVisible =",
+      isVisible,
+      "imageArray.length =",
+      imageArray.length
+    );
     return null;
   }
 
   const currentImageUrl = imageArray[currentIndex] || "/assets/logo_big.png";
   const hasMultipleImages = imageArray.length > 1;
 
-  console.log("FullscreenImagePopup: RENDERING MODAL - isVisible =", isVisible, "URL =", currentImageUrl);
+  console.log(
+    "FullscreenImagePopup: RENDERING MODAL - isVisible =",
+    isVisible,
+    "URL =",
+    currentImageUrl
+  );
 
   return (
     <div className="fullscreen-popup-backdrop" onClick={handleBackdropClick}>
@@ -297,8 +298,9 @@ const FullscreenImagePopup = ({
             className="fullscreen-popup-image"
             style={{
               transform: `scale(${zoomLevel}) translate(${offsetX}px, ${offsetY}px)`,
-              transition: isDragging ? 'none' : 'transform 0.1s ease-out',
-              cursor: zoomLevel > 1 ? (isDragging ? 'grabbing' : 'grab') : 'pointer',
+              transition: isDragging ? "none" : "transform 0.1s ease-out",
+              cursor:
+                zoomLevel > 1 ? (isDragging ? "grabbing" : "grab") : "pointer",
             }}
             onError={(e) => {
               console.log("Fullscreen image error:", e.target.src);
@@ -317,7 +319,16 @@ const FullscreenImagePopup = ({
             aria-label="Download image"
             title="Download this image"
           >
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+            <svg
+              width="24"
+              height="24"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="white"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
               <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
               <polyline points="7 10 12 15 17 10"></polyline>
               <line x1="12" y1="15" x2="12" y2="3"></line>
