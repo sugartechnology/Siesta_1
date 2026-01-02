@@ -25,6 +25,8 @@ const Login = () => {
     password: "",
     rePassword: "",
   });
+  const [registerLoading, setRegisterLoading] = useState(false);
+  const [registerSuccess, setRegisterSuccess] = useState(false);
 
   const imgLogo = "/assets/logo_big.png";
   const imgBackground = "/assets/login_background.jpg";
@@ -50,6 +52,7 @@ const Login = () => {
     auth
       .login(loginUsername, loginPassword)
       .then(() => {
+        console.log("Login successful");
         navigate("/home");
       })
       .catch((error) => {
@@ -63,7 +66,7 @@ const Login = () => {
     return emailRegex.test(email);
   };
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
 
     // Reset errors
@@ -113,17 +116,36 @@ const Login = () => {
     }
 
     setRegisterErrors(errors);
+    setRegisterSuccess(false);
 
     if (!hasError) {
-      // Registration successful - switch to login form
-      alert("Registration successful! Please login with your credentials.");
-      setIsLogin(true);
-      // Clear register form
-      setRegisterName("");
-      setRegisterEmail("");
-      setRegisterPassword("");
-      setRegisterRePassword("");
-      setRegisterErrors({ name: "", email: "", password: "", rePassword: "" });
+      setRegisterLoading(true);
+      try {
+        await auth.register(registerName, registerEmail, registerPassword);
+        setRegisterSuccess(true);
+        // Clear register form
+        setRegisterName("");
+        setRegisterEmail("");
+        setRegisterPassword("");
+        setRegisterRePassword("");
+        setRegisterErrors({ name: "", email: "", password: "", rePassword: "" });
+        
+        // Show success message and switch to login after 2 seconds
+        setTimeout(() => {
+          setIsLogin(true);
+          setRegisterSuccess(false);
+        }, 2000);
+      } catch (error) {
+        console.error("Registration error:", error);
+        setRegisterErrors({
+          name: "",
+          email: error.message || "Kayıt başarısız. Lütfen tekrar deneyin.",
+          password: "",
+          rePassword: "",
+        });
+      } finally {
+        setRegisterLoading(false);
+      }
     }
   };
 
@@ -221,6 +243,11 @@ const Login = () => {
           ) : (
             // REGISTER FORM
             <form onSubmit={handleRegister} className="login-form">
+              {registerSuccess && (
+                <div className="success-message">
+                  Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...
+                </div>
+              )}
               {/* Name Field */}
               <div className="input-group">
                 <label className="input-label">Full Name</label>
@@ -292,8 +319,12 @@ const Login = () => {
               </div>
 
               {/* Sign Up Button */}
-              <button type="submit" className="sign-in-btn">
-                Sign Up
+              <button 
+                type="submit" 
+                className="sign-in-btn"
+                disabled={registerLoading}
+              >
+                {registerLoading ? "Kaydediliyor..." : "Sign Up"}
               </button>
             </form>
           )}

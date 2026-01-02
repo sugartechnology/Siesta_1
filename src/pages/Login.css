@@ -312,6 +312,18 @@ input[type="text"] {
   text-align: center;
 }
 
+.success-message {
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 400;
+  color: #065f46;
+  background: rgba(209, 250, 229, 0.3);
+  padding: 10px 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+  text-align: center;
+}
+
 .field-error {
   font-family: "Poppins", sans-serif;
   font-size: 13px;

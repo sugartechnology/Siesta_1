@@ -4,6 +4,7 @@ import { AuthProvider } from "./auth/AuthProvider";
 import { useAuth } from "./auth/useAuth";
 import TopMenu from "./components/TopMenu";
 import BottomMenu from "./components/BottomMenu";
+import AccountSettings from "./pages/AccountSettings";
 import Camera from "./pages/Camera";
 import Catalog from "./pages/Catalog";
 import Home from "./pages/Home";
@@ -70,6 +71,7 @@ function AppRoutes() {
     { path: "/camera", element: <Camera /> },
     { path: "/photograph", element: <Photograph /> },
     { path: "/room-type", element: <RoomType /> },
+    { path: "/account-settings", element: <AccountSettings /> },
   ];
 
   return (

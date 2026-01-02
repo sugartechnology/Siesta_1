@@ -11,6 +11,39 @@ export const loginUser = async (email, password) => {
   return await postData(endpoint, payload);
 };
 
+// ===== USER MANAGEMENT API =====
+
+// Register user
+export const registerUser = async (name, email, password) => {
+  const endpoint = `${process.env.REACT_APP_API_URL}/auth/register`;
+  const payload = { name, email, password };
+  return await postData(endpoint, payload);
+};
+
+// Get current user profile
+export const getCurrentUser = async () => {
+  const endpoint = `${process.env.REACT_APP_API_URL}/user/me`;
+  return await fetchData(endpoint);
+};
+
+// Update user profile
+export const updateUserProfile = async (userData) => {
+  const endpoint = `${process.env.REACT_APP_API_URL}/user/me`;
+  return await postData(endpoint, userData, undefined, "PUT");
+};
+
+// Suspend user account
+export const suspendUserAccount = async () => {
+  const endpoint = `${process.env.REACT_APP_API_URL}/user/suspend`;
+  return await postData(endpoint, null, undefined, "POST");
+};
+
+// Reactivate user account
+export const reactivateUserAccount = async () => {
+  const endpoint = `${process.env.REACT_APP_API_URL}/user/reactivate`;
+  return await postData(endpoint, null, undefined, "POST");
+};
+
 export const fetchProducts = async (
   defaultFilters,
   filter = undefined,

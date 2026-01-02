@@ -62,6 +62,28 @@ export function AuthProvider({ children }) {
     });
   }
 
+  async function register(name, email, password) {
+    const postData = {
+      name: name,
+      email: email,
+      password: password,
+    };
+    const res = await fetch(API_URL + "/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(postData),
+      credentials: "include",
+    });
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.message || "Kayıt başarısız");
+    }
+    const data = await res.json();
+    return data;
+  }
+
   async function logout() {
     /*fetch(API_URL + "/auth/logout", {
       method: "POST",
@@ -72,7 +94,14 @@ export function AuthProvider({ children }) {
     navigate("/login");
   }
 
-  const value = { user, loading, login, logout, isAuthenticated: !!user };
+  const value = {
+    user,
+    loading,
+    login,
+    logout,
+    register,
+    isAuthenticated: !!user,
+  };
 
   return (
     <AuthContext.Provider value={value}>
