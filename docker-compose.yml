@@ -1,0 +1,14 @@
+version: "3.8"
+
+services:
+  siesta-app:
+    build: .
+    ports:
+      - "7764:7764"
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:7764"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
