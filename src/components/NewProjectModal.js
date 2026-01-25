@@ -3,8 +3,10 @@ import { IMaskInput } from "react-imask";
 import LocationMapModal from "./LocationMapModal";
 import { createProject } from "../api/Api";
 import "./NewProjectModal.css";
+import { useTranslation } from "react-i18next";
 
 export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
+  const { t } = useTranslation();
   const [formData, setFormData] = useState({
     projectName: "",
     sectionName: "",
@@ -149,7 +151,7 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
       <div className="modal-backdrop" onClick={handleCancel} />
       <div className="new-project-modal">
         <div className="new-modal-header">
-          <h2>New Project</h2>
+          <h2>{t('newProjectModal.title')}</h2>
           <button className="close-btn" onClick={handleCancel}>
             <svg width="21" height="21" viewBox="0 0 21 21" fill="none">
               <path
@@ -166,28 +168,28 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
         <form onSubmit={handleSubmit} className="modal-form">
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="projectName">Project Name</label>
+              <label htmlFor="projectName">{t('newProjectModal.projectName')}</label>
               <input
                 type="text"
                 id="projectName"
                 name="projectName"
                 value={formData.projectName}
                 onChange={handleInputChange}
-                placeholder="Enter project name"
+                placeholder={t('newProjectModal.projectNamePlaceholder')}
                 required
               />
             </div>
 
             <div className="form-group">
 
-              <label htmlFor="sectionName">Section Name</label>
+              <label htmlFor="sectionName">{t('newProjectModal.sectionName')}</label>
               <input
                 type="text"
                 id="sectionName"
                 name="sectionName"
                 value={formData.sectionName}
                 onChange={handleInputChange}
-                placeholder="Enter section name"
+                placeholder={t('newProjectModal.sectionNamePlaceholder')}
                 required
               />
             </div>
@@ -195,7 +197,7 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
 
           <div className="form-row">
             <div className="form-group phone-group">
-              <label>Phone Number</label>
+              <label>{t('newProjectModal.phoneNumber')}</label>
               <div className="phone-input-container">
                 <select
                   name="countryCode"
@@ -225,13 +227,13 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="additionalInfo">Additional Info</label>
+              <label htmlFor="additionalInfo">{t('newProjectModal.additionalInfo')}</label>
               <textarea
                 id="additionalInfo"
                 name="additionalInfo"
                 value={formData.additionalInfo}
                 onChange={handleInputChange}
-                placeholder="Enter additional information about the project..."
+                placeholder={t('newProjectModal.additionalInfoPlaceholder')}
                 rows="4"
               />
             </div>
@@ -246,14 +248,14 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
               onClick={handleCancel}
               disabled={isSubmitting}
             >
-              Cancel
+              {t('newProjectModal.cancel')}
             </button>
             <button
               type="submit"
               className="submit-btn"
               disabled={isSubmitting}
             >
-              {isSubmitting ? "Creating..." : "Create Project"}
+              {isSubmitting ? t('newProjectModal.creating') : t('newProjectModal.create')}
             </button>
           </div>
         </form>

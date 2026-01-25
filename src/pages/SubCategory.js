@@ -1,6 +1,7 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { startNewSectionFlow, categoriesMap } from "../utils/NavigationState";
 import "./SubCategory.css";
+import { useTranslation } from "react-i18next";
 
 const extractPath = (category, subCategory) => {
   return `/products?category=${encodeURIComponent(
@@ -10,6 +11,7 @@ const extractPath = (category, subCategory) => {
 
 export default function SubCategory() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
   const category = searchParams.get("category");
 
@@ -31,9 +33,8 @@ export default function SubCategory() {
         >
           <div className="sub-category-overlay"></div>
           <p
-            className={`sub-category-name ${
-              subCategory.multiline ? "multiline" : ""
-            }`}
+            className={`sub-category-name ${subCategory.multiline ? "multiline" : ""
+              }`}
           >
             {subCategory.name}
           </p>

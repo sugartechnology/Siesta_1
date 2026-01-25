@@ -1,8 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import "./Home.css";
+import { useTranslation } from "react-i18next";
 
 export default function Home() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   return (
     <div className="hero-section">
@@ -18,14 +20,13 @@ export default function Home() {
         </div>
         <div className="hero-content">
           <h2 className="hero-title">
-            Her Parçada Zarafet, Her Dokunuşta Siesta İmzası
+            {t('home.catalogTitle')}
           </h2>
           <p className="hero-description">
-            Tüm Siesta ürünlerini tek bir yerde keşfedin. Detaylı inceleyin,
-            favorilerinizi seçin.
+            {t('home.catalogDesc')}
           </p>
           <button className="hero-button" onClick={() => navigate("/catalog")}>
-            Catalog
+            {t('home.catalogBtn')}
           </button>
         </div>
       </div>
@@ -42,14 +43,13 @@ export default function Home() {
         </div>
         <div className="hero-content">
           <h2 className="hero-title">
-            Ürünleri Mekânlarınıza Taşıyın, Hayalinizi Çizgiye Sığdırmayın
+            {t('home.projectsTitle')}
           </h2>
           <p className="hero-description">
-            Yeni projeler başlatın, eskilerini yönetin ve yapay zekâ ile
-            sahnelerinizi tasarlayın.
+            {t('home.projectsDesc')}
           </p>
           <button className="hero-button" onClick={() => navigate("/projects")}>
-            Projects
+            {t('home.projectsBtn')}
           </button>
         </div>
       </div>

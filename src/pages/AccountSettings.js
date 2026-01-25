@@ -8,10 +8,12 @@ import {
   reactivateUserAccount,
 } from "../api/Api";
 import "./AccountSettings.css";
+import { useTranslation } from "react-i18next";
 
 const AccountSettings = () => {
   const navigate = useNavigate();
   const auth = useAuth();
+  const { t } = useTranslation();
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -42,7 +44,7 @@ const AccountSettings = () => {
       setIsSuspended(userData.suspended || false);
     } catch (error) {
       console.error("Error loading user data:", error);
-      setError("Failed to load user information");
+      setError(t('accountSettings.loadError'));
     } finally {
       setLoading(false);
     }
@@ -64,11 +66,11 @@ const AccountSettings = () => {
 
     try {
       await updateUserProfile(formData);
-      setSuccess("Profile updated successfully");
+      setSuccess(t('accountSettings.updateSuccess'));
       await loadUserData();
     } catch (error) {
       console.error("Error updating profile:", error);
-      setError("Failed to update profile");
+      setError(t('accountSettings.updateError'));
     } finally {
       setSaving(false);
     }
@@ -77,7 +79,7 @@ const AccountSettings = () => {
   const handleSuspendAccount = async () => {
     if (
       !window.confirm(
-        "Are you sure you want to suspend your account? You will not be able to log in after suspension."
+        t('accountSettings.suspendConfirm')
       )
     ) {
       return;
@@ -87,14 +89,14 @@ const AccountSettings = () => {
       setSaving(true);
       await suspendUserAccount();
       setIsSuspended(true);
-      setSuccess("Your account has been suspended");
+      setSuccess(t('accountSettings.suspendSuccess'));
       // Logout after suspension
       setTimeout(() => {
         auth.logout();
       }, 2000);
     } catch (error) {
       console.error("Error suspending account:", error);
-      setError("Failed to suspend account");
+      setError(t('accountSettings.suspendError'));
     } finally {
       setSaving(false);
     }
@@ -105,11 +107,11 @@ const AccountSettings = () => {
       setSaving(true);
       await reactivateUserAccount();
       setIsSuspended(false);
-      setSuccess("Your account has been reactivated");
+      setSuccess(t('accountSettings.reactivateSuccess'));
       await loadUserData();
     } catch (error) {
       console.error("Error reactivating account:", error);
-      setError("Failed to reactivate account");
+      setError(t('accountSettings.reactivateError'));
     } finally {
       setSaving(false);
     }
@@ -118,7 +120,7 @@ const AccountSettings = () => {
   if (loading) {
     return (
       <div className="account-settings-container">
-        <div className="loading">Loading...</div>
+        <div className="loading">{t('accountSettings.loading')}</div>
       </div>
     );
   }
@@ -126,7 +128,7 @@ const AccountSettings = () => {
   return (
     <div className="account-settings-container">
       <div className="account-settings-header">
-        <h1>Account Settings</h1>
+        <h1>{t('accountSettings.title')}</h1>
       </div>
 
       <div className="account-settings-content">
@@ -135,7 +137,7 @@ const AccountSettings = () => {
 
         <form onSubmit={handleSave} className="account-form">
           <div className="form-group">
-            <label htmlFor="name" className="input-label">Full Name</label>
+            <label htmlFor="name" className="input-label">{t('accountSettings.fullName')}</label>
             <input
               type="text"
               id="name"
@@ -149,7 +151,7 @@ const AccountSettings = () => {
           </div>
 
           <div className="form-group">
-            <label htmlFor="email" className="input-label">Email</label>
+            <label htmlFor="email" className="input-label">{t('accountSettings.email')}</label>
             <input
               type="email"
               id="email"
@@ -168,23 +170,23 @@ const AccountSettings = () => {
               className="sign-in-btn"
               disabled={isSuspended || saving}
             >
-              {saving ? "Saving..." : "Save"}
+              {saving ? t('accountSettings.saving') : t('accountSettings.save')}
             </button>
           </div>
         </form>
 
         <div className="account-actions">
-          <h2>Account Actions</h2>
-          
+          <h2>{t('accountSettings.actions')}</h2>
+
           {isSuspended ? (
             <div className="suspended-notice">
-              <p>Your account is currently suspended.</p>
+              <p>{t('accountSettings.suspendedNotice')}</p>
               <button
                 className="reactivate-button"
                 onClick={handleReactivateAccount}
                 disabled={saving}
               >
-                Reactivate Account
+                {t('accountSettings.reactivateAccount')}
               </button>
             </div>
           ) : (
@@ -193,7 +195,7 @@ const AccountSettings = () => {
               onClick={handleSuspendAccount}
               disabled={saving}
             >
-              Suspend Account
+              {t('accountSettings.suspendAccount')}
             </button>
           )}
         </div>

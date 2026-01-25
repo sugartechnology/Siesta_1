@@ -1,27 +1,29 @@
 import { useNavigate } from "react-router-dom";
 import "./Catalog.css";
+import { useTranslation } from "react-i18next";
 
 export default function Catalog() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const categories = [
     {
       id: 1,
-      name: "Contract",
+      name: t('catalog.contract'),
       value: "contract",
       image: "/assets/catalog-garden.png",
       path: "/subcategory?category=contract",
     },
     {
       id: 2,
-      name: "Rattan",
+      name: t('catalog.rattan'),
       value: "rattan",
       image: "/assets/catalog-rattan.png",
       path: "/subcategory?category=rattan",
     },
     {
       id: 3,
-      name: "Garden",
+      name: t('catalog.garden'),
       value: "garden",
       image: "/assets/catalog-contract.png",
       path: "/subcategory?category=garden",

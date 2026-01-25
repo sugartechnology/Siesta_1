@@ -9,9 +9,11 @@ import {
 } from "../utils/ImageUtils";
 import { getNextPage, NavigationState } from "../utils/NavigationState";
 import "./Photograph.css";
+import { useTranslation } from "react-i18next";
 
 export default function Photograph() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const project = NavigationState.project || {};
   const capturedImage = NavigationState.image || null;
 
@@ -123,7 +125,7 @@ export default function Photograph() {
                 <button
                   className="control-btn"
                   onClick={handleFlipHorizontal}
-                  title="Flip Horizontal"
+                  title={t('photograph.flipHorizontal')}
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path
@@ -146,7 +148,7 @@ export default function Photograph() {
                 <button
                   className="control-btn"
                   onClick={handleFlipVertical}
-                  title="Flip Vertical"
+                  title={t('photograph.flipVertical')}
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path
@@ -171,7 +173,7 @@ export default function Photograph() {
               {/* Next Button */}
               {capturedImage && (
                 <button className="next-btn-bottom" onClick={handleNext}>
-                  Next
+                  {t('common.next')}
                 </button>
               )}
 
@@ -179,7 +181,7 @@ export default function Photograph() {
                 <button
                   className="control-btn"
                   onClick={handleRotateLeft}
-                  title="Rotate Left"
+                  title={t('photograph.rotateLeft')}
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path
@@ -200,7 +202,7 @@ export default function Photograph() {
                 <button
                   className="control-btn"
                   onClick={handleRotateRight}
-                  title="Rotate Right"
+                  title={t('photograph.rotateRight')}
                 >
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
                     <path
@@ -252,8 +254,8 @@ export default function Photograph() {
                 />
               </svg>
             </div>
-            <h3>No Photo Available</h3>
-            <p>Please go back and select or capture a photo</p>
+            <h3>{t('photograph.noPhoto')}</h3>
+            <p>{t('photograph.goBackDesc')}</p>
             <button className="back-to-camera-btn" onClick={handleRetake}>
               <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                 <path
@@ -269,7 +271,7 @@ export default function Photograph() {
                   strokeWidth="2"
                 />
               </svg>
-              Back to Camera
+              {t('photograph.backToCamera')}
             </button>
           </div>
         )}

@@ -159,7 +159,7 @@
   text-shadow: 2px 2px 8px rgba(0, 0, 0, 0.5);
   letter-spacing: -1px;
   transform: translate(-50%, 50%) rotate(270deg) translate(50%, 50%);
-  width: 400px;
+  width: 300px;
 }
 
 /* Next Button */
@@ -193,8 +193,7 @@
 
 /* Responsive adjustments */
 @media (max-width: 1200px) {
-  .room-types-grid {
-  }
+  .room-types-grid {}
 
   .room-type-card {
     border-radius: 35px;

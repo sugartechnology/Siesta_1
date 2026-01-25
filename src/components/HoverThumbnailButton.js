@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import "./HoverThumbnailButton.css";
 import LoadingSpinner from "./LoadingSpinner";
 import EditableTitle from "./EditableTitle";
+import { useTranslation } from "react-i18next";
 
 const HoverThumbnailButton = ({
   id,
@@ -24,6 +25,7 @@ const HoverThumbnailButton = ({
   titleClassName = "", // EditableTitle için custom className
   ...props
 }) => {
+  const { t } = useTranslation();
   const [hovered, setHovered] = useState(false);
   const [popupPosition, setPopupPosition] = useState({ x: 0, y: 0 });
   const [isPressed, setIsPressed] = useState(false);
@@ -45,7 +47,7 @@ const HoverThumbnailButton = ({
         // Eğer tek action varsa ve requireConfirmation true ise direkt confirmation göster
         if (actions.length === 1 && actions[0].requireConfirmation) {
           setConfirmationDialog({
-            message: actions[0].confirmationMessage || "Are you sure?",
+            message: actions[0].confirmationMessage || t('common.areYouSure'),
             onConfirm: () => {
               actions[0].action();
               setConfirmationDialog(null);
@@ -85,7 +87,7 @@ const HoverThumbnailButton = ({
         if (actions.length === 1 && actions[0].requireConfirmation) {
           const touch = event.touches[0];
           setConfirmationDialog({
-            message: actions[0].confirmationMessage || "Emin misiniz?",
+            message: actions[0].confirmationMessage || t('common.areYouSure'),
             onConfirm: () => {
               actions[0].action();
               setConfirmationDialog(null);
@@ -185,7 +187,7 @@ const HoverThumbnailButton = ({
     if (actionItem.requireConfirmation) {
       setHovered(false); // Action popup'ını kapat
       setConfirmationDialog({
-        message: actionItem.confirmationMessage || "Emin misiniz?",
+        message: actionItem.confirmationMessage || t('common.areYouSure'),
         onConfirm: () => {
           actionItem.action();
           setConfirmationDialog(null);
@@ -206,9 +208,8 @@ const HoverThumbnailButton = ({
     <>
       <div
         id={id}
-        className={`hover-thumbnail-button ${isActive ? "active" : ""} ${
-          isPressed ? "pressed" : ""
-        } ${className}`}
+        className={`hover-thumbnail-button ${isActive ? "active" : ""} ${isPressed ? "pressed" : ""
+          } ${className}`}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
@@ -329,13 +330,13 @@ const HoverThumbnailButton = ({
                   className="hover-thumbnail-confirmation-button cancel"
                   onClick={confirmationDialog.onCancel}
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
                 <button
                   className="hover-thumbnail-confirmation-button confirm"
                   onClick={confirmationDialog.onConfirm}
                 >
-                  Confirm
+                  {t('common.confirm')}
                 </button>
               </div>
             </div>

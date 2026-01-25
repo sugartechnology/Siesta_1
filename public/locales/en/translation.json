@@ -1,0 +1,156 @@
+{
+  "welcome": "Welcome",
+  "nav": {
+    "home": "Home",
+    "collections": "Collections",
+    "projects": "Projects",
+    "accountSettings": "Account Settings",
+    "logout": "Logout"
+  },
+  "common": {
+    "areYouSure": "Are you sure?",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "next": "Next",
+    "loading": "Loading..."
+  },
+  "home": {
+    "catalogTitle": "Elegance in Every Piece, Siesta Signature in Every Touch",
+    "catalogDesc": "Discover all Siesta products in one place. Examine in detail, choose your favorites.",
+    "catalogBtn": "Catalog",
+    "projectsTitle": "Bring Products to Your Spaces, Don't Limit Your Dreams to Lines",
+    "projectsDesc": "Start new projects, manage old ones, and design your scenes with AI.",
+    "projectsBtn": "Projects"
+  },
+  "products": {
+    "search": "Search",
+    "viewAll": "View all products",
+    "addToDesign": "Add To Design"
+  },
+  "sectionDetails": {
+    "clickToEdit": "Click to edit",
+    "loading": "Loading...",
+    "addNewSection": "Add New Section",
+    "addNewProduct": "Add new product",
+    "referenceImage": "Reference Image",
+    "referenceImageDesc": "The photo you uploaded to begin your project.",
+    "change": "Change",
+    "roomTypeDesc": "The room type you selected for the project.",
+    "promptPlaceholder": "Enter any custom information ...",
+    "lastGenerated": "Last Generated",
+    "lastGeneratedDesc": "Preview of your most recently generated design.",
+    "regenerate": "Regenerate",
+    "generate": "Generate"
+  },
+  "catalog": {
+    "contract": "Contract",
+    "rattan": "Rattan",
+    "garden": "Garden"
+  },
+  "projects": {
+    "newProject": "New Project",
+    "create": "Create",
+    "recentProjects": "Recent Projects",
+    "projectsPage": "Projects page",
+    "loading": "Loading projects...",
+    "noProjects": "No projects found. Create your first project!",
+    "sections": "sections",
+    "remove": "Remove",
+    "removeConfirm": "Are you sure you want to remove?",
+    "noResults": "No projects found",
+    "trySearchAgain": "Try searching with a different keyword"
+  },
+  "login": {
+    "welcomeSubtitle": "Welcome to",
+    "signInToContinue": "Sign in to continue",
+    "createYourAccount": "Create your account",
+    "username": "Username",
+    "password": "Password",
+    "forgotPassword": "Forgot password?",
+    "signIn": "Sign In",
+    "fullName": "Full Name",
+    "email": "Email",
+    "confirmPassword": "Confirm Password",
+    "saving": "Saving...",
+    "signUp": "Sign Up",
+    "or": "or",
+    "with": "with",
+    "signInLowerCase": "sign in",
+    "signUpLowerCase": "sign up",
+    "dontHaveAccount": "Don't have an account?",
+    "alreadyHaveAccount": "Already have an account?"
+  },
+  "accountSettings": {
+    "loadError": "Failed to load user information",
+    "updateSuccess": "Profile updated successfully",
+    "updateError": "Failed to update profile",
+    "suspendConfirm": "Are you sure you want to suspend your account? You will not be able to log in after suspension.",
+    "suspendSuccess": "Your account has been suspended",
+    "suspendError": "Failed to suspend account",
+    "reactivateSuccess": "Your account has been reactivated",
+    "reactivateError": "Failed to reactivate account",
+    "loading": "Loading...",
+    "title": "Account Settings",
+    "fullName": "Full Name",
+    "email": "Email",
+    "saving": "Saving...",
+    "save": "Save",
+    "actions": "Account Actions",
+    "suspendedNotice": "Your account is currently suspended.",
+    "reactivateAccount": "Reactivate Account",
+    "suspendAccount": "Suspend Account"
+  },
+  "newProjectModal": {
+    "title": "New Project",
+    "projectName": "Project Name",
+    "projectNamePlaceholder": "Enter project name",
+    "sectionName": "Section Name",
+    "sectionNamePlaceholder": "Enter section name",
+    "phoneNumber": "Phone Number",
+    "additionalInfo": "Additional Info",
+    "additionalInfoPlaceholder": "Enter additional information about the project...",
+    "cancel": "Cancel",
+    "create": "Create Project",
+    "creating": "Creating..."
+  },
+  "variantModal": {
+    "title": "Product Variants"
+  },
+  "camera": {
+    "addPhoto": "Add a photo",
+    "addPhotoDesc": "chose or take a photo for start redesign and beautiful your home.",
+    "requestingCamera": "Requesting camera...",
+    "permissionError": "Camera permission denied",
+    "sampleRooms": "Sample Rooms"
+  },
+  "photograph": {
+    "flipHorizontal": "Flip Horizontal",
+    "flipVertical": "Flip Vertical",
+    "rotateLeft": "Rotate Left",
+    "rotateRight": "Rotate Right",
+    "noPhoto": "No Photo Available",
+    "goBackDesc": "Please go back and select or capture a photo",
+    "backToCamera": "Back to Camera"
+  },
+  "projectDetails": {
+    "projectNameDetails": "Project Name Details",
+    "addNewSection": "Add New Section"
+  },
+  "splashScreen": {
+    "designSpacesWith": "Design Spaces With"
+  },
+  "roomTypes": {
+    "1": "Balcony & Terrace",
+    "2": "Garden",
+    "3": "Cafe",
+    "4": "Pool",
+    "6": "Home",
+    "7": "Office",
+    "8": "Event",
+    "9": "Wedding",
+    "10": "Bar & Pub",
+    "11": "Restaurant",
+    "12": "Meeting Room",
+    "13": "Mall & Food Court"
+  }
+}

@@ -7,9 +7,11 @@ import {
   categoriesMap,
 } from "../utils/NavigationState";
 import "./Products.css";
+import { useTranslation } from "react-i18next";
 
 export default function Products() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [searchParams, setSearchParams] = useSearchParams();
   const [showVariantModal, setShowVariantModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
@@ -482,7 +484,7 @@ export default function Products() {
               </svg>
               <input
                 type="text"
-                placeholder="Search"
+                placeholder={t('products.search')}
                 onChange={(e) => {
                   const newState = {
                     ...filterState,
@@ -682,10 +684,10 @@ export default function Products() {
           >
             {" "}
           </div>
-          <button className="view-all-btn">View all products</button>
+          <button className="view-all-btn">{t('products.viewAll')}</button>
         </div>
         <button className="generate-design-btn" onClick={handleGenerateDesign}>
-          Add To Design
+          {t('products.addToDesign')}
         </button>
       </div>
 
@@ -792,7 +794,7 @@ export default function Products() {
               className="add-to-design-btn"
               onClick={() => setShowVariantModal(false)}
             >
-              Add to Design
+              {t('products.addToDesign')}
             </button>
           </div>
         </>

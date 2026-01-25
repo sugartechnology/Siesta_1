@@ -3,9 +3,11 @@ import { useNavigate } from "react-router-dom";
 import { getUserProjects, removeProject } from "../api/Api";
 import HoverThumbnailButton from "../components/HoverThumbnailButton";
 import "./ProjectsList.css";
+import { useTranslation } from "react-i18next";
 
 const ProjectsList = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [projects, setProjects] = useState([]);
@@ -61,7 +63,7 @@ const ProjectsList = () => {
           </svg>
           <input
             type="text"
-            placeholder="Search"
+            placeholder={t('products.search')}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="search-input"
@@ -92,11 +94,11 @@ const ProjectsList = () => {
                   duration={500}
                   actions={[
                     {
-                      label: "Remove",
+                      label: t('projects.remove'),
                       action: () => handleRemoveProject(project),
                       icon: "🗑️",
                       requireConfirmation: true,
-                      confirmationMessage: "Are you sure you want to remove?",
+                      confirmationMessage: t('projects.removeConfirm'),
                     },
                   ]}
                   showPopup={false}
@@ -121,8 +123,8 @@ const ProjectsList = () => {
                 strokeLinecap="round"
               />
             </svg>
-            <h3>No projects found</h3>
-            <p>Try searching with a different keyword</p>
+            <h3>{t('projects.noResults')}</h3>
+            <p>{t('projects.trySearchAgain')}</p>
           </div>
         )}
       </div>

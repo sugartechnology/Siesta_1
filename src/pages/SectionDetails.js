@@ -31,11 +31,13 @@ import {
 } from "../utils/NavigationState";
 import "./SectionDetails.css";
 import SliderComponent from "../components/SliderComponent";
+import { useTranslation } from "react-i18next";
 
 const POLL_INTERVAL = 5000;
 
 const SectionDetails = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const pollRef = useRef(null);
   const [
     isFullscreenLoadingSpinnerVisible,
@@ -396,12 +398,12 @@ const SectionDetails = () => {
           <EditableTitle
             value={project.name}
             onChange={handleProjectTitleChange}
-            placeholder="Click to edit"
+            placeholder={t('sectionDetails.clickToEdit')}
             className="project-title"
             autoFocus={false}
           />
         ) : (
-          "Loading..."
+          t('sectionDetails.loading')
         )}
       </h1>
 
@@ -444,7 +446,7 @@ const SectionDetails = () => {
               />
             </svg>
           </div>
-          <span className="add-section-text">Add New Section</span>
+          <span className="add-section-text">{t('sectionDetails.addNewSection')}</span>
         </div>
       </div>
 
@@ -556,7 +558,7 @@ const SectionDetails = () => {
             ))}
           </div>
           <button className="add-product-btn" onClick={handleAddNewProduct}>
-            Add new product
+            {t('sectionDetails.addNewProduct')}
           </button>
         </div>
 
@@ -578,16 +580,16 @@ const SectionDetails = () => {
               }}
             />
             <div className="info-content">
-              <h3 className="sd-info-title">Reference Image</h3>
+              <h3 className="sd-info-title">{t('sectionDetails.referenceImage')}</h3>
               <p className="sd-info-description">
-                The photo you uploaded to begin your project.
+                {t('sectionDetails.referenceImageDesc')}
               </p>
               <button
                 className="change-btn"
                 onClick={handleChangeReference}
                 disabled={desabled}
               >
-                Change
+                {t('sectionDetails.change')}
               </button>
             </div>
           </div>
@@ -608,7 +610,7 @@ const SectionDetails = () => {
             <div className="info-content-roomtype">
 
               <p className="sd-info-description">
-                The room type you selected for the project.
+                {t('sectionDetails.roomTypeDesc')}
               </p>
               <h3 className="sd-info-title">{roomType?.name}</h3>
               <button
@@ -616,7 +618,7 @@ const SectionDetails = () => {
                 onClick={handleChangeRoomType}
                 disabled={desabled}
               >
-                Change
+                {t('sectionDetails.change')}
               </button>
             </div>
           </div>
@@ -640,7 +642,7 @@ const SectionDetails = () => {
               className="promt-textarea"
               value={projectDetails}
               onChange={(e) => setProjectDetails(e.target.value)}
-              placeholder="Enter any custom information ..."
+              placeholder={t('sectionDetails.promptPlaceholder')}
             />
 
 
@@ -661,9 +663,9 @@ const SectionDetails = () => {
               }}
             />
             <div className="info-content">
-              <h3 className="sd-info-title">Last Generated</h3>
+              <h3 className="sd-info-title">{t('sectionDetails.lastGenerated')}</h3>
               <p className="sd-info-description">
-                Preview of your most recently generated design.
+                {t('sectionDetails.lastGeneratedDesc')}
               </p>
               <button
                 className="change-btn"
@@ -671,8 +673,8 @@ const SectionDetails = () => {
                 disabled={desabled}
               >
                 {section.design && section.design.resultImageUrl
-                  ? "Regenerate"
-                  : "Generate"}
+                  ? t('sectionDetails.regenerate')
+                  : t('sectionDetails.generate')}
               </button>
             </div>
           </div>

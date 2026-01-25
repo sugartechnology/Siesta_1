@@ -2,9 +2,11 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import { useAuth } from "../auth/useAuth";
+import { useTranslation } from "react-i18next";
 
 const Login = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true); // Toggle between login and register
 
   // Login form state
@@ -129,7 +131,7 @@ const Login = () => {
         setRegisterPassword("");
         setRegisterRePassword("");
         setRegisterErrors({ name: "", email: "", password: "", rePassword: "" });
-        
+
         // Show success message and switch to login after 2 seconds
         setTimeout(() => {
           setIsLogin(true);
@@ -190,13 +192,13 @@ const Login = () => {
  */}
         {/* Welcome Text */}
         <div className="login-welcome-text">
-          <h2 className="welcome-subtitle">Welcome to</h2>
+          <h2 className="welcome-subtitle">{t('login.welcomeSubtitle')}</h2>
           <h1 className="welcome-title">SiestaAI</h1>
         </div>
 
         {/* Sign in to continue - Moved outside card */}
         <h3 className="login-page-title">
-          {isLogin ? "Sign in to continue" : "Create your account"}
+          {isLogin ? t('login.signInToContinue') : t('login.createYourAccount')}
         </h3>
 
         {/* Login/Register Form Card */}
@@ -208,7 +210,7 @@ const Login = () => {
 
               {/* Username Field */}
               <div className="input-group">
-                <label className="input-label">Username</label>
+                <label className="input-label">{t('login.username')}</label>
                 <input
                   type="text"
                   value={loginUsername}
@@ -220,7 +222,7 @@ const Login = () => {
 
               {/* Password Field */}
               <div className="input-group">
-                <label className="input-label">Password</label>
+                <label className="input-label">{t('login.password')}</label>
                 <input
                   type="password"
                   value={loginPassword}
@@ -232,12 +234,12 @@ const Login = () => {
 
               {/* Forgot Password */}
               <button type="button" className="forgot-password-btn">
-                Forgot password?
+                {t('login.forgotPassword')}
               </button>
 
               {/* Sign In Button */}
               <button type="submit" className="sign-in-btn">
-                Sign In
+                {t('login.signIn')}
               </button>
             </form>
           ) : (
@@ -250,15 +252,14 @@ const Login = () => {
               )}
               {/* Name Field */}
               <div className="input-group">
-                <label className="input-label">Full Name</label>
+                <label className="input-label">{t('login.fullName')}</label>
                 <input
                   type="text"
                   value={registerName}
                   onChange={(e) => setRegisterName(e.target.value)}
                   placeholder="John Doe"
-                  className={`input-field ${
-                    registerErrors.name ? "input-error" : ""
-                  }`}
+                  className={`input-field ${registerErrors.name ? "input-error" : ""
+                    }`}
                 />
                 {registerErrors.name && (
                   <span className="field-error">{registerErrors.name}</span>
@@ -267,15 +268,14 @@ const Login = () => {
 
               {/* Email Field */}
               <div className="input-group">
-                <label className="input-label">Email</label>
+                <label className="input-label">{t('login.email')}</label>
                 <input
                   type="email"
                   value={registerEmail}
                   onChange={(e) => setRegisterEmail(e.target.value)}
                   placeholder="johndoe@mail.com"
-                  className={`input-field ${
-                    registerErrors.email ? "input-error" : ""
-                  }`}
+                  className={`input-field ${registerErrors.email ? "input-error" : ""
+                    }`}
                 />
                 {registerErrors.email && (
                   <span className="field-error">{registerErrors.email}</span>
@@ -284,15 +284,14 @@ const Login = () => {
 
               {/* Password Field */}
               <div className="input-group">
-                <label className="input-label">Password</label>
+                <label className="input-label">{t('login.password')}</label>
                 <input
                   type="password"
                   value={registerPassword}
                   onChange={(e) => setRegisterPassword(e.target.value)}
                   placeholder="•••••••••"
-                  className={`input-field ${
-                    registerErrors.password ? "input-error" : ""
-                  }`}
+                  className={`input-field ${registerErrors.password ? "input-error" : ""
+                    }`}
                 />
                 {registerErrors.password && (
                   <span className="field-error">{registerErrors.password}</span>
@@ -301,15 +300,14 @@ const Login = () => {
 
               {/* Re-Password Field */}
               <div className="input-group">
-                <label className="input-label">Confirm Password</label>
+                <label className="input-label">{t('login.confirmPassword')}</label>
                 <input
                   type="password"
                   value={registerRePassword}
                   onChange={(e) => setRegisterRePassword(e.target.value)}
                   placeholder="•••••••••"
-                  className={`input-field ${
-                    registerErrors.rePassword ? "input-error" : ""
-                  }`}
+                  className={`input-field ${registerErrors.rePassword ? "input-error" : ""
+                    }`}
                 />
                 {registerErrors.rePassword && (
                   <span className="field-error">
@@ -319,12 +317,12 @@ const Login = () => {
               </div>
 
               {/* Sign Up Button */}
-              <button 
-                type="submit" 
+              <button
+                type="submit"
                 className="sign-in-btn"
                 disabled={registerLoading}
               >
-                {registerLoading ? "Kaydediliyor..." : "Sign Up"}
+                {registerLoading ? t('login.saving') : t('login.signUp')}
               </button>
             </form>
           )}
@@ -333,7 +331,7 @@ const Login = () => {
           <div className="social-divider">
             <div className="divider-line"></div>
             <span className="divider-text">
-              or {isLogin ? "Sign in" : "Sign up"} with
+              {t('login.or')} {isLogin ? t('login.signInLowerCase') : t('login.signUpLowerCase')} {t('login.with')}
             </span>
             <div className="divider-line"></div>
           </div>
@@ -354,16 +352,16 @@ const Login = () => {
           {/* Toggle between Login and Register */}
           {isLogin ? (
             <div className="signup-link">
-              Don't have an account?{" "}
+              {t('login.dontHaveAccount')}{" "}
               <span className="signup-link-text" onClick={switchToRegister}>
-                Sign Up
+                {t('login.signUp')}
               </span>
             </div>
           ) : (
             <div className="signup-link">
-              Already have an account?{" "}
+              {t('login.alreadyHaveAccount')}{" "}
               <span className="signup-link-text" onClick={switchToLogin}>
-                Sign In
+                {t('login.signIn')}
               </span>
             </div>
           )}

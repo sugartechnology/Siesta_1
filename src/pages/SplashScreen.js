@@ -1,9 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./SplashScreen.css";
+import { useTranslation } from "react-i18next";
 
 const SplashScreen = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [slidePosition, setSlidePosition] = useState(0); // Start at 0% (left side)
   const [isDragging, setIsDragging] = useState(false);
   const startX = useRef(0);
@@ -140,7 +142,7 @@ const SplashScreen = () => {
 
           {/* Text Overlay on Left */}
           <div className="splash-text-overlay">
-            <h2 className="splash-heading">Design Spaces With</h2>
+            <h2 className="splash-heading">{t('splashScreen.designSpacesWith')}</h2>
             <h1 className="splash-brand-name">Siesta AI</h1>
           </div>
         </div>

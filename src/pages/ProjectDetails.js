@@ -8,9 +8,11 @@ import {
   startExistingSectionFlow,
   getNextPage,
 } from "../utils/NavigationState";
+import { useTranslation } from "react-i18next";
 
 const ProjectDetails = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const { id } = useParams();
   const [project, setProject] = useState(null);
 
@@ -68,7 +70,7 @@ const ProjectDetails = () => {
             autoFocus={false}
           />
         ) : (
-          "Loading..."
+          t('common.loading')
         )}
       </h1>
 
@@ -145,12 +147,12 @@ const ProjectDetails = () => {
       {/* Project Details and Add New Section */}
       <div className="bottom-section">
         <div className="project-info-card">
-          <h2 className="info-title">Project Name Details</h2>
+          <h2 className="info-title">{t('projectDetails.projectNameDetails')}</h2>
           <p className="info-description">
-            {project ? project.details : "Loading..."}
+            {project ? project.details : t('common.loading')}
           </p>
           <p className="info-phone">
-            {project ? project.mobilePhone : "Loading..."}
+            {project ? project.mobilePhone : t('common.loading')}
           </p>
         </div>
 
@@ -176,7 +178,7 @@ const ProjectDetails = () => {
                 />
               </svg>
             </div>
-            <h3 className="pd-add-section-text">Add New Section</h3>
+            <h3 className="pd-add-section-text">{t('projectDetails.addNewSection')}</h3>
           </div>
         </div>
       </div>

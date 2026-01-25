@@ -1,0 +1,156 @@
+{
+  "welcome": "Hoşgeldiniz",
+  "nav": {
+    "home": "Anasayfa",
+    "collections": "Koleksiyonlar",
+    "projects": "Projeler",
+    "accountSettings": "Hesap Ayarları",
+    "logout": "Çıkış Yap"
+  },
+  "common": {
+    "areYouSure": "Emin misiniz?",
+    "cancel": "İptal",
+    "confirm": "Onayla",
+    "next": "İleri",
+    "loading": "Yükleniyor..."
+  },
+  "home": {
+    "catalogTitle": "Her Parçada Zarafet, Her Dokunuşta Siesta İmzası",
+    "catalogDesc": "Tüm Siesta ürünlerini tek bir yerde keşfedin. Detaylı inceleyin, favorilerinizi seçin.",
+    "catalogBtn": "Katalog",
+    "projectsTitle": "Ürünleri Mekânlarınıza Taşıyın, Hayalinizi Çizgiye Sığdırmayın",
+    "projectsDesc": "Yeni projeler başlatın, eskilerini yönetin ve yapay zekâ ile sahnelerinizi tasarlayın.",
+    "projectsBtn": "Projeler"
+  },
+  "products": {
+    "search": "Ara",
+    "viewAll": "Tüm ürünleri gör",
+    "addToDesign": "Tasarıma Ekle"
+  },
+  "sectionDetails": {
+    "clickToEdit": "Düzenlemek için tıklayın",
+    "loading": "Yükleniyor...",
+    "addNewSection": "Yeni Bölüm Ekle",
+    "addNewProduct": "Yeni ürün ekle",
+    "referenceImage": "Referans Görsel",
+    "referenceImageDesc": "Projenize başlamak için yüklediğiniz fotoğraf.",
+    "change": "Değiştir",
+    "roomTypeDesc": "Proje için seçtiğiniz oda tipi.",
+    "promptPlaceholder": "Özel bilgilerinizi buraya girin...",
+    "lastGenerated": "Son Oluşturulan",
+    "lastGeneratedDesc": "En son oluşturulan tasarımınızın önizlemesi.",
+    "regenerate": "Yeniden Oluştur",
+    "generate": "Oluştur"
+  },
+  "catalog": {
+    "contract": "Sözleşme",
+    "rattan": "Rattan",
+    "garden": "Bahçe"
+  },
+  "projects": {
+    "newProject": "Yeni Proje",
+    "create": "Oluştur",
+    "recentProjects": "Son Projeler",
+    "projectsPage": "Projeler Sayfası",
+    "loading": "Projeler yükleniyor...",
+    "noProjects": "Proje bulunamadı. İlk projenizi oluşturun!",
+    "sections": "bölüm",
+    "remove": "Sil",
+    "removeConfirm": "Silmek istediğinizden emin misiniz?",
+    "noResults": "Proje bulunamadı",
+    "trySearchAgain": "Farklı bir kelime ile aramayı deneyin"
+  },
+  "login": {
+    "welcomeSubtitle": "Hoşgeldiniz",
+    "signInToContinue": "Devam etmek için giriş yapın",
+    "createYourAccount": "Hesabınızı oluşturun",
+    "username": "Kullanıcı Adı",
+    "password": "Şifre",
+    "forgotPassword": "Şifrenizi mi unuttunuz?",
+    "signIn": "Giriş Yap",
+    "fullName": "Tam İsim",
+    "email": "E-posta",
+    "confirmPassword": "Şifreyi Onayla",
+    "saving": "Kaydediliyor...",
+    "signUp": "Kayıt Ol",
+    "or": "ya da",
+    "with": "ile",
+    "signInLowerCase": "giriş yap",
+    "signUpLowerCase": "kayıt ol",
+    "dontHaveAccount": "Hesabınız yok mu?",
+    "alreadyHaveAccount": "Zaten hesabınız var mı?"
+  },
+  "accountSettings": {
+    "loadError": "Kullanıcı bilgileri yüklenemedi",
+    "updateSuccess": "Profil başarıyla güncellendi",
+    "updateError": "Profil güncellenemedi",
+    "suspendConfirm": "Hesabınızı askıya almak istediğinizden emin misiniz? Askıya alındıktan sonra giriş yapamazsınız.",
+    "suspendSuccess": "Hesabınız askıya alındı",
+    "suspendError": "Hesap askıya alınamadı",
+    "reactivateSuccess": "Hesabınız yeniden etkinleştirildi",
+    "reactivateError": "Hesap etkinleştirilemedi",
+    "loading": "Yükleniyor...",
+    "title": "Hesap Ayarları",
+    "fullName": "Tam İsim",
+    "email": "E-posta",
+    "saving": "Kaydediliyor...",
+    "save": "Kaydet",
+    "actions": "Hesap İşlemleri",
+    "suspendedNotice": "Hesabınız şu anda askıya alınmış durumda.",
+    "reactivateAccount": "Hesabı Etkinleştir",
+    "suspendAccount": "Hesabı Askıya Al"
+  },
+  "newProjectModal": {
+    "title": "Yeni Proje",
+    "projectName": "Proje Adı",
+    "projectNamePlaceholder": "Proje adını girin",
+    "sectionName": "Bölüm Adı",
+    "sectionNamePlaceholder": "Bölüm adını girin",
+    "phoneNumber": "Telefon Numarası",
+    "additionalInfo": "Ek Bilgi",
+    "additionalInfoPlaceholder": "Proje hakkında ek bilgi girin...",
+    "cancel": "İptal",
+    "create": "Proje Oluştur",
+    "creating": "Oluşturuluyor..."
+  },
+  "variantModal": {
+    "title": "Ürün Varyasyonları"
+  },
+  "camera": {
+    "addPhoto": "Fotoğraf Ekle",
+    "addPhotoDesc": "Evinizi yeniden tasarlamaya başlamak için bir fotoğraf seçin veya çekin.",
+    "requestingCamera": "Kamera izni isteniyor...",
+    "permissionError": "Kameraya erişim izni verilmedi",
+    "sampleRooms": "Örnek Odalar"
+  },
+  "photograph": {
+    "flipHorizontal": "Yatay Çevir",
+    "flipVertical": "Dikey Çevir",
+    "rotateLeft": "Sola Döndür",
+    "rotateRight": "Sağa Döndür",
+    "noPhoto": "Fotoğraf Yok",
+    "goBackDesc": "Lütfen geri gidin ve bir fotoğraf seçin veya çekin",
+    "backToCamera": "Kameraya Dön"
+  },
+  "projectDetails": {
+    "projectNameDetails": "Proje Detayları",
+    "addNewSection": "Yeni Bölüm Ekle"
+  },
+  "splashScreen": {
+    "designSpacesWith": "Mekanları Tasarlayın"
+  },
+  "roomTypes": {
+    "1": "Balkon & Teras",
+    "2": "Bahçe",
+    "3": "Kafe",
+    "4": "Havuz",
+    "6": "Ev",
+    "7": "Ofis",
+    "8": "Etkinlik",
+    "9": "Düğün",
+    "10": "Bar & Pub",
+    "11": "Restoran",
+    "12": "Toplantı Odası",
+    "13": "AVM & Yemek Alanı"
+  }
+}

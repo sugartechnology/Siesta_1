@@ -4,9 +4,11 @@ import { fetchSampleRooms } from "../api/Api";
 import { downloadImageAsBase64 } from "../utils/ImageUtils";
 import { getNextPage, NavigationState } from "../utils/NavigationState";
 import "./Camera.css";
+import { useTranslation } from "react-i18next";
 
 export default function Camera() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const project = NavigationState.project || {};
 
   const [hasPermission, setHasPermission] = useState(null);
@@ -282,9 +284,9 @@ export default function Camera() {
                 />
               </svg>
             </div>
-            <h3 className="placeholder-title">Add a photo</h3>
+            <h3 className="placeholder-title">{t('camera.addPhoto')}</h3>
             <p className="placeholder-description">
-              chose or take a photo for start redesign and beautiful your home.
+              {t('camera.addPhotoDesc')}
             </p>
           </div>
         )}
@@ -292,7 +294,7 @@ export default function Camera() {
         {isRequestingPermission && (
           <div className="camera-loading-box">
             <div className="spinner"></div>
-            <p>Requesting camera...</p>
+            <p>{t('camera.requestingCamera')}</p>
           </div>
         )}
 
@@ -346,7 +348,7 @@ export default function Camera() {
 
         {permissionError && (
           <div className="error-message">
-            <span>{permissionError}</span>
+            <span>{t('camera.permissionError')}</span>
           </div>
         )}
       </div>
@@ -354,7 +356,7 @@ export default function Camera() {
       {/* Sample Rooms Section */}
       <div className="sample-rooms-container"></div>
       <div className="sample-rooms-container sample-rooms-container-absolute">
-        <h3 className="sample-rooms-heading">Sample Rooms</h3>
+        <h3 className="sample-rooms-heading">{t('camera.sampleRooms')}</h3>
         <div className="sample-rooms-scroll">
           {sampleRooms.map((sample) => (
             <div
@@ -373,7 +375,7 @@ export default function Camera() {
           ))}
         </div>
         <button className="skip-btn-bottom" onClick={handleSkip}>
-          Next
+          {t('common.next')}
         </button>
         <input
           ref={fileInputRef}

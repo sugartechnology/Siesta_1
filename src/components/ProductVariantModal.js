@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import './ProductVariantModal.css';
+import { useTranslation } from 'react-i18next';
 
 const ProductVariantModal = ({ product, onClose }) => {
+  const { t } = useTranslation();
   const variants = [
     { id: 1, name: 'Black', image: '/assets/variant-black.png', quantity: 2 },
     { id: 2, name: 'White', image: '/assets/variant-white.png', quantity: 0 },
@@ -29,7 +31,7 @@ const ProductVariantModal = ({ product, onClose }) => {
         <div className="variant-modal" onClick={(e) => e.stopPropagation()}>
           <div className="modal-content">
             <div className="modal-header">
-              <h2 className="modal-title">Portofino Bar 75 Variants</h2>
+              <h2 className="modal-title">{t('variantModal.title')}</h2>
               <button className="close-btn" onClick={onClose}>
                 <img src="/assets/close-icon.svg" alt="Close" />
               </button>
@@ -44,14 +46,14 @@ const ProductVariantModal = ({ product, onClose }) => {
                   <p className="variant-product-name">Portofino Bar 75</p>
                   <p className="variant-name">{variant.name}</p>
                   <div className="quantity-control">
-                    <button 
+                    <button
                       className="qty-btn"
                       onClick={() => decrement(variant.id)}
                     >
                       −
                     </button>
                     <span className="qty-display">{quantities[variant.id]}</span>
-                    <button 
+                    <button
                       className="qty-btn"
                       onClick={() => increment(variant.id)}
                     >
@@ -71,14 +73,14 @@ const ProductVariantModal = ({ product, onClose }) => {
                   <p className="variant-product-name">Portofino Bar 75</p>
                   <p className="variant-name">{variant.name}</p>
                   <div className="quantity-control">
-                    <button 
+                    <button
                       className="qty-btn"
                       onClick={() => decrement(variant.id)}
                     >
                       −
                     </button>
                     <span className="qty-display">{quantities[variant.id]}</span>
-                    <button 
+                    <button
                       className="qty-btn"
                       onClick={() => increment(variant.id)}
                     >
@@ -90,7 +92,7 @@ const ProductVariantModal = ({ product, onClose }) => {
             </div>
 
             <button className="add-to-design-btn">
-              Add to Design
+              {t('products.addToDesign')}
             </button>
           </div>
         </div>
