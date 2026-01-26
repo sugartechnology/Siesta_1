@@ -12,6 +12,7 @@ const HoverThumbnailButton = ({
   isLoading = false,
   onClick,
   onPress,
+  onImageClick,
   duration = 500,
   className = "",
   children,
@@ -239,6 +240,14 @@ const HoverThumbnailButton = ({
             onError={(e) => {
               e.target.src = "/assets/logo_big.png";
             }}
+            onClick={(e) => {  // ← این handler را اضافه کنید
+              if (onImageClick) {
+                e.stopPropagation();
+                onImageClick();
+              }
+            }}
+
+            style={{ cursor: onImageClick ? 'pointer' : 'default' }}
             className="hover-thumbnail-image"
           />
         )}

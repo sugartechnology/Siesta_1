@@ -43,9 +43,9 @@
     "generate": "Oluştur"
   },
   "catalog": {
-    "contract": "Sözleşme",
+    "contract": "contract",
     "rattan": "Rattan",
-    "garden": "Bahçe"
+    "garden": "garden"
   },
   "projects": {
     "newProject": "Yeni Proje",

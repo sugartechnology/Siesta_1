@@ -420,8 +420,10 @@ const SectionDetails = () => {
               onTitleChange={handleSectionTitleChange}
               onRemove={handleRemoveSection}
               onViewDetails={handleSectionClick}
+              onImageClick={handleImageClick}
             />
           ))}
+
         </SliderComponent>
         <div
           className="add-section-thumbnail"

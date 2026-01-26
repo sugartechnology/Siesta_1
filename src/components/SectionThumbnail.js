@@ -11,6 +11,7 @@ const SectionThumbnail = ({
   onTitleChange,
   onRemove,
   onViewDetails,
+  onImageClick,
   duration = 500,
 }) => {
   // Action'ları tanımla
@@ -48,6 +49,7 @@ const SectionThumbnail = ({
       isActive={isActive}
       isLoading={section.design && section.design.status === "PROCESSING"}
       onClick={handleClick}
+      onImageClick={onImageClick}
       duration={duration}
       actions={actions}
       className="section-thumbnail"
