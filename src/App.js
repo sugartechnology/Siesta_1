@@ -2,6 +2,7 @@ import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
 import "./App.css";
 import { AuthProvider } from "./auth/AuthProvider";
 import { useAuth } from "./auth/useAuth";
+import { SectionDesignProvider } from "./contexts/SectionDesignContext";
 import TopMenu from "./components/TopMenu";
 import BottomMenu from "./components/BottomMenu";
 import AccountSettings from "./pages/AccountSettings";
@@ -94,7 +95,9 @@ export default function App() {
   return (
     <Router>
       <AuthProvider>
-        <AppChrome />
+        <SectionDesignProvider>
+          <AppChrome />
+        </SectionDesignProvider>
       </AuthProvider>
     </Router>
   );

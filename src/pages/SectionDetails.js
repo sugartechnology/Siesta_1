@@ -4,13 +4,12 @@ import {
   addProductToSection,
   addSectionToProject,
   deleteSection,
-  generateDesignForSection,
   getProductsByIds,
-  getSectionById,
   createProject,
   updateProjectName,
   updateSectionName,
 } from "../api/Api";
+import { useSectionDesign } from "../contexts/SectionDesignContext";
 import EditableTitle from "../components/EditableTitle";
 import FullscreenImagePopup from "../components/FullscreenImagePopup";
 import { FullscreenLoadingSpinner } from "../components/FullscreenLoadingSpinner";
@@ -33,12 +32,16 @@ import "./SectionDetails.css";
 import SliderComponent from "../components/SliderComponent";
 import { useTranslation } from "react-i18next";
 
-const POLL_INTERVAL = 5000;
-
 const SectionDetails = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const pollRef = useRef(null);
+  const {
+    startGeneration,
+    registerSection,
+    unregisterSection,
+    subscribeSectionUpdates,
+  } = useSectionDesign();
+  const sectionIdRef = useRef(null);
   const [
     isFullscreenLoadingSpinnerVisible,
     setIsFullscreenLoadingSpinnerVisible,
@@ -101,62 +104,32 @@ const SectionDetails = () => {
     console.log("isFullscreenPopupVisible changed to:", isFullscreenPopupVisible);
   }, [isFullscreenPopupVisible]);
 
-  const callInterval = () => {
-    clearTimeout(pollRef.current);
-    //console.log("callInterval section.id called", section.id);
-    const sectionId = section.id;
-    pollRef.current = setTimeout(() => {
-      //console.log("callInterval section.id timeout", section.id);
-      if (sectionId) {
-        getSectionById(sectionId)
-          .then((newSection) => {
-            // pollRef null ise component unmount olmuş, state set etme
-            if (!pollRef.current) {
-              return;
-            }
-            //console.log("--------------------------------");
-            //console.log("check sectionId:", sectionId, newSection.id);
-            // Eğer sectionId değişmediyse state'i güncelle
-            /*if (NavigationState.section.id !== newSection.id) {
-              console.log(
-                "sectionId changed:",
-                NavigationState.section.id,
-                newSection.id
-              );
-            }*/
-
-            if (newSection.id === NavigationState.section.id) {
-              setContextSection(newSection);
-              setSection(newSection);
-            }
-          })
-          .catch((error) => {
-            //console.error("Polling error:", error);
-            // Hata durumunda da polling'i devam ettir (eğer mount durumundaysa)
-            if (pollRef.current) {
-              //callInterval();
-            }
-          });
-      } else {
-        //callInterval();ƒ
-      }
-    }, POLL_INTERVAL);
-  };
+  sectionIdRef.current = section?.id;
 
   useEffect(() => {
-    return () => {
-      // Component unmount olduğunda timeout'u temizle ve pollRef'i null yap
-      if (pollRef.current) {
-        clearTimeout(pollRef.current);
-        pollRef.current = null;
-      }
-    };
-  }, []);
+    const sectionId = section?.id;
+    if (sectionId) registerSection(sectionId);
+    return () => unregisterSection(sectionId);
+  }, [section?.id, registerSection, unregisterSection]);
 
   useEffect(() => {
-    //console.log("useEffect section called", section.id);
-    callInterval();
-  }, [section]);
+    const unsubscribe = subscribeSectionUpdates((newSection) => {
+      if (newSection?.id === sectionIdRef.current) {
+        setSection(newSection);
+        setProject((prev) =>
+          prev
+            ? {
+                ...prev,
+                sections: prev.sections.map((s) =>
+                  s.id === newSection.id ? newSection : s
+                ),
+              }
+            : prev
+        );
+      }
+    });
+    return unsubscribe;
+  }, [subscribeSectionUpdates]);
 
   useEffect(() => {
     //
@@ -274,18 +247,7 @@ const SectionDetails = () => {
   };
 
   const handleRegenerate = () => {
-    //console.log("Regenerating design...");
-    generateDesignForSection(section.id, projectDetails).then((response) => {
-      console.log("Response:", response);
-      if (!section.design) {
-        section.design = { status: "PROCESSING" };
-      }
-      section.design.status = "PROCESSING";
-
-      const newSection = { ...section };
-      setContextSection(newSection);
-      setSection(newSection);
-    });
+    startGeneration(section.id, projectDetails);
   };
 
   const updateProducts = (sectionSelected) => {
