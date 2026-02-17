@@ -551,7 +551,7 @@ const SectionDetails = () => {
                 console.log("Reference image error:", e.target.src);
               }}
             />
-            <div className="info-content">
+            <div className="info-content" style={{height: "14vw"}}>
               <h3 className="sd-info-title">{t('sectionDetails.referenceImage')}</h3>
               <p className="sd-info-description">
                 {t('sectionDetails.referenceImageDesc')}
@@ -632,6 +632,10 @@ const SectionDetails = () => {
               onError={(e) => {
                 console.log("Last generated image error:", e.target.src);
                 e.target.src = "/assets/logo_big.png";
+              }}
+              style={{
+                height: "21vw",
+                width: "21vw",
               }}
             />
             <div className="info-content">
