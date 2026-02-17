@@ -341,22 +341,21 @@ const SectionDetails = () => {
   };
 
   const getResultImageUrl = (section) => {
-    if (section.design && section.design.resultImageUrl) {
-      return section.design.resultImageUrl;
-    }
-    if (section.designs && section.designs.length > 0) {
-      return section.designs.find((design) => design.resultImageUrl)
-        ?.resultImageUrl;
-    }
-    return undefined;
+    const latest = section.designs?.[0];
+    if (latest?.resultImageUrl) return latest.resultImageUrl;
+    if (latest?.imageUrl) return latest.imageUrl;
+    const withUrl = section.designs?.find((d) => d.resultImageUrl || d.imageUrl);
+    return withUrl?.resultImageUrl || withUrl?.imageUrl;
   };
 
   const roomType = getRoomType(section);
+  const latestDesign = section.designs?.[0];
   const desabled =
-    section.design &&
-    section.design.status !== "COMPLETED" &&
-    section.design.status !== "FAILED" &&
-    section.design.status !== "MOCKED";
+    latestDesign?.status === "PROCESSING" ||
+    (latestDesign &&
+      latestDesign.status !== "COMPLETED" &&
+      latestDesign.status !== "FAILED" &&
+      latestDesign.status !== "MOCKED");
 
   return (
     <div className="section-details-container">
@@ -376,7 +375,7 @@ const SectionDetails = () => {
       </h1>
 
       {/* Sections List */}
-      <div className="sections-list-container">
+      <div className="sections-list-container" style={{ display: "none" }}>
         <SliderComponent>
           {allSections.map((sectionItem, index) => (
             <SectionThumbnail
@@ -540,6 +539,9 @@ const SectionDetails = () => {
               src={
                 section.thumbnailUrl ||
                 section.rootImageUrl ||
+                latestDesign?.thumbnailUrl ||
+                latestDesign?.resultImageUrl ||
+                latestDesign?.imageUrl ||
                 "/assets/logo_big.png"
               }
               alt="Reference"
@@ -642,7 +644,7 @@ const SectionDetails = () => {
                 onClick={handleRegenerate}
                 disabled={desabled}
               >
-                {section.design && section.design.resultImageUrl
+                {(latestDesign?.resultImageUrl || latestDesign?.imageUrl)
                   ? t('sectionDetails.regenerate')
                   : t('sectionDetails.generate')}
               </button>
@@ -654,17 +656,14 @@ const SectionDetails = () => {
       {/* Fullscreen Image Popup */}
       <FullscreenImagePopup
         images={[
-          // Reference image
-          // Result image
           section.resultImageUrl ||
-          (section.design && section.design.resultImageUrl),
-          // Design images if available
+            latestDesign?.resultImageUrl ||
+            latestDesign?.imageUrl,
           ...(section.designs
-            ?.filter((design) => design.resultImageUrl)
-            .filter((design) => design.id !== section.design.id)
-            .sort((a, b) => b.createdDate - a.createdDate)
-            .map((design) => design.resultImageUrl) || []),
-        ].filter(Boolean)} // Remove null/undefined values
+            ?.filter((d) => d.id !== latestDesign?.id && (d.resultImageUrl || d.imageUrl))
+            .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0))
+            .map((d) => d.resultImageUrl || d.imageUrl) || []),
+        ].filter(Boolean)}
         initialIndex={0} // Start with first image (index 0)
         isVisible={isFullscreenPopupVisible}
         onClose={() => setIsFullscreenPopupVisible(false)}

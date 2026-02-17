@@ -25,10 +25,11 @@ const SectionThumbnail = ({
     },
   ];
 
-  // Image URL'i belirle
+  const latestDesign = section.designs?.[0];
   const imageUrl =
-    (section.design && section.design.thumbnailUrl) ||
-    (section.design && section.design.resultImageUrl) ||
+    latestDesign?.thumbnailUrl ||
+    latestDesign?.resultImageUrl ||
+    latestDesign?.imageUrl ||
     section.thumbnailUrl ||
     section.resultImageUrl ||
     section.rootImageUrl ||
@@ -47,7 +48,7 @@ const SectionThumbnail = ({
       imageUrl={imageUrl}
       title={section.title}
       isActive={isActive}
-      isLoading={section.design && section.design.status === "PROCESSING"}
+      isLoading={latestDesign?.status === "PROCESSING"}
       onClick={handleClick}
       onImageClick={onImageClick}
       duration={duration}

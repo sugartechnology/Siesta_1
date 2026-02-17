@@ -28,10 +28,7 @@ export function SectionDesignProvider({ children }) {
         .then((newSection) => {
           setContextSection(newSection);
           notifySubscribers(newSection);
-          if (
-            newSection.design &&
-            newSection.design.status !== "PROCESSING"
-          ) {
+          if (newSection.designs?.[0]?.status !== "PROCESSING") {
             processingSectionIdsRef.current.delete(sectionId);
           }
         })
@@ -80,7 +77,7 @@ export function SectionDesignProvider({ children }) {
             : { id: sectionId };
         const section = {
           ...current,
-          design: { ...(current.design || {}), status: "PROCESSING" },
+          designs: [{ status: "PROCESSING" }, ...(current.designs || [])],
         };
         setContextSection(section);
         processingSectionIdsRef.current.add(sectionId);
