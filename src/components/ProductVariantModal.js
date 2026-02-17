@@ -39,9 +39,10 @@ const ProductVariantModal = ({ product, onClose }) => {
 
             <div className="variants-grid">
               {variants.slice(0, 3).map((variant) => (
+                console.log(variant),
                 <div key={variant.id} className="variant-item">
                   <div className="variant-image-container">
-                    <img src={variant.image} alt={variant.name} className="variant-image" />
+                    <img src={variant.thumbnail || variant.thumbnailUrl || variant.thumbnail} alt={variant.name} className="variant-image" />
                   </div>
                   <p className="variant-product-name">Portofino Bar 75</p>
                   <p className="variant-name">{variant.name}</p>
@@ -66,9 +67,10 @@ const ProductVariantModal = ({ product, onClose }) => {
 
             <div className="variants-grid">
               {variants.slice(3, 6).map((variant) => (
+                console.log(variant),
                 <div key={variant.id} className="variant-item">
                   <div className="variant-image-container">
-                    <img src={variant.image} alt={variant.name} className="variant-image" />
+                    <img src={variant.thumbnail || variant.thumbnailUrl || variant.thumbnail} alt={variant.name} className="variant-image" />
                   </div>
                   <p className="variant-product-name">Portofino Bar 75</p>
                   <p className="variant-name">{variant.name}</p>

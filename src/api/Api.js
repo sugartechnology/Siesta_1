@@ -5,9 +5,11 @@ export const getUserProfile = async (userId) => {
   return await fetchData(endpoint);
 };
 
-export const loginUser = async (email, password) => {
-  const endpoint = `${process.env.REACT_APP_API_URL}/v1/auth/login`;
-  const payload = { email, password };
+/** CRM login: POST /api/login, body { username, password, companySlug? }. Returns { accessToken, refreshToken, user }. */
+export const loginUser = async (usernameOrEmail, password) => {
+  const endpoint = `${process.env.REACT_APP_API_URL}/login`;
+  const companySlug = process.env.REACT_APP_COMPANY_SLUG ;
+  const payload = { username: usernameOrEmail, password, companySlug };
   return await postData(endpoint, payload);
 };
 
@@ -16,7 +18,8 @@ export const loginUser = async (email, password) => {
 // Register user
 export const registerUser = async (name, email, password) => {
   const endpoint = `${process.env.REACT_APP_API_URL}/auth/register`;
-  const payload = { name, email, password };
+  const companySlug = process.env.REACT_APP_COMPANY_SLUG ;
+  const payload = { name, email, password, companySlug };
   return await postData(endpoint, payload);
 };
 
@@ -44,37 +47,104 @@ export const reactivateUserAccount = async () => {
   return await postData(endpoint, null, undefined, "POST");
 };
 
+/**
+ * Siesta filter/sort → CRM SearchCriteria dönüşümü.
+ * CRM product index'te "baseName" yok; "name.keyword" ile sıralama yapılır.
+ * Sort örn. "baseName Asc" → [{ field: "name.keyword", order: "ASC" }]
+ */
+const SORT_FIELD_MAP = {
+  baseName: "name.keyword",
+  name: "name.keyword",
+};
+
+const parseSort = (sortStr) => {
+  if (!sortStr || typeof sortStr !== "string") {
+    return [{ field: "name.keyword", order: "ASC" }];
+  }
+  const parts = sortStr.trim().split(/\s+/);
+  const rawField = parts[0] || "baseName";
+  const field = SORT_FIELD_MAP[rawField] ?? rawField;
+  const order = (parts[1] || "Asc").toUpperCase() === "DESC" ? "DESC" : "ASC";
+  return [{ field, order }];
+};
+
+/**
+ * Backend fieldToKeyMap sadece küçük harf anahtar kabul ediyor (category, collection).
+ * Siesta "Category", "SubCategory" vb. gönderdiği için alan adını küçük harfe çeviriyoruz.
+ */
+const FILTER_KEY_TO_FIELD = {
+  Category: "collection",
+  SubCategory: "category",
+  Rooms: "rooms",
+  Styles: "styles",
+  Collection: "collection",
+};
+
+/**
+ * Siesta filter.filters → CRM SearchCriteria.filters (SearchFilter[])
+ * Siesta: [{ key: "Category", options: [{ key, selected }] | value[] }]
+ * CRM SearchFilter: { field, query?, min?, max?, options: [{ value, label }] }
+ */
+const mapFiltersToSearchCriteria = (filters) => {
+  if (!Array.isArray(filters) || filters.length === 0) {
+    return [];
+  }
+  return filters.map((f) => {
+    const rawKey = f.key || f.field;
+    const field =
+      typeof rawKey === "string"
+        ? FILTER_KEY_TO_FIELD[rawKey] ?? rawKey.toLowerCase()
+        : rawKey;
+    const options = (f.options || []).map((o) => {
+      const val = o?.key ?? o?.value ?? o;
+      const label = o?.label ?? o?.key ?? o?.value ?? o;
+      return { value: String(val), label: String(label) };
+    });
+    return {
+      field,
+      query: null,
+      min: null,
+      max: null,
+      options,
+    };
+  });
+};
+
+/**
+ * CRM products search: POST /api/products/search (company_id gerekmez; şirket kapsamı oturum açan kullanıcıdan türetilir).
+ * Body: SearchCriteria { query, page, size, sort, filters }
+ * Query params: includeImages (boolean, default: false) - Images'ları DB'den yüklemek için
+ * Response: PagedFilterable { content, page: { size, number, totalElements, totalPages } }
+ */
 export const fetchProducts = async (
   defaultFilters,
   filter = undefined,
   pageNumber = 0,
-  sort = "baseName Asc" // Default: A'dan Z'ye
+  sort = "baseName Asc", // Default: A'dan Z'ye
+  includeImages = true // Images'ları DB'den yüklemek için (default: false)
 ) => {
   try {
-    const hasDefaultFilters = Boolean(
-      defaultFilters.type || defaultFilters.style || defaultFilters.colorPalette
-    );
+    const searchCriteria = {
+      query: filter?.search ?? "",
+      page: pageNumber,
+      size: 24,
+      sort: parseSort(sort),
+      filters: mapFiltersToSearchCriteria(filter?.filters ?? []),
+      includeImages: includeImages,
+      groupBy: "name", // Ürünleri isimlere göre gruplandır
+    };
 
-    const requestBody = filter
-      ? hasDefaultFilters
-        ? { ...filter, defaultFilters, sort }
-        : { ...filter, sort }
-      : hasDefaultFilters
-      ? { defaultFilters, sort }
-      : { sort };
+    // URL'e query parametrelerini ekle
+    const baseUrl = `${process.env.REACT_APP_API_URL}/products/search`;
+    const queryParams = new URLSearchParams();
+    if (includeImages) {
+      queryParams.append("includeImages", "true");
+    }
+    const url = queryParams.toString() 
+      ? `${baseUrl}?${queryParams.toString()}` 
+      : baseUrl;
 
-    const url =
-      process.env.REACT_APP_SEARCY_API_URL +
-      `/search/v2/products?page=${pageNumber}`;
-
-    console.log("url", url);
-    console.log(JSON.stringify(requestBody), "Request");
-    const response = await postData(url, requestBody, {
-      "X-Tenant-Id": process.env.REACT_APP_TENANT_ID,
-      "Accept-Language": "en",
-      Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
-    });
-    console.log(JSON.stringify(response.data), "Response");
+    const response = await postData(url, searchCriteria);
     return response;
   } catch (error) {
     console.error("Fetch error:", error);
@@ -85,11 +155,9 @@ export const fetchProducts = async (
 export const fetchProductVariants = async (name) => {
   try {
     const url =
-      process.env.REACT_APP_API_URL + `/projects/products/variants/${name}`;
+      process.env.REACT_APP_API_URL + `/projects/products/variants/${encodeURIComponent(name)}`;
 
-    console.log("url", url);
     const response = await postData(url);
-    console.log(JSON.stringify(response.data), "Response");
     return response;
   } catch (error) {
     console.error("Fetch error:", error);
@@ -246,9 +314,18 @@ export const getProductsByIds = async (productIds) => {
 };
 
 export const fetchSampleRooms = async () => {
-  const endpoint = `${process.env.REACT_APP_URL}/api/similar-rooms`;
-
-  return await fetchData(endpoint);
+  const endpoint = `${process.env.REACT_APP_URL}/similar-rooms`;
+  try {
+    const response = await fetch(endpoint);
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
 };
 // ===== USAGE EXAMPLES =====
 
@@ -298,7 +375,7 @@ const products = await getProductsByIds(["prod-123", "prod-456", "prod-789"]);
 
 // ===== ENVIRONMENT VARIABLES =====
 // Add to your .env file:
-// REACT_APP_API_URL=https://api.local.test:4764
-// REACT_APP_SEARCY_API_URL=https://search-api.example.com
+// REACT_APP_API_URL=https://api.local.test:4764/api  (CRM base URL)
 // REACT_APP_TENANT_ID=your-tenant-id
+// (products/search company_id istemez; şirket kapsamı kullanıcı yetkisinden alınır)
 */

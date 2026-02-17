@@ -8,6 +8,7 @@ import {
   createProject,
   updateProjectName,
   updateSectionName,
+  removeProductFromSection,
 } from "../api/Api";
 import { useSectionDesign } from "../contexts/SectionDesignContext";
 import EditableTitle from "../components/EditableTitle";
@@ -198,29 +199,34 @@ const SectionDetails = () => {
   };
 
   const handleQuantityChange = async (productIdd, change) => {
+    const product = products.find((p) => p.productId === productIdd);
+    const newQuantity = product
+      ? Math.max(0, product.quantity + change)
+      : 0;
+    const isRemoval = change < 0 ;
+
     const updatedProducts = products
-      .map((product) => {
-        if (product.productId === productIdd) {
-          const newQuantity = Math.max(0, product.quantity + change);
-          return { ...product, quantity: newQuantity };
-        }
-        return product;
-      })
-      // 🔥 این خط باعث حذف محصولاتی می‌شود که quantity آنها صفر است
-      .filter((product) => product.quantity > 0);
+      .map((p) =>
+        p.productId === productIdd ? { ...p, quantity: newQuantity } : p
+      )
+      .filter((p) => p.quantity > 0);
 
     NavigationState.section.productIds = updatedProducts;
     setProducts(updatedProducts);
 
     if (section.id) {
       try {
-        await addProductToSection(section.id, {
-          productId: productIdd,
-          quantity: change,
-        });
+        if (isRemoval) {
+          await removeProductFromSection(section.id, productIdd);
+        } else {
+          await addProductToSection(section.id, {
+            productId: productIdd,
+            quantity: change,
+          });
+        }
       } catch (error) {
         console.error("Error updating product quantity:", error);
-        setProducts(products); // rollback local state
+        setProducts(products);
       }
     }
   };

@@ -124,6 +124,8 @@ export default function Products() {
             url:
               product.images[1] ||
               product.images[0] ||
+              product.thumbnailUrl ||
+              product.thumbnail ||
               "/assets/product-placeholder.png",
           },
         ];
@@ -205,6 +207,8 @@ export default function Products() {
               url:
                 product.images[1] ||
                 product.images[0] ||
+                product.thumbnailUrl ||
+                product.thumbnail ||
                 "/assets/product-placeholder.png",
             },
           ];
@@ -270,9 +274,18 @@ export default function Products() {
       // Seçili filtreleri API formatına çevir
       const filter = getFilter();
       const data = await fetchProducts({}, filter, pageNum);
-      const items = data.results.content ?? [];
-
-      setHasMore(pageNum + 1 < data.results.totalPages);
+      // CRM PagedFilterable: { content, page: { totalPages } }
+      const rawItems = data.content ?? [];
+      const items = rawItems.map((item) => ({
+        ...item,
+        productId: item.id ?? item.productId,
+        name: item.name ?? item.baseName,
+        images: Array.isArray(item.images)
+          ? item.images.map((img) => (typeof img === "string" ? img : img?.url))
+          : item.images ?? [],
+      }));
+      const totalPages = data.page?.totalPages ?? 0;
+      setHasMore(pageNum + 1 < totalPages);
       setProducts((prev) => (pageNum === 0 ? items : [...prev, ...items]));
     } catch (e) {
       setHasMore(false);
@@ -519,6 +532,8 @@ export default function Products() {
                     src={
                       product.images[1] ||
                       product.images[0] ||
+                      product.thumbnailUrl ||
+                      product.thumbnail ||
                       "/assets/product-placeholder.png"
                     }
                     alt={product.name}
@@ -727,8 +742,11 @@ export default function Products() {
                     <div className="variant-image-container">
                       <img
                         src={
+                          
                           variant.images[1] ||
                           variant.images[0] ||
+                          variant.thumbnailUrl ||
+                          variant.thumbnail ||
                           "/assets/product-placeholder.png"
                         }
                         alt={variant.name}

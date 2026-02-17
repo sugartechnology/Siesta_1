@@ -327,7 +327,7 @@
 
 .next-btn-bottom:hover {
   background: #1a1a1a;
-  transform: translateX(-50%) translateY(-2px);
+  transform: translateY(-2px);
   box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.3);
 }
 
@@ -451,14 +451,14 @@
 @media (orientation: portrait) {
 
   .image-display-wrapper {
-    border-radius: 20px;
+    /*border-radius: 20px;
     height: 50%;
-    margin-top: 35%;
+    margin-top: 35%;*/
   }
 
 
   .grid-overlay {
-    display: none;
+    /*display: none;*/
   }
 
   .image-controls {
@@ -469,7 +469,19 @@
 
   .controls-left,
   .controls-right {
-    display: none;
+    
+    position: absolute;
+    
+    top: -60px;
+
+  }
+
+  .controls-left {
+    left: 0px;
+  }
+
+  .controls-right {
+    right: 0px;
   }
 
   .next-btn-bottom {

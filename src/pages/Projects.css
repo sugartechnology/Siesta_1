@@ -179,7 +179,7 @@
   padding: 5vw 0 5vw 5vw;
   display: flex;
   position: relative;
-  height: 40vw;
+  flex: 1;
 }
 
 .recent-projects-header {
@@ -402,10 +402,11 @@
 
 @media (orientation: portrait) {
   .recent-projects-section {
-    height: 110vw;
+    /*height: 110vw;*/
     gap: 0.1vw;
     border-radius: 20px 20px 70px 20px;
     flex-direction: column;
+    flex: 1;
   }
 
   .projects-page-content {

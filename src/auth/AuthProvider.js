@@ -17,6 +17,17 @@ export function AuthProvider({ children }) {
     //setLoading(false);
   }, []);
 
+  /** Map CRM UserResponse (user/me) to Siesta user shape */
+  function mapUserMeToSiesta(data) {
+    if (!data) return null;
+    const name = [data.firstName, data.lastName].filter(Boolean).join(" ") || data.username || "";
+    return {
+      id: data.id,
+      name,
+      email: data.email ?? "",
+    };
+  }
+
   async function checkSession() {
     try {
       const res = await fetch(API_URL + "/user/me", {
@@ -24,8 +35,8 @@ export function AuthProvider({ children }) {
         credentials: "include",
       });
       if (res.ok) {
-        //const data = await res.json();
-        setUser({ id: "data.id", name: "data.name", email: "" });
+        const data = await res.json();
+        setUser(mapUserMeToSiesta(data));
         navigate("/home");
       } else {
         setUser(null);
@@ -41,13 +52,25 @@ export function AuthProvider({ children }) {
     }
   }
 
-  async function login(username, password) {
-    const postData = {
-      email: username,
-      password: password,
-      deviceUUID: undefined,
+  /** Map CRM UserInfo (login response) to Siesta user shape */
+  function mapLoginUserToSiesta(dataUser) {
+    if (!dataUser) return { id: null, name: "", email: "" };
+    const name = [dataUser.firstName, dataUser.lastName].filter(Boolean).join(" ") || dataUser.username || "";
+    return {
+      id: dataUser.id,
+      name,
+      email: dataUser.email ?? "",
     };
-    const res = await fetch(API_URL + "/auth/login", {
+  }
+
+  async function login(username, password) {
+    const companySlug = process.env.REACT_APP_COMPANY_SLUG || "siesta";
+    const postData = {
+      username,
+      password,
+      companySlug,
+    };
+    const res = await fetch(API_URL + "/login", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,11 +78,12 @@ export function AuthProvider({ children }) {
       body: JSON.stringify(postData),
       credentials: "include",
     });
-    if (!res.ok) throw new Error("Giriş başarısız");
-    res.json().then((data) => {
-      setUser({ id: "data.id", name: "data.name", email: "" });
-      setToken(data.accessToken);
-    });
+    const data = await res.json().catch(() => ({}));
+    if (!res.ok) {
+      throw new Error(data.error || "Giriş başarısız");
+    }
+    setToken(data.accessToken);
+    setUser(mapLoginUserToSiesta(data.user));
   }
 
   async function register(name, email, password) {
@@ -67,6 +91,7 @@ export function AuthProvider({ children }) {
       name: name,
       email: email,
       password: password,
+      companySlug: process.env.REACT_APP_COMPANY_SLUG 
     };
     const res = await fetch(API_URL + "/auth/register", {
       method: "POST",
