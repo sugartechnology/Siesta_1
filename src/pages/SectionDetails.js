@@ -537,8 +537,8 @@ const SectionDetails = () => {
           <div className="info-item">
             <img
               src={
-                section.thumbnailUrl ||
                 section.rootImageUrl ||
+                section.thumbnailUrl ||
                 latestDesign?.thumbnailUrl ||
                 latestDesign?.resultImageUrl ||
                 latestDesign?.imageUrl ||
