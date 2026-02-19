@@ -70,6 +70,7 @@ export function SectionDesignProvider({ children }) {
 
   const startGeneration = useCallback(
     (projectId, sectionId, prompt) => {
+      stopPolling();
       generateDesignForSection(projectId, sectionId, prompt).then(() => {
         const current =
           NavigationState.section?.id === sectionId
@@ -85,7 +86,7 @@ export function SectionDesignProvider({ children }) {
         scheduleNextPoll();
       });
     },
-    [notifySubscribers, scheduleNextPoll]
+    [notifySubscribers, scheduleNextPoll, stopPolling]
   );
 
   const registerSection = useCallback((sectionId) => {

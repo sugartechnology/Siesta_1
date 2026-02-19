@@ -43,10 +43,12 @@ const SectionDetails = () => {
     subscribeSectionUpdates,
   } = useSectionDesign();
   const sectionIdRef = useRef(null);
+  const waitingForGenerationResultRef = useRef(false);
   const [
     isFullscreenLoadingSpinnerVisible,
     setIsFullscreenLoadingSpinnerVisible,
   ] = useState(false);
+  const [designGenerationError, setDesignGenerationError] = useState(null);
   // NavigationState parametrelerini section'a aktar ve temizle
   const initialSection = NavigationState.section || {
     rootImageUrl: "",
@@ -129,6 +131,12 @@ const SectionDetails = () => {
         const status = newSection?.designs?.[0]?.status;
         if (status === "COMPLETED" || status === "FAILED" || status === "ERROR") {
           setIsFullscreenLoadingSpinnerVisible(false);
+          if (waitingForGenerationResultRef.current) {
+            waitingForGenerationResultRef.current = false;
+            if (status === "FAILED" || status === "ERROR") {
+              setDesignGenerationError(t("sectionDetails.designGenerationError"));
+            }
+          }
         }
       }
     });
@@ -256,6 +264,8 @@ const SectionDetails = () => {
   };
 
   const handleRegenerate = () => {
+    setDesignGenerationError(null);
+    waitingForGenerationResultRef.current = true;
     setIsFullscreenLoadingSpinnerVisible(true);
     startGeneration(project.id, section.id, projectDetails);
   };
@@ -362,6 +372,11 @@ const SectionDetails = () => {
 
   return (
     <div className="section-details-container">
+      {designGenerationError && (
+        <div className="section-details-error-banner" role="alert">
+          {designGenerationError}
+        </div>
+      )}
       {/* Project Name Title */}
       <h1 className="section-project-title">
         {project ? (
