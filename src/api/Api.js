@@ -300,8 +300,8 @@ export const deleteSection = async (sectionId) => {
 };
 
 // Generate AI design for section
-export const generateDesignForSection = async (sectionId, prompt) => {
-  const endpoint = `${process.env.REACT_APP_API_URL}/projects/sections/${sectionId}/generate-design`;
+export const generateDesignForSection = async (projectId, sectionId, prompt) => {
+  const endpoint = `${process.env.REACT_APP_API_URL}/projects/${projectId}/sections/${sectionId}/generate-design`;
   const payload = new FormData();
   payload.append("prompt", prompt);
   return await postData(endpoint, payload);

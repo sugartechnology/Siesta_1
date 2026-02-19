@@ -69,8 +69,8 @@ export function SectionDesignProvider({ children }) {
   }, [stopPolling]);
 
   const startGeneration = useCallback(
-    (sectionId, prompt) => {
-      generateDesignForSection(sectionId, prompt).then(() => {
+    (projectId, sectionId, prompt) => {
+      generateDesignForSection(projectId, sectionId, prompt).then(() => {
         const current =
           NavigationState.section?.id === sectionId
             ? NavigationState.section

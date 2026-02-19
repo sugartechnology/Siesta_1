@@ -93,9 +93,7 @@ const SectionDetails = () => {
 
   // useCallback to ensure handler is stable
   const handleImageClick = useCallback(() => {
-    console.log("handleImageClick called, setting to true");
     setIsFullscreenPopupVisible(prevState => {
-      console.log("State setter called, prev state:", prevState, "new state: true");
       return true;
     });
   }, []);
@@ -117,6 +115,7 @@ const SectionDetails = () => {
     const unsubscribe = subscribeSectionUpdates((newSection) => {
       if (newSection?.id === sectionIdRef.current) {
         setSection(newSection);
+        console.log("newSection", newSection);
         setProject((prev) =>
           prev
             ? {
@@ -127,6 +126,10 @@ const SectionDetails = () => {
               }
             : prev
         );
+        const status = newSection?.designs?.[0]?.status;
+        if (status === "COMPLETED" || status === "FAILED" || status === "ERROR") {
+          setIsFullscreenLoadingSpinnerVisible(false);
+        }
       }
     });
     return unsubscribe;
@@ -253,7 +256,8 @@ const SectionDetails = () => {
   };
 
   const handleRegenerate = () => {
-    startGeneration(section.id, projectDetails);
+    setIsFullscreenLoadingSpinnerVisible(true);
+    startGeneration(project.id, section.id, projectDetails);
   };
 
   const updateProducts = (sectionSelected) => {
@@ -273,7 +277,6 @@ const SectionDetails = () => {
   };
 
   const handleSectionClick = (sectionSelected) => {
-    console.log("handleSectionClick sectionSelected", sectionSelected.id);
     setContextSection(sectionSelected);
     setSection(sectionSelected);
 
@@ -638,7 +641,7 @@ const SectionDetails = () => {
                 width: "21vw",
               }}
             />
-            <div className="info-content">
+            <div className="info-content" style={{height: "21vw"}}>
               <h3 className="sd-info-title">{t('sectionDetails.lastGenerated')}</h3>
               <p className="sd-info-description">
                 {t('sectionDetails.lastGeneratedDesc')}
