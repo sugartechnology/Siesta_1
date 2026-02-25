@@ -5,6 +5,7 @@
   padding: 7px 0;
   width: 100%;
   flex-shrink: 0;
+  min-height: 52px;
 }
 
 .bm-menu-section {

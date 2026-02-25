@@ -43,7 +43,7 @@ code {
   /*height: 100vh;
   padding: 44px 31px 31px 31px;*/
   flex: 1;
-  overflow: unset;
+  overflow: scroll;
 }
 
 .portrate-menu {

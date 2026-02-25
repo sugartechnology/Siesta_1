@@ -368,6 +368,7 @@
 }
 
 .products-filter-select {
+  max-width: 50vw;
   height: 50px;
   background: white;
   border-radius: 40px;

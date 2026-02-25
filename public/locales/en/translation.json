@@ -40,7 +40,8 @@
     "lastGenerated": "Last Generated",
     "lastGeneratedDesc": "Preview of your most recently generated design.",
     "regenerate": "Regenerate",
-    "generate": "Generate"
+    "generate": "Generate",
+    "designGenerationError": "An error occurred while generating the design. Please try again."
   },
   "catalog": {
     "contract": "Contract",

@@ -40,7 +40,8 @@
     "lastGenerated": "Son Oluşturulan",
     "lastGeneratedDesc": "En son oluşturulan tasarımınızın önizlemesi.",
     "regenerate": "Yeniden Oluştur",
-    "generate": "Oluştur"
+    "generate": "Oluştur",
+    "designGenerationError": "Tasarım oluşturulurken bir hata oluştu. Lütfen tekrar deneyin."
   },
   "catalog": {
     "contract": "contract",
