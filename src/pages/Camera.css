@@ -283,7 +283,7 @@
 }
 
 /* Error Message */
-.error-message {
+.cm-error-message {
   position: absolute;
   top: 20px;
   left: 50%;

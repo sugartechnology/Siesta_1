@@ -347,7 +347,7 @@ export default function Camera() {
         )}
 
         {permissionError && (
-          <div className="error-message">
+          <div className="cm-error-message">
             <span>{t('camera.permissionError')}</span>
           </div>
         )}

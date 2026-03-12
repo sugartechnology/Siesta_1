@@ -79,7 +79,8 @@
     "signInLowerCase": "giriş yap",
     "signUpLowerCase": "kayıt ol",
     "dontHaveAccount": "Hesabınız yok mu?",
-    "alreadyHaveAccount": "Zaten hesabınız var mı?"
+    "alreadyHaveAccount": "Zaten hesabınız var mı?",
+    "rememberMe": "Şifremi hatırla"
   },
   "accountSettings": {
     "loadError": "Kullanıcı bilgileri yüklenemedi",

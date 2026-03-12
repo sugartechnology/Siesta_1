@@ -79,7 +79,8 @@
     "signInLowerCase": "sign in",
     "signUpLowerCase": "sign up",
     "dontHaveAccount": "Don't have an account?",
-    "alreadyHaveAccount": "Already have an account?"
+    "alreadyHaveAccount": "Already have an account?",
+    "rememberMe": "Remember me"
   },
   "accountSettings": {
     "loadError": "Failed to load user information",

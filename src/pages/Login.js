@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import { useAuth } from "../auth/useAuth";
@@ -12,6 +12,7 @@ const Login = () => {
   // Login form state
   const [loginUsername, setLoginUsername] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
+  const [rememberMe, setRememberMe] = useState(false);
 
   // Register form state
   const [registerName, setRegisterName] = useState("");
@@ -40,6 +41,22 @@ const Login = () => {
     "http://localhost:3845/assets/aa9ac7f11aa49d2924c673c3aa1f0b953d28b9b8.svg";
 
   const auth = useAuth();
+  const REMEMBER_ME_KEY = "siesta_login_prefs";
+
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem(REMEMBER_ME_KEY);
+      if (!stored) return;
+
+      const parsed = JSON.parse(stored);
+      if (parsed?.rememberMe && typeof parsed.username === "string") {
+        setRememberMe(true);
+        setLoginUsername(parsed.username);
+      }
+    } catch (error) {
+      console.error("Failed to read remember-me prefs:", error);
+    }
+  }, []);
 
   const handleSignIn = (e) => {
     e.preventDefault();
@@ -55,6 +72,19 @@ const Login = () => {
       .login(loginUsername, loginPassword)
       .then(() => {
         console.log("Login successful");
+        try {
+          if (rememberMe) {
+            const prefs = {
+              rememberMe: true,
+              username: loginUsername,
+            };
+            localStorage.setItem(REMEMBER_ME_KEY, JSON.stringify(prefs));
+          } else {
+            localStorage.removeItem(REMEMBER_ME_KEY);
+          }
+        } catch (storageError) {
+          console.error("Failed to persist remember-me prefs:", storageError);
+        }
         navigate("/home");
       })
       .catch((error) => {
@@ -230,6 +260,19 @@ const Login = () => {
                   placeholder="•••••••••"
                   className="input-field"
                 />
+              </div>
+
+              {/* Remember Me */}
+              <div className="remember-me-row">
+                <label className="remember-me-label">
+                  <input
+                    type="checkbox"
+                    className="remember-me-checkbox"
+                    checked={rememberMe}
+                    onChange={(e) => setRememberMe(e.target.checked)}
+                  />
+                  {t('login.rememberMe')}
+                </label>
               </div>
 
               {/* Forgot Password */}
