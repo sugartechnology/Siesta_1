@@ -297,19 +297,20 @@
   font-weight: 500;
 }
 
-/* Sample Rooms Container */
-.sample-rooms-container {
-  /*margin-bottom: 80px;*/
+/* Sample Rooms Section */
+.sample-rooms-shell {
+  position: relative;
   min-height: 325px;
 }
 
-.sample-rooms-container-absolute {
+.sample-rooms-section {
   position: absolute;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
+  inset: 0 0 0 0;
   z-index: 100;
-  padding: 30px 30px 0px 30px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 30px 30px 92px;
   border-top-right-radius: 15px;
   border-top-left-radius: 15px;
   box-shadow: 0 5px 17px rgba(0, 0, 0, 1);
@@ -443,8 +444,8 @@
   object-fit: cover;
 }
 
-.camera-main-container.fullscreen .sample-rooms-container,
-.camera-main-container.fullscreen .sample-rooms-container-absolute {
+.camera-main-container.fullscreen .sample-rooms-shell,
+.camera-main-container.fullscreen .sample-rooms-section {
   display: none !important;
 }
 
@@ -543,10 +544,6 @@
     height: 42px;
   }
 
-  .sample-rooms-container {
-    margin-bottom: 70px;
-  }
-
   .sample-rooms-heading {
     font-size: 14px;
   }
@@ -563,5 +560,61 @@
     padding: 8px 32px;
     height: 45px;
     font-size: 15px;
+  }
+}
+
+@media (orientation: portrait) {
+  .camera-main-container {
+    height: auto;
+    min-height: fit-content;
+    justify-content: flex-start;
+    gap: 20px;
+  }
+
+  .main-camera-area {
+    flex: 0 0 auto;
+    min-height: clamp(280px, 42vh, 380px);
+    margin-bottom: 0;
+  }
+
+  .camera-placeholder-box {
+    padding: 32px 20px;
+  }
+
+  .sample-rooms-shell {
+    min-height: 0;
+  }
+
+  .sample-rooms-section {
+    position: static;
+    min-height: 0;
+    padding: 0 0 4px;
+    gap: 14px;
+    box-shadow: none;
+    border-radius: 0;
+  }
+
+  .sample-rooms-scroll {
+    gap: 14px;
+    padding-bottom: 4px;
+  }
+
+  .sample-room-item {
+    min-width: 140px;
+    width: 140px;
+    height: 140px;
+  }
+
+  .skip-btn-bottom {
+    position: static;
+    left: auto;
+    bottom: auto;
+    transform: none;
+    width: min(100%, 320px);
+    margin: 2px auto 0;
+  }
+
+  .skip-btn-bottom:hover {
+    transform: translateY(-2px);
   }
 }

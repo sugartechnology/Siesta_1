@@ -9,6 +9,18 @@ import { getNextPage, startNewSectionFlow } from "../utils/NavigationState";
 import "./Projects.css";
 import { useTranslation } from "react-i18next";
 
+const getSlidesToShow = (width) => {
+  if (width > 1024) {
+    return 3.2;
+  }
+
+  if (width > 490) {
+    return 2.2;
+  }
+
+  return 1.2;
+};
+
 export default function Projects() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -17,6 +29,9 @@ export default function Projects() {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [slidesToShow, setSlidesToShow] = useState(() =>
+    getSlidesToShow(window.innerWidth)
+  );
 
   // Fetch projects from API
   const fetchProjects = async () => {
@@ -36,15 +51,22 @@ export default function Projects() {
     fetchProjects();
   }, []);
 
-  const settingsSlidesToShow =
-    window.screen.width > 490 ? (window.screen.width > 1024 ? 3.2 : 2.2) : 1.2;
+  useEffect(() => {
+    const handleResize = () => {
+      setSlidesToShow(getSlidesToShow(window.innerWidth));
+    };
 
-  console.log("settingsSlidesToShow", settingsSlidesToShow);
+    window.addEventListener("resize", handleResize);
+    return () => {
+      window.removeEventListener("resize", handleResize);
+    };
+  }, []);
+
   const settings = {
     dots: false,
     infinite: false,
     speed: 500,
-    slidesToShow: settingsSlidesToShow,
+    slidesToShow,
     slidesToScroll: 1,
     arrows: false,
     swipeToSlide: true,
@@ -71,18 +93,24 @@ export default function Projects() {
   return (
     <div className="projects-page-content">
       {/* New Project Section */}
-      <div className="new-project-section" onClick={handleNewProjectClick}>
-        <div className="new-project-overlay" />
+      <button
+        type="button"
+        className="new-project-section"
+        onClick={handleNewProjectClick}
+      >
+        <span className="new-project-overlay" aria-hidden="true" />
         <img
           src="/assets/project-new-bg.png"
           alt="New Project"
           className="new-project-bg"
         />
-        <div className="new-project-content">
-          <h1 className="new-project-title">{t('projects.newProject')}</h1>
-          <button className="create-btn">{t('projects.create')}</button>
-        </div>
-      </div>
+        <span className="new-project-content">
+          <span className="new-project-title">{t('projects.newProject')}</span>
+          <span className="create-btn" aria-hidden="true">
+            {t('projects.create')}
+          </span>
+        </span>
+      </button>
 
       {/* Recent Projects Section */}
       <div className="recent-projects-section">

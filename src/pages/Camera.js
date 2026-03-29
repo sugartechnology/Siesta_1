@@ -354,37 +354,39 @@ export default function Camera() {
       </div>
 
       {/* Sample Rooms Section */}
-      <div className="sample-rooms-container"></div>
-      <div className="sample-rooms-container sample-rooms-container-absolute">
-        <h3 className="sample-rooms-heading">{t('camera.sampleRooms')}</h3>
-        <div className="sample-rooms-scroll">
-          {sampleRooms.map((sample) => (
-            <div
-              key={sample.id}
-              className={`sample-room-item ${selectedSample?.id === sample.id ? "selected" : ""
+      <div className="sample-rooms-shell">
+        <div className="sample-rooms-section">
+          <h3 className="sample-rooms-heading">{t('camera.sampleRooms')}</h3>
+          <div className="sample-rooms-scroll">
+            {sampleRooms.map((sample) => (
+              <div
+                key={sample.id}
+                className={`sample-room-item ${
+                  selectedSample?.id === sample.id ? "selected" : ""
                 }`}
-              onClick={() => handleSampleSelect(sample)}
-            >
-              <img
-                loading="lazy"
-                src={sample.thumbnailUrl}
-                alt={sample.name}
-                className="sample-image"
-              />
-            </div>
-          ))}
+                onClick={() => handleSampleSelect(sample)}
+              >
+                <img
+                  loading="lazy"
+                  src={sample.thumbnailUrl}
+                  alt={sample.name}
+                  className="sample-image"
+                />
+              </div>
+            ))}
+          </div>
+          <button className="skip-btn-bottom" onClick={handleSkip}>
+            {t('common.next')}
+          </button>
         </div>
-        <button className="skip-btn-bottom" onClick={handleSkip}>
-          {t('common.next')}
-        </button>
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          onChange={handleFileChange}
-          style={{ display: "none" }}
-        />
       </div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        onChange={handleFileChange}
+        style={{ display: "none" }}
+      />
     </div>
   );
 }

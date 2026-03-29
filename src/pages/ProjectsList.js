@@ -7,7 +7,7 @@ import { useTranslation } from "react-i18next";
 
 const ProjectsList = () => {
   const navigate = useNavigate();
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [projects, setProjects] = useState([]);
@@ -34,6 +34,20 @@ const ProjectsList = () => {
   const filteredProjects = projects.filter((project) =>
     project.name.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  const formatProjectDate = (value) => {
+    const parsedDate = new Date(value);
+
+    if (Number.isNaN(parsedDate.getTime())) {
+      return value;
+    }
+
+    return new Intl.DateTimeFormat(i18n.language || undefined, {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    }).format(parsedDate);
+  };
 
   return (
     <div className="projects-list-content-wrapper">
@@ -105,8 +119,11 @@ const ProjectsList = () => {
                   titleClassName="project-item-name"
                 />
                 {project.createdDate && (
-                  <div className="project-item-created-date">
-                    {project.createdDate}
+                  <div
+                    className="project-item-created-date"
+                    title={project.createdDate}
+                  >
+                    {formatProjectDate(project.createdDate)}
                   </div>
                 )}
               </div>

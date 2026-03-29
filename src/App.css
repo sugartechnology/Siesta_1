@@ -11,7 +11,9 @@ body {
     "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow: hidden;
+  min-height: 100vh;
+  overflow-x: hidden;
+  overflow-y: auto;
   background: linear-gradient(to right, #ffffff 39.074%, #d2d2d2 126.77%);
 
 }
@@ -29,7 +31,7 @@ code {
   justify-content: center;*/
   display: flex;
   flex-direction: column;
-  height: 100%;
+  min-height: 100vh;
   padding: 20px 31px 31px 31px;
   gap: 25px;
 }
@@ -42,8 +44,9 @@ code {
   box-sizing: border-box;
   /*height: 100vh;
   padding: 44px 31px 31px 31px;*/
-  flex: 1;
-  overflow: scroll;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: visible;
 }
 
 .portrate-menu {
@@ -70,7 +73,7 @@ code {
 
 @media (max-width: 490px) {
   .App {
-    padding: 10px 10px 0px 10px !important;
+    padding: 10px 10px calc(108px + env(safe-area-inset-bottom)) 10px !important;
   }
 }
 
@@ -78,7 +81,7 @@ code {
   .App {
     gap: 10px;
     /*background: linear-gradient(to top, #d2d2d2 0%, #ffffff 75%);*/
-    padding-bottom: 10px;
+    padding-bottom: calc(108px + env(safe-area-inset-bottom));
   }
 
   .app-content {
@@ -97,7 +100,7 @@ code {
 }
 
 #root {
-  width: 100vw;
-  height: 100vh;
-  overflow: scroll;
+  width: 100%;
+  min-height: 100vh;
+  overflow: visible;
 }

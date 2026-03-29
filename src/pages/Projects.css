@@ -12,9 +12,10 @@
   display: flex;
   flex-direction: column;
   width: 100%;
-  height: 100%;
-  gap: 25px;
-  justify-content: space-between;
+  min-height: fit-content;
+  gap: 24px;
+  justify-content: flex-start;
+  padding-bottom: 8px;
 }
 
 /* Top Menu - Same as other pages */
@@ -99,21 +100,34 @@
 .new-project-section {
   position: relative;
   width: 100%;
-  height: 320px;
+  min-height: clamp(240px, 28vw, 320px);
   border-radius: 30px;
   overflow: hidden;
   cursor: pointer;
   transition: transform 0.3s ease, box-shadow 0.3s ease;
-  margin-bottom: 10px;
+  border: none;
+  background: transparent;
+  padding: clamp(24px, 4vw, 40px);
+  display: grid;
+  place-items: center;
+  flex: 0 0 auto;
+  isolation: isolate;
+  text-align: center;
+  appearance: none;
 }
 
 .new-project-section:hover {
   transform: translateY(-5px);
 }
 
+.new-project-section:focus-visible {
+  outline: 2px solid #000;
+  outline-offset: 4px;
+}
+
 .new-project-bg {
   position: absolute;
-  left: 0;
+  inset: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
@@ -131,66 +145,77 @@
 }
 
 .new-project-content {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 42px;
+  justify-content: center;
+  gap: clamp(18px, 3vw, 42px);
   z-index: 2;
+  width: min(100%, 680px);
 }
 
 .new-project-title {
   font-family: "Poppins", sans-serif;
-  font-size: 60px;
+  font-size: clamp(32px, 5vw, 60px);
   font-weight: 600;
-  line-height: 1.3;
+  line-height: 1.15;
   color: #000;
   margin: 0;
   text-align: center;
 }
 
 .create-btn {
-  padding: 0px 120px;
-  height: 51px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px clamp(36px, 8vw, 120px);
+  min-height: 51px;
+  min-width: min(100%, clamp(220px, 32vw, 340px));
   border-radius: 80px;
   border: 1px solid #000;
   background: rgba(0, 0, 0, 0.1);
   font-family: "Poppins", sans-serif;
   font-size: 16px;
   font-weight: 700;
+  line-height: 1.2;
   color: #000;
-  cursor: pointer;
   transition: all 0.3s ease;
+  white-space: nowrap;
+  pointer-events: none;
 }
 
-.create-btn:hover {
+.new-project-section:hover .create-btn,
+.new-project-section:focus-visible .create-btn {
   background: rgba(0, 0, 0, 0.2);
-  transform: scale(1.05);
 }
 
 /* Recent Projects Section */
 .recent-projects-section {
+  --project-card-height: clamp(260px, 27vw, 370px);
   background: #161616;
   border-radius: 30px 30px 30px 88px;
-  flex-direction: row;
-  padding: 5vw 0 5vw 5vw;
-  display: flex;
+  padding: clamp(24px, 5vw, 56px) clamp(24px, 3vw, 32px) clamp(24px, 5vw, 56px)
+    clamp(24px, 5vw, 56px);
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
+  gap: clamp(20px, 4vw, 48px);
+  align-items: stretch;
   position: relative;
-  flex: 1;
+  flex: 0 0 auto;
+  min-height: fit-content;
 }
 
 .recent-projects-header {
   display: flex;
-  justify-content: space-around;
+  justify-content: space-between;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
+  gap: 24px;
   position: relative;
   z-index: 10;
   flex-shrink: 0;
-  padding: 0 20px;
+  min-height: 100%;
 }
 
 .recent-projects-title {
@@ -203,8 +228,12 @@
 }
 
 .projects-page-btn {
-  padding: 0px 40px;
-  height: 50px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  align-self: flex-start;
+  padding: 0 40px;
+  min-height: 50px;
   border-radius: 80px;
   border: 1px solid #fff;
   background: rgba(255, 255, 255, 0.1);
@@ -215,6 +244,7 @@
   cursor: pointer;
   transition: all 0.3s ease;
   flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .projects-page-btn:hover {
@@ -225,17 +255,20 @@
 /* Projects Slider Wrapper */
 .projects-slider-wrapper {
   position: relative;
-  flex: 1;
   display: flex;
-  align-items: center;
+  align-items: stretch;
   overflow: hidden;
+  min-width: 0;
+  min-height: var(--project-card-height);
 }
 
 /* Projects Slider */
 .projects-slider-container {
   position: relative;
   width: 100%;
-  overflow: scroll;
+  overflow: hidden;
+  min-width: 0;
+  min-height: var(--project-card-height);
 }
 
 .project-slide {
@@ -245,12 +278,13 @@
   display: flex !important;
   justify-content: center;
   align-items: center;
+  height: var(--project-card-height);
 }
 
 .project-card {
   position: relative;
-  width: 99%;
-  height: 27vw;
+  width: calc(100% - 4px);
+  height: var(--project-card-height);
   border-radius: 20px 20px 20px 60px;
   overflow: hidden;
   background: #f0f0f0;
@@ -284,13 +318,38 @@
   color: #000;
   margin: 0;
   text-align: center;
+  max-width: calc(100% - 32px);
   white-space: nowrap;
-  /* Semi-transparent background with backdrop blur for a frosted-glass effect */
+  overflow: hidden;
+  text-overflow: ellipsis;
   background: rgba(255, 255, 255, 0.45);
   -webkit-backdrop-filter: blur(6px);
   backdrop-filter: blur(6px);
   padding: 5px 15px;
   border-radius: 10px;
+}
+
+.project-sections {
+  position: absolute;
+  bottom: 68px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: calc(100% - 40px);
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: #000;
+  margin: 0;
+  text-align: center;
+  background: rgba(255, 255, 255, 0.35);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  padding: 4px 12px;
+  border-radius: 999px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* Slider Arrow */
@@ -352,10 +411,10 @@
 .slick-list {
   position: relative;
   display: block;
-  overflow: visible !important;
+  overflow: hidden !important;
   margin: 0;
   padding: 0;
-  height: 370px;
+  height: var(--project-card-height);
 }
 
 .slick-track {
@@ -364,14 +423,14 @@
   left: 0;
   display: flex !important;
   align-items: center;
-  height: 370px;
+  height: var(--project-card-height);
 }
 
 .slick-slide {
   display: none;
   float: left;
-  height: 370px;
-  min-height: 370px;
+  height: var(--project-card-height);
+  min-height: var(--project-card-height);
 }
 
 .slick-slide.slick-active {
@@ -402,26 +461,34 @@
 
 @media (orientation: portrait) {
   .recent-projects-section {
-    /*height: 110vw;*/
-    gap: 0.1vw;
+    --project-card-height: clamp(240px, 60vw, 340px);
+    gap: 20px;
     border-radius: 20px 20px 70px 20px;
-    flex-direction: column;
-    flex: 1;
+    grid-template-columns: 1fr;
+    padding: 24px 20px 28px;
+    min-height: auto;
   }
 
   .projects-page-content {
-    gap: 0.1vw;
+    gap: 12px;
+  }
+
+  .recent-projects-header {
+    align-items: center;
+    gap: 16px;
+    min-height: 0;
+    text-align: center;
   }
 
   .recent-projects-title {
-    font-size: 5vw;
+    font-size: clamp(26px, 5vw, 36px);
     font-weight: 500;
     width: auto;
     letter-spacing: 1.5px;
   }
 
   .new-project-title {
-    font-size: 5vw;
+    font-size: clamp(28px, 5vw, 42px);
     backdrop-filter: blur(3px);
     padding: 1vh 7vw;
     border-radius: 8px;
@@ -432,32 +499,54 @@
   }
 
   .new-project-content {
-    gap: 3vw;
+    width: 100%;
+    gap: 16px;
+  }
+
+  .new-project-section {
+    min-height: 220px;
+    padding: 24px 20px;
+  }
+
+  .create-btn {
+    width: min(100%, 320px);
+    min-width: 0;
+    padding: 14px 32px;
   }
 
   .projects-page-btn {
-    padding: 1vh 11vw;
-    height: 5.5vh;
-    width: 70vw;
+    width: min(100%, 320px);
+    min-height: 52px;
+    padding: 0 24px;
     font-size: 16px;
     font-weight: 500;
-    margin-top: 4vw;
-    margin-left: -2vw;
+    margin: 0;
+    align-self: center;
+  }
+
+  .projects-slider-wrapper {
+    overflow: visible;
   }
 
   .project-card {
-    height: 60vw;
     width: 100%;
     border-radius: 20px 20px 60px 20px;
   }
 
-  .slick-initialized .slick-slide {
-    width: 60vw;
+  .project-name {
+    bottom: 16px;
+    max-width: calc(100% - 24px);
+    font-size: 17px;
   }
-}
 
-@media (max-width: 490px) {
-  .slick-initialized .slick-slide {
-    width: 60vw;
+  .project-sections {
+    bottom: 56px;
+    max-width: calc(100% - 28px);
+    font-size: 12px;
+  }
+
+  .slider-arrow,
+  .slider-overlay {
+    display: none;
   }
 }

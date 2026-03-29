@@ -13,6 +13,8 @@
   flex-direction: column;
   box-sizing: border-box;
   position: relative;
+  width: 100%;
+  min-height: fit-content;
 }
 
 /* Top Menu - Similar to other pages */
@@ -88,13 +90,27 @@
 
 .project-item-created-date {
   position: absolute;
-  bottom: 4px;
-  right: 12px;
+  right: 18px;
+  bottom: 18px;
+  z-index: 12;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  max-width: calc(100% - 36px);
+  padding: 6px 12px;
+  border-radius: 999px;
   font-family: "Poppins", sans-serif;
   font-size: 12px;
   font-weight: 400;
   color: white;
-  text-align: left;
+  text-align: center;
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  background: rgba(0, 0, 0, 0.42);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
 }
 
 .projects-list-top-menu .menu-right {
@@ -160,14 +176,13 @@
 
 /* Projects Grid */
 .projects-grid {
-  flex: 1;
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
   grid-template-rows: auto;
   gap: 25px;
   padding: 40px 10px 60px;
   align-content: flex-start;
-  overflow-y: auto;
+  overflow: visible;
 }
 
 .project-item-card {
@@ -184,6 +199,14 @@
   width: 100%;
   height: 280px;
   aspect-ratio: 6 / 7;
+  min-width: 0;
+}
+
+.project-item-card > .hover-thumbnail-button {
+  width: 100% !important;
+  height: 100%;
+  border-radius: inherit;
+  box-shadow: none;
 }
 
 .project-item-card:hover {
