@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Bağımlılıkları yükle
-RUN npm ci --only=production=false
+RUN npm ci --only=production=false --force
 
 # .env dosyasını kopyala (varsa)
 COPY .env* ./
