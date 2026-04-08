@@ -7,7 +7,7 @@ WORKDIR /app
 COPY package*.json ./
 
 # Bağımlılıkları yükle
-RUN npm ci --only=production=false --force
+RUN npm ci --legacy-peer-deps
 
 # .env dosyasını kopyala (varsa)
 COPY .env* ./
