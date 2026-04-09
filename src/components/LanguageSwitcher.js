@@ -1,11 +1,12 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import { setAppLanguagePreference } from '../utils/nativeAppLanguage';
 
 const LanguageSwitcher = () => {
     const { i18n } = useTranslation();
 
     const changeLanguage = (lng) => {
-        i18n.changeLanguage(lng);
+        setAppLanguagePreference(i18n, lng);
     };
 
     return (
