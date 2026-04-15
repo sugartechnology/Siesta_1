@@ -98,6 +98,7 @@
 .room-types-grid {
   flex: 1;
   display: grid;
+  justify-content: center;
   grid-template-columns: repeat(4, 307px);
   /*grid-template-rows: repeat(2, 392px);*/
   gap: 25px;

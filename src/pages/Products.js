@@ -540,69 +540,7 @@ export default function Products() {
                     className="product-image"
                   />
 
-                  {/* Product Actions (Visible on hover) 
-                  <div className="product-actions">
-                    <button className="action-btn wishlist">
-                      <svg
-                        width="18"
-                        height="18"
-                        viewBox="0 0 18 18"
-                        fill="none"
-                      >
-                        <path
-                          d="M15.75 3.375C14.625 2.25 12.75 2.0625 11.25 2.8125C10.5 3.1875 9.75 3.9375 9 4.875C8.25 3.9375 7.5 3.1875 6.75 2.8125C5.25 2.0625 3.375 2.25 2.25 3.375C0.75 4.875 0.75 7.3125 2.25 8.8125L9 15.5625L15.75 8.8125C17.25 7.3125 17.25 4.875 15.75 3.375Z"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </button>
-                    <button className="action-btn quick-view">
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                      >
-                        <path
-                          d="M10 7.5C8.625 7.5 7.5 8.625 7.5 10C7.5 11.375 8.625 12.5 10 12.5C11.375 12.5 12.5 11.375 12.5 10C12.5 8.625 11.375 7.5 10 7.5Z"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinejoin="round"
-                        />
-                        <path
-                          d="M2.5 10C2.5 10 5 5 10 5C15 5 17.5 10 17.5 10C17.5 10 15 15 10 15C5 15 2.5 10 2.5 10Z"
-                          stroke="currentColor"
-                          strokeWidth="1.5"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </button>
-                    <button
-                      className="action-btn variants"
-                      onClick={() => handleAddToCart(product)}
-                    >
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                      >
-                        <path
-                          d="M10 5C10.5523 5 11 4.55228 11 4C11 3.44772 10.5523 3 10 3C9.44772 3 9 3.44772 9 4C9 4.55228 9.44772 5 10 5Z"
-                          fill="currentColor"
-                        />
-                        <path
-                          d="M10 11C10.5523 11 11 10.5523 11 10C11 9.44772 10.5523 9 10 9C9.44772 9 9 9.44772 9 10C9 10.5523 9.44772 11 10 11Z"
-                          fill="currentColor"
-                        />
-                        <path
-                          d="M10 17C10.5523 17 11 16.5523 11 16C11 15.4477 10.5523 15 10 15C9.44772 15 9 15.4477 9 16C9 16.5523 9.44772 17 10 17Z"
-                          fill="currentColor"
-                        />
-                      </svg>
-                    </button>
-                  </div> */}
+       
                 </div>
 
                 <div className="product-info">
