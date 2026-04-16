@@ -395,6 +395,8 @@ const SectionDetails = () => {
 
   const roomType = getRoomType(section);
   const latestDesign = section.designs?.[0];
+  const resultImageUrl = getResultImageUrl(section);
+  const hasGeneratedImage = Boolean(resultImageUrl);
   const desabled =
     latestDesign?.status === "PROCESSING" ||
     (latestDesign &&
@@ -588,6 +590,27 @@ const SectionDetails = () => {
 
         {/* Right Panel - Section Information */}
         <div className="info-panel">
+          {/* Last Generated */}
+          <div className="last-generated-card">
+            <div className="last-generated-card-header">
+              <h3 className="sd-info-title">{t('sectionDetails.lastGenerated')}</h3>
+              <p className="sd-info-description">
+                {t('sectionDetails.lastGeneratedDesc')}
+              </p>
+            </div>
+            <img
+              src={resultImageUrl || "/assets/logo_big.png"}
+              alt="Last Generated"
+              className={`last-generated-hero${hasGeneratedImage ? " clickable-image" : ""}`}
+              onClick={hasGeneratedImage ? handleImageClick : undefined}
+              onError={(e) => {
+                console.log("Last generated image error:", e.target.src);
+                e.target.src = "/assets/logo_big.png";
+              }}
+            />
+          </div>
+          <div className="info-divider"></div>
+
           {/* Reference Image */}
           <div className="info-item">
             <img
@@ -595,8 +618,7 @@ const SectionDetails = () => {
                 section.rootImageUrl ||
                 section.thumbnailUrl ||
                 latestDesign?.thumbnailUrl ||
-                latestDesign?.resultImageUrl ||
-                latestDesign?.imageUrl ||
+                resultImageUrl ||
                 "/assets/logo_big.png"
               }
               alt="Reference"
@@ -671,40 +693,19 @@ const SectionDetails = () => {
               onChange={(e) => setProjectDetails(e.target.value)}
               placeholder={t('sectionDetails.promptPlaceholder')}
             />
-
-
           </div>
+
+          <button
+            className="generate-design-button"
+            onClick={handleRegenerate}
+            disabled={desabled}
+          >
+            {hasGeneratedImage
+              ? t('sectionDetails.regenerate')
+              : t('sectionDetails.generate')}
+          </button>
 
           <div className="info-divider"></div>
-
-          {/* Last Generated */}
-          <div className="info-item last-generated-item">
-            <img
-              src={getResultImageUrl(section) || "/assets/logo_big.png"}
-              alt="Last Generated"
-              className="info-thumbnail clickable-image last-generated-thumbnail"
-              onClick={handleImageClick}
-              onError={(e) => {
-                console.log("Last generated image error:", e.target.src);
-                e.target.src = "/assets/logo_big.png";
-              }}
-            />
-            <div className="info-content last-generated-content">
-              <h3 className="sd-info-title">{t('sectionDetails.lastGenerated')}</h3>
-              <p className="sd-info-description">
-                {t('sectionDetails.lastGeneratedDesc')}
-              </p>
-              <button
-                className="change-btn"
-                onClick={handleRegenerate}
-                disabled={desabled}
-              >
-                {(latestDesign?.resultImageUrl || latestDesign?.imageUrl)
-                  ? t('sectionDetails.regenerate')
-                  : t('sectionDetails.generate')}
-              </button>
-            </div>
-          </div>
         </div>
       </div>
 
