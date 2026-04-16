@@ -8,6 +8,7 @@ import NewProjectModal from "../components/NewProjectModal";
 import { getNextPage, startNewSectionFlow } from "../utils/NavigationState";
 import "./Projects.css";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../auth/useAuth";
 
 const getSlidesToShow = (width) => {
   if (width > 1024) {
@@ -24,6 +25,7 @@ const getSlidesToShow = (width) => {
 export default function Projects() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { requireAuth } = useAuth();
   const sliderRef = useRef(null);
   const [showNewProjectModal, setShowNewProjectModal] = useState(false);
   const [projects, setProjects] = useState([]);
@@ -79,7 +81,12 @@ export default function Projects() {
     navigate(`/projects-details/${project.id}`, { state: { project } });
   };
 
-  const handleNewProjectClick = () => {
+  const handleNewProjectClick = async () => {
+    const isAuthenticated = await requireAuth();
+    if (!isAuthenticated) {
+      return;
+    }
+
     setShowNewProjectModal(true);
   };
 

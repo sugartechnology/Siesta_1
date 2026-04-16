@@ -9,6 +9,33 @@ import {
 import "./Products.css";
 import { useTranslation } from "react-i18next";
 
+const normalizeImageList = (images) =>
+  Array.isArray(images)
+    ? images.map((img) => (typeof img === "string" ? img : img?.url)).filter(Boolean)
+    : [];
+
+const normalizeCatalogProduct = (item) => {
+  const firstPrice = Array.isArray(item?.prices) ? item.prices[0] : null;
+  const rawPrice = item?.price ?? firstPrice?.amount ?? null;
+  const numericPrice =
+    rawPrice === null || rawPrice === undefined ? null : Number(rawPrice);
+
+  return {
+    ...item,
+    productId: item?.id ?? item?.productId,
+    name: item?.name ?? item?.baseName,
+    code: item?.sku ?? item?.code ?? "",
+    price: Number.isNaN(numericPrice) ? null : numericPrice,
+    currency:
+      item?.currency ??
+      firstPrice?.currency?.currencyCode ??
+      firstPrice?.currencyCode ??
+      null,
+    images: normalizeImageList(item?.images),
+    thumbnailUrl: item?.thumbnailUrl ?? item?.thumbnail ?? null,
+  };
+};
+
 export default function Products() {
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -83,6 +110,31 @@ export default function Products() {
   // Filter options
 
   const [variants, setVariants] = useState([]);
+
+  const formatPrice = (product) => {
+    if (product?.price === null || product?.price === undefined) {
+      return "-";
+    }
+
+    const amount = Number(product.price);
+    if (Number.isNaN(amount)) {
+      return "-";
+    }
+
+    if (product.currency) {
+      try {
+        return new Intl.NumberFormat(undefined, {
+          style: "currency",
+          currency: product.currency,
+          maximumFractionDigits: 2,
+        }).format(amount);
+      } catch (error) {
+        console.warn("Price formatting failed:", error);
+      }
+    }
+
+    return `$${amount.toFixed(2)}`;
+  };
 
   const removeFilter = (filterType, filter) => {
     setFilterState((prev) => {
@@ -276,14 +328,7 @@ export default function Products() {
       const data = await fetchProducts({}, filter, pageNum);
       // CRM PagedFilterable: { content, page: { totalPages } }
       const rawItems = data.content ?? [];
-      const items = rawItems.map((item) => ({
-        ...item,
-        productId: item.id ?? item.productId,
-        name: item.name ?? item.baseName,
-        images: Array.isArray(item.images)
-          ? item.images.map((img) => (typeof img === "string" ? img : img?.url))
-          : item.images ?? [],
-      }));
+      const items = rawItems.map(normalizeCatalogProduct);
       const totalPages = data.page?.totalPages ?? 0;
       setHasMore(pageNum + 1 < totalPages);
       setProducts((prev) => (pageNum === 0 ? items : [...prev, ...items]));
@@ -329,10 +374,16 @@ export default function Products() {
   const handleProductClick = (product) => {
     console.log("product", product);
     setSelectedProduct(product);
-    fetchProductVariants(product.name ? product.name.toLowerCase() : "").then(
+    fetchProductVariants(product.name || "").then(
       (variants) => {
-        const v = variants.reduce((acc, variant) => {
-          const f = acc.find((v) => v.sku === variant.sku);
+        const v = variants
+          .map(normalizeCatalogProduct)
+          .reduce((acc, variant) => {
+          const f = acc.find(
+            (existingVariant) =>
+              existingVariant.sku === variant.sku ||
+              existingVariant.productId === variant.productId
+          );
           if (!f) {
             acc.push(variant);
           }
@@ -549,7 +600,7 @@ export default function Products() {
                       Code: {product.code || product.productId.substring(0, 3)}
                     </p>
                     <h3 className="product-name">{product.name}</h3>
-                    <p className="p-product-price">${product.price}</p>
+                    <p className="p-product-price">{formatPrice(product)}</p>
                   </div>
                   {/* Seçili ürün kontrolü */}
                   {getProductQuantity(product.productId) > 0 ? (

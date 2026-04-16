@@ -27,10 +27,15 @@ export default function Camera() {
   const [sampleRooms, setSampleRooms] = useState([]);
 
   useEffect(() => {
-    fetchSampleRooms().then((data) => {
-      console.log("Sample rooms:", data);
-      setSampleRooms(data);
-    });
+    fetchSampleRooms()
+      .then((data) => {
+        console.log("Sample rooms:", data);
+        setSampleRooms(data);
+      })
+      .catch((error) => {
+        console.error("Error loading sample rooms:", error);
+        setSampleRooms([]);
+      });
   }, []);
 
   // Debug: hasPermission state değişimini takip et
@@ -223,13 +228,8 @@ export default function Camera() {
     } catch (error) {
       console.error("Error downloading sample image:", error);
       // Fallback: original image kullan
-      navigate("/photograph", {
-        state: {
-          project,
-          image: sample.image,
-          sampleRoom: sample,
-        },
-      });
+      const nextPage = getNextPage("camera", { image: sample.imageUrl });
+      navigate(nextPage);
     }
   };
 

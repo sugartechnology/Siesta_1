@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
 import {
   getCurrentUser,
@@ -11,7 +10,6 @@ import "./AccountSettings.css";
 import { useTranslation } from "react-i18next";
 
 const AccountSettings = () => {
-  const navigate = useNavigate();
   const auth = useAuth();
   const { t } = useTranslation();
   const [user, setUser] = useState(null);
@@ -28,6 +26,37 @@ const AccountSettings = () => {
 
   const [isSuspended, setIsSuspended] = useState(false);
 
+  const mapUserToViewModel = (userData) => {
+    const fullName =
+      [userData?.firstName, userData?.lastName].filter(Boolean).join(" ") ||
+      userData?.username ||
+      "";
+
+    return {
+      id: userData?.id,
+      username: userData?.username || "",
+      email: userData?.email || "",
+      name: fullName,
+      firstName: userData?.firstName || "",
+      lastName: userData?.lastName || "",
+      status: userData?.status || "ACTIVE",
+    };
+  };
+
+  const buildUpdatePayload = () => {
+    const trimmedName = formData.name.trim();
+    const nameParts = trimmedName ? trimmedName.split(/\s+/) : [];
+    const firstName = nameParts[0] || user?.firstName || user?.username || "";
+    const lastNameFromInput = nameParts.slice(1).join(" ").trim();
+
+    return {
+      username: user?.username || formData.email.trim(),
+      email: formData.email.trim(),
+      firstName,
+      lastName: lastNameFromInput || user?.lastName || null,
+    };
+  };
+
   useEffect(() => {
     loadUserData();
   }, []);
@@ -35,13 +64,13 @@ const AccountSettings = () => {
   const loadUserData = async () => {
     try {
       setLoading(true);
-      const userData = await getCurrentUser();
+      const userData = mapUserToViewModel(await getCurrentUser());
       setUser(userData);
       setFormData({
         name: userData.name || "",
         email: userData.email || "",
       });
-      setIsSuspended(userData.suspended || false);
+      setIsSuspended(userData.status === "SUSPENDED");
     } catch (error) {
       console.error("Error loading user data:", error);
       setError(t('accountSettings.loadError'));
@@ -65,7 +94,7 @@ const AccountSettings = () => {
     setSuccess("");
 
     try {
-      await updateUserProfile(formData);
+      await updateUserProfile(buildUpdatePayload());
       setSuccess(t('accountSettings.updateSuccess'));
       await loadUserData();
     } catch (error) {

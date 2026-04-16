@@ -4,9 +4,11 @@ import LocationMapModal from "./LocationMapModal";
 import { createProject } from "../api/Api";
 import "./NewProjectModal.css";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../auth/useAuth";
 
 export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
   const { t } = useTranslation();
+  const { requireAuth } = useAuth();
   const [formData, setFormData] = useState({
     projectName: "",
     sectionName: "",
@@ -61,6 +63,12 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
     setSubmitError(null);
 
     try {
+      const isAuthenticated = await requireAuth();
+      if (!isAuthenticated) {
+        setSubmitError("Please sign in to create a project.");
+        return;
+      }
+
       // Prepare project data for API (ProjectDTO format)
       const projectData = {
         name: formData.projectName,
@@ -125,7 +133,9 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
       onClose();
     } catch (error) {
       console.error("Error creating project:", error);
-      setSubmitError("Failed to create project. Please try again.");
+      setSubmitError(
+        error?.message || "Failed to create project. Please try again."
+      );
     } finally {
       setIsSubmitting(false);
     }

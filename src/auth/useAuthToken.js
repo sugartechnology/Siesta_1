@@ -1,25 +1,37 @@
 import { useState, useEffect, useCallback } from "react";
 
+const normalizeToken = (value) => {
+  if (!value || value === "null" || value === "undefined") {
+    return null;
+  }
+  return value;
+};
+
 export function useAuthToken(storageType = "local") {
   const storage =
     storageType === "local" ? window.localStorage : window.sessionStorage;
 
   const [token, setTokenState] = useState(() => {
     try {
-      console.log("Token yüklendi:", storage.getItem("auth_token"));
-      return storage.getItem("auth_token");
+      const storedToken = normalizeToken(storage.getItem("auth_token"));
+      console.log("Token yuklendi:", storedToken);
+      return storedToken;
     } catch {
       return null;
     }
   });
 
-  // Token kaydet
   const setToken = useCallback(
     (newToken) => {
       try {
-        storage.setItem("auth_token", newToken);
-        console.log("Token kaydedildi:", newToken);
-        setTokenState(newToken);
+        const normalizedToken = normalizeToken(newToken);
+        if (normalizedToken) {
+          storage.setItem("auth_token", normalizedToken);
+        } else {
+          storage.removeItem("auth_token");
+        }
+        console.log("Token kaydedildi:", normalizedToken);
+        setTokenState(normalizedToken);
       } catch (err) {
         console.error("Token kaydedilemedi:", err);
       }
@@ -27,7 +39,6 @@ export function useAuthToken(storageType = "local") {
     [storage]
   );
 
-  // Token sil
   const removeToken = useCallback(() => {
     try {
       storage.removeItem("auth_token");
@@ -37,12 +48,12 @@ export function useAuthToken(storageType = "local") {
     }
   }, [storage]);
 
-  // Tarayıcı sekmeleri arasında senkronizasyon
   useEffect(() => {
     const handleStorageChange = (e) => {
       if (e.key === "auth_token") {
-        console.log("Storage değişikliği algılandı:", e.newValue);
-        setTokenState(e.newValue);
+        const nextToken = normalizeToken(e.newValue);
+        console.log("Storage degisikligi algilandi:", nextToken);
+        setTokenState(nextToken);
       }
     };
     window.addEventListener("storage", handleStorageChange);

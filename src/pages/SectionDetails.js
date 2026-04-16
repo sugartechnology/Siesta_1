@@ -32,10 +32,12 @@ import {
 import "./SectionDetails.css";
 import SliderComponent from "../components/SliderComponent";
 import { useTranslation } from "react-i18next";
+import { useAuth } from "../auth/useAuth";
 
 const SectionDetails = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { requireAuth } = useAuth();
   const {
     startGeneration,
     registerSection,
@@ -49,6 +51,7 @@ const SectionDetails = () => {
     setIsFullscreenLoadingSpinnerVisible,
   ] = useState(false);
   const [designGenerationError, setDesignGenerationError] = useState(null);
+  const [projectCreateError, setProjectCreateError] = useState(null);
   // NavigationState parametrelerini section'a aktar ve temizle
   const initialSection = NavigationState.section || {
     rootImageUrl: "",
@@ -144,34 +147,63 @@ const SectionDetails = () => {
   }, [subscribeSectionUpdates]);
 
   useEffect(() => {
-    //
-    // Get section by id
-    if (NavigationState.sectionMode === "update-section") {
-      if (!NavigationState.project || !NavigationState.project.id) {
-        createProject({
-          ...DefaultNavigationState.project,
-        }).then((project) => {
-          section.projectId = project.id;
-          project.sections = [section];
-          NavigationState.project = project;
-          NavigationState.section = section;
+    let isMounted = true;
+
+    const initializeSection = async () => {
+      if (NavigationState.sectionMode === "update-section") {
+        if (!NavigationState.project || !NavigationState.project.id) {
+          const isAuthenticated = await requireAuth();
+          if (!isAuthenticated) {
+            if (isMounted) {
+              setProjectCreateError("Please sign in to create a project.");
+            }
+            return;
+          }
+
+          try {
+            const project = await createProject({
+              ...DefaultNavigationState.project,
+            });
+
+            if (!isMounted) {
+              return;
+            }
+
+            setProjectCreateError(null);
+            section.projectId = project.id;
+            project.sections = [section];
+            NavigationState.project = project;
+            NavigationState.section = section;
+            setContextSection(section);
+            setProject(project);
+            updateSection(section, project.id);
+          } catch (error) {
+            console.error("Error creating project:", error);
+            if (isMounted) {
+              setProjectCreateError(
+                error?.message || "Failed to create project. Please try again."
+              );
+            }
+          }
+        } else {
           setContextSection(section);
-          setProject(project);
-          updateSection(section, project.id);
-        });
-      } else {
-        setContextSection(section);
-        updateSection(section);
+          updateSection(section);
+        }
+
+        NavigationState.sectionMode = undefined;
       }
 
-      NavigationState.sectionMode = undefined;
-    }
+      if (section.productIds && section.productIds.length > 0) {
+        updateProducts(section);
+      }
+    };
 
-    if (section.productIds && section.productIds.length > 0) {
-      updateProducts(section);
-    }
-    //
-  }, []);
+    initializeSection();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [requireAuth]);
 
   const updateSection = async (section, projectId = undefined) => {
     setIsFullscreenLoadingSpinnerVisible(true);
@@ -372,6 +404,11 @@ const SectionDetails = () => {
 
   return (
     <div className="section-details-container">
+      {projectCreateError && (
+        <div className="section-details-error-banner" role="alert">
+          {projectCreateError}
+        </div>
+      )}
       {designGenerationError && (
         <div className="section-details-error-banner" role="alert">
           {designGenerationError}

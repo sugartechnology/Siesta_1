@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useAuthToken } from "./useAuthToken";
 
@@ -6,21 +6,24 @@ export const AuthContext = createContext(null);
 
 export function AuthProvider({ children }) {
   const API_URL = process.env.REACT_APP_API_URL;
+  const companySlug = process.env.REACT_APP_COMPANY_SLUG || "siesta";
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   const { setToken, token } = useAuthToken("local");
 
-  useEffect(() => {
-    checkSession();
-    //setLoading(false);
-  }, []);
+  function shouldRedirectAuthenticatedUserToHome() {
+    const currentPath = window.location.pathname;
+    return currentPath === "/" || currentPath === "/login";
+  }
 
-  /** Map CRM UserResponse (user/me) to Siesta user shape */
   function mapUserMeToSiesta(data) {
     if (!data) return null;
-    const name = [data.firstName, data.lastName].filter(Boolean).join(" ") || data.username || "";
+    const name =
+      [data.firstName, data.lastName].filter(Boolean).join(" ") ||
+      data.username ||
+      "";
     return {
       id: data.id,
       name,
@@ -28,34 +31,79 @@ export function AuthProvider({ children }) {
     };
   }
 
-  async function checkSession() {
-    try {
-      const res = await fetch(API_URL + "/user/me", {
-        headers: { Authorization: "Bearer " + token },
-        credentials: "include",
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setUser(mapUserMeToSiesta(data));
-        navigate("/home");
-      } else {
+  const buildAuthHeaders = useCallback(
+    (authToken) => {
+      return {
+        ...(authToken ? { Authorization: "Bearer " + authToken } : {}),
+        ...(companySlug ? { "X-Company-Slug": companySlug } : {}),
+      };
+    },
+    [companySlug]
+  );
+
+  const validateSession = useCallback(
+    async ({ redirectOnSuccess = false, redirectOnFailure = true } = {}) => {
+      try {
+        const res = await fetch(API_URL + "/user/me", {
+          headers: buildAuthHeaders(token),
+          credentials: "include",
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setUser(mapUserMeToSiesta(data));
+          if (redirectOnSuccess && shouldRedirectAuthenticatedUserToHome()) {
+            navigate("/home");
+          }
+          return true;
+        }
+
         setUser(null);
         setToken(null);
-        navigate("/login");
+        if (redirectOnFailure) {
+          navigate("/login");
+        }
+        return false;
+      } catch (error) {
+        console.error("Session check failed:", error);
+        setUser(null);
+        setToken(null);
+        if (redirectOnFailure) {
+          navigate("/login");
+        }
+        return false;
       }
-    } catch (error) {
-      console.error("Session check failed:", error);
-      navigate("/login");
-      setUser(null);
+    },
+    [API_URL, buildAuthHeaders, navigate, setToken, token]
+  );
+
+  const checkSession = useCallback(async () => {
+    try {
+      await validateSession({
+        redirectOnSuccess: true,
+        redirectOnFailure: true,
+      });
     } finally {
       setLoading(false);
     }
-  }
+  }, [validateSession]);
 
-  /** Map CRM UserInfo (login response) to Siesta user shape */
+  const requireAuth = useCallback(async () => {
+    return validateSession({
+      redirectOnSuccess: false,
+      redirectOnFailure: true,
+    });
+  }, [validateSession]);
+
+  useEffect(() => {
+    checkSession();
+  }, [checkSession]);
+
   function mapLoginUserToSiesta(dataUser) {
     if (!dataUser) return { id: null, name: "", email: "" };
-    const name = [dataUser.firstName, dataUser.lastName].filter(Boolean).join(" ") || dataUser.username || "";
+    const name =
+      [dataUser.firstName, dataUser.lastName].filter(Boolean).join(" ") ||
+      dataUser.username ||
+      "";
     return {
       id: dataUser.id,
       name,
@@ -64,7 +112,6 @@ export function AuthProvider({ children }) {
   }
 
   async function login(username, password) {
-    const companySlug = process.env.REACT_APP_COMPANY_SLUG || "siesta";
     const postData = {
       username,
       password,
@@ -80,7 +127,7 @@ export function AuthProvider({ children }) {
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      throw new Error(data.error || "Giriş başarısız");
+      throw new Error(data.error || "Giris basarisiz");
     }
     setToken(data.accessToken);
     setUser(mapLoginUserToSiesta(data.user));
@@ -88,10 +135,10 @@ export function AuthProvider({ children }) {
 
   async function register(name, email, password) {
     const postData = {
-      name: name,
-      email: email,
-      password: password,
-      companySlug: process.env.REACT_APP_COMPANY_SLUG 
+      name,
+      email,
+      password,
+      companySlug,
     };
     const res = await fetch(API_URL + "/auth/register", {
       method: "POST",
@@ -103,17 +150,13 @@ export function AuthProvider({ children }) {
     });
     if (!res.ok) {
       const errorData = await res.json().catch(() => ({}));
-      throw new Error(errorData.message || "Kayıt başarısız");
+      throw new Error(errorData.message || "Kayit basarisiz");
     }
     const data = await res.json();
     return data;
   }
 
   async function logout() {
-    /*fetch(API_URL + "/auth/logout", {
-      method: "POST",
-      credentials: "include",
-    });*/
     setToken(null);
     setUser(null);
     navigate("/login");
@@ -125,13 +168,13 @@ export function AuthProvider({ children }) {
     login,
     logout,
     register,
+    requireAuth,
     isAuthenticated: !!user,
   };
 
   return (
     <AuthContext.Provider value={value}>
       {!loading && children}
-      {/*children*/}
     </AuthContext.Provider>
   );
 }

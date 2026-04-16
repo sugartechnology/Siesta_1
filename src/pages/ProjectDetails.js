@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate, useLocation, useParams } from "react-router-dom";
-import { getProjectById } from "../api/Api";
+import { useNavigate, useParams } from "react-router-dom";
+import { getProjectById, updateProjectName } from "../api/Api";
 import "./ProjectDetails.css";
 import EditableTitle from "../components/EditableTitle";
 import {
@@ -15,6 +15,7 @@ const ProjectDetails = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const [project, setProject] = useState(null);
+  const [projectError, setProjectError] = useState("");
 
   useEffect(() => {
     console.log("useEffect", id);
@@ -28,10 +29,16 @@ const ProjectDetails = () => {
 
         // Component hala mount edilmişse state'i güncelle
         if (isMounted) {
+          setProjectError("");
           setProject(response);
         }
       } catch (error) {
         console.error("Error fetching project:", error);
+        if (isMounted) {
+          setProjectError(
+            error?.message || "Failed to load project details. Please try again."
+          );
+        }
       }
     };
 
@@ -53,12 +60,35 @@ const ProjectDetails = () => {
     navigate(getNextPage());
   };
 
-  const handleTitleChange = (newTitle) => {
-    setProject((prev) => ({ ...prev, name: newTitle }));
+  const handleTitleChange = async (newTitle) => {
+    const trimmedTitle = newTitle?.trim();
+    if (!project?.id || !trimmedTitle) {
+      return;
+    }
+
+    const previousProject = project;
+    setProject((prev) => ({ ...prev, name: trimmedTitle }));
+
+    try {
+      const updatedProject = await updateProjectName(project.id, trimmedTitle);
+      setProject(updatedProject);
+      setProjectError("");
+    } catch (error) {
+      console.error("Error updating project name:", error);
+      setProject(previousProject);
+      setProjectError(
+        error?.message || "Failed to update project name. Please try again."
+      );
+    }
   };
 
   return (
     <div className="project-details-content-wrapper">
+      {projectError && (
+        <div className="section-details-error-banner" role="alert">
+          {projectError}
+        </div>
+      )}
       {/* Project Title */}
       <h1 className="project-title">
         {project ? (

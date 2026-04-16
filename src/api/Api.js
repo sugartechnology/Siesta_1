@@ -8,7 +8,7 @@ export const getUserProfile = async (userId) => {
 /** CRM login: POST /api/login, body { username, password, companySlug? }. Returns { accessToken, refreshToken, user }. */
 export const loginUser = async (usernameOrEmail, password) => {
   const endpoint = `${process.env.REACT_APP_API_URL}/login`;
-  const companySlug = process.env.REACT_APP_COMPANY_SLUG ;
+  const companySlug = process.env.REACT_APP_COMPANY_SLUG || "siesta";
   const payload = { username: usernameOrEmail, password, companySlug };
   return await postData(endpoint, payload);
 };
@@ -18,7 +18,7 @@ export const loginUser = async (usernameOrEmail, password) => {
 // Register user
 export const registerUser = async (name, email, password) => {
   const endpoint = `${process.env.REACT_APP_API_URL}/auth/register`;
-  const companySlug = process.env.REACT_APP_COMPANY_SLUG ;
+  const companySlug = process.env.REACT_APP_COMPANY_SLUG || "siesta";
   const payload = { name, email, password, companySlug };
   return await postData(endpoint, payload);
 };
@@ -211,12 +211,16 @@ export const removeProject = async (projectId) => {
 
 // Create new project
 export const updateProjectName = async (projectId, projectName) => {
-  const endpoint = `${process.env.REACT_APP_API_URL}/projects/${projectId}/update-name/${projectName}`;
+  const endpoint = `${process.env.REACT_APP_API_URL}/projects/${projectId}/update-name/${encodeURIComponent(
+    projectName
+  )}`;
   return await postData(endpoint);
 };
 
 export const updateSectionName = async (sectionId, sectionName) => {
-  const endpoint = `${process.env.REACT_APP_API_URL}/projects/sections/${sectionId}/update-name/${sectionName}`;
+  const endpoint = `${process.env.REACT_APP_API_URL}/projects/sections/${sectionId}/update-name/${encodeURIComponent(
+    sectionName
+  )}`;
   return await postData(endpoint);
 };
 
