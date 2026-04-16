@@ -472,6 +472,22 @@
   justify-content: space-around;
 }
 
+.last-generated-item {
+  align-items: stretch;
+  gap: 16px;
+}
+
+.last-generated-thumbnail {
+  width: 21vw;
+  height: 21vw;
+}
+
+.last-generated-content {
+  min-height: 21vw;
+  justify-content: space-between;
+  gap: 12px;
+}
+
 .info-content-roomtype {
   display: flex;
   flex-direction: column;
@@ -517,7 +533,10 @@
 }
 
 .change-btn {
-  align-items: flex-end;
+  display: inline-flex;
+  align-self: flex-end;
+  justify-content: center;
+  align-items: center;
   padding: 12px 35px;
   background: rgba(0, 0, 0, 0.1);
   border: 1px solid rgb(5, 5, 5);
@@ -525,10 +544,12 @@
   font-family: "Poppins", sans-serif;
   font-size: 16px;
   font-weight: 700;
+  color: #111111;
   cursor: pointer;
   transition: all 0.3s ease;
   min-width: 199px;
   text-align: center;
+  flex-shrink: 0;
 }
 
 .change-btn:hover {
@@ -711,6 +732,15 @@
     min-width: 150px;
   }
 
+  .last-generated-thumbnail {
+    width: 30vw;
+    height: 30vw;
+  }
+
+  .last-generated-content {
+    min-height: 30vw;
+  }
+
   .info-panel {
     border-radius: 10px;
   }
@@ -728,6 +758,10 @@
 }
 
 @media(orientation: portrait) and (max-width: 766px) {
+
+  .last-generated-item {
+    align-items: flex-start;
+  }
 
   .sd-info-title {
     font-size: 15px;

@@ -678,22 +678,18 @@ const SectionDetails = () => {
           <div className="info-divider"></div>
 
           {/* Last Generated */}
-          <div className="info-item">
+          <div className="info-item last-generated-item">
             <img
               src={getResultImageUrl(section) || "/assets/logo_big.png"}
               alt="Last Generated"
-              className="info-thumbnail clickable-image"
+              className="info-thumbnail clickable-image last-generated-thumbnail"
               onClick={handleImageClick}
               onError={(e) => {
                 console.log("Last generated image error:", e.target.src);
                 e.target.src = "/assets/logo_big.png";
               }}
-              style={{
-                height: "21vw",
-                width: "21vw",
-              }}
             />
-            <div className="info-content" style={{height: "21vw"}}>
+            <div className="info-content last-generated-content">
               <h3 className="sd-info-title">{t('sectionDetails.lastGenerated')}</h3>
               <p className="sd-info-description">
                 {t('sectionDetails.lastGeneratedDesc')}
