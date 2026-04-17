@@ -1,11 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { fetchProducts, fetchProductVariants } from "../api/Api";
+import { getNextPage, NavigationState } from "../utils/NavigationState";
 import {
-  getNextPage,
-  NavigationState,
+  catalogCollections,
   categoriesMap,
-} from "../utils/NavigationState";
+  getDefaultCollectionSlug,
+  getDefaultSubCategorySlug,
+  normalizeCatalogSelection,
+} from "../utils/siestaCatalog";
 import "./Products.css";
 import { useTranslation } from "react-i18next";
 
@@ -36,26 +39,37 @@ const normalizeCatalogProduct = (item) => {
   };
 };
 
+const buildCatalogSelection = (category, subCategory) => {
+  const { collectionSlug, subCategorySlug } = normalizeCatalogSelection(
+    category,
+    subCategory
+  );
+
+  return {
+    selectedCategories: collectionSlug ? [collectionSlug] : [],
+    selectedSubCategories: subCategorySlug ? [subCategorySlug] : [],
+  };
+};
+
 export default function Products() {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [searchParams, setSearchParams] = useSearchParams();
+  const [searchParams] = useSearchParams();
   const [showVariantModal, setShowVariantModal] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
   // URL parametrelerinden initial state oluştur
   const getInitialFilterState = () => {
-    const category = searchParams.get("category") ?? "contract";
-    const subCategory = searchParams.get("subCategory") ?? "chairs";
+    const category = searchParams.get("category") ?? getDefaultCollectionSlug();
+    const subCategory =
+      searchParams.get("subCategory") ?? getDefaultSubCategorySlug(category);
     const search = searchParams.get("search") || "";
+    const catalogSelection = buildCatalogSelection(category, subCategory);
 
     return {
       searchQuery: search,
       page: 0,
-      selectedCategories: category ? [category] : [],
-      selectedSubCategories: subCategory
-        ? [decodeURIComponent(subCategory)]
-        : [],
+      ...catalogSelection,
       selectedRooms: [],
       selectedStyles: [],
       activeFilters: [],
@@ -96,6 +110,14 @@ export default function Products() {
   );
 
   // Dışardan seçili ürünleri set et
+  const selectedCollection =
+    filterState.selectedCategories[0] ?? getDefaultCollectionSlug();
+  const { subCategorySlug: selectedSubCategory } = normalizeCatalogSelection(
+    selectedCollection,
+    filterState.selectedSubCategories[0]
+  );
+  const availableSubCategories = categoriesMap[selectedCollection] ?? [];
+
   const setSelectedProductsFromExternal = (products) => {
     setSelectedProducts(products);
   };
@@ -430,10 +452,6 @@ export default function Products() {
     );
   };
 
-  console.log(
-    "selectedCategory",
-    categoriesMap[filterState.selectedCategories[0]]
-  );
   return (
     <>
       <div className="products-container">
@@ -443,51 +461,47 @@ export default function Products() {
             <div className="filter-buttons">
               <select
                 className="products-filter-select"
+                value={selectedCollection}
                 onChange={(e) => {
-                  console.log("values", e.target.value);
-                  const newState = {
-                    ...filterState,
+                  const nextSelection = buildCatalogSelection(
+                    e.target.value,
+                    selectedSubCategory
+                  );
+                  setFilterState((prev) => ({
+                    ...prev,
                     page: 0,
-                    selectedCategories: [e.target.value],
-                  };
-                  setFilterState(newState);
+                    ...nextSelection,
+                  }));
                   //updateURL(newState);
                 }}
               >
-                {Object.keys(categoriesMap).map((c) => {
+                {catalogCollections.map((collection) => {
                   return (
-                    <option
-                      key={c}
-                      value={c}
-                      selected={c === filterState.selectedCategories[0]}
-                    >
-                      {c}
+                    <option key={collection.value} value={collection.value}>
+                      {t(collection.translationKey)}
                     </option>
                   );
                 })}
               </select>
               <select
                 className="products-filter-select"
+                value={selectedSubCategory}
                 onChange={(e) => {
-                  console.log("values", e.target.value);
-                  const newState = {
-                    ...filterState,
+                  const nextSelection = buildCatalogSelection(
+                    selectedCollection,
+                    e.target.value
+                  );
+                  setFilterState((prev) => ({
+                    ...prev,
                     page: 0,
-                    selectedSubCategories: [e.target.value],
-                  };
-                  setFilterState(newState);
+                    ...nextSelection,
+                  }));
                   //updateURL(newState);
                 }}
               >
-                {categoriesMap[filterState.selectedCategories[0]]?.map((c) => {
+                {availableSubCategories.map((c) => {
                   return (
-                    <option
-                      key={c.value}
-                      value={c.value}
-                      selected={
-                        c.value === filterState.selectedSubCategories[0]
-                      }
-                    >
+                    <option key={c.value} value={c.value}>
                       {c.name}
                     </option>
                   );

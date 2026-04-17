@@ -1,34 +1,17 @@
 import { useNavigate } from "react-router-dom";
 import "./Catalog.css";
 import { useTranslation } from "react-i18next";
+import { catalogCollections } from "../utils/siestaCatalog";
 
 export default function Catalog() {
   const navigate = useNavigate();
   const { t } = useTranslation();
 
-  const categories = [
-    {
-      id: 1,
-      name: t('catalog.contract'),
-      value: "contract",
-      image: "/assets/catalog-garden.png",
-      path: "/subcategory?category=contract",
-    },
-    {
-      id: 2,
-      name: t('catalog.rattan'),
-      value: "rattan",
-      image: "/assets/catalog-rattan.png",
-      path: "/subcategory?category=rattan",
-    },
-    {
-      id: 3,
-      name: t('catalog.garden'),
-      value: "garden",
-      image: "/assets/catalog-contract.png",
-      path: "/subcategory?category=garden",
-    },
-  ];
+  const categories = catalogCollections.map((category) => ({
+    ...category,
+    name: t(category.translationKey),
+    path: `/subcategory?category=${encodeURIComponent(category.value)}`,
+  }));
 
   return (
     <div className="catalog-categories">

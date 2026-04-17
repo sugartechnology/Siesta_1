@@ -1,7 +1,10 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { startNewSectionFlow, categoriesMap } from "../utils/NavigationState";
+import { startNewSectionFlow } from "../utils/NavigationState";
+import {
+  getSubCategoriesForCollection,
+  normalizeCatalogSelection,
+} from "../utils/siestaCatalog";
 import "./SubCategory.css";
-import { useTranslation } from "react-i18next";
 
 const extractPath = (category, subCategory) => {
   return `/products?category=${encodeURIComponent(
@@ -11,11 +14,12 @@ const extractPath = (category, subCategory) => {
 
 export default function SubCategory() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
   const [searchParams] = useSearchParams();
-  const category = searchParams.get("category");
+  const { collectionSlug } = normalizeCatalogSelection(
+    searchParams.get("category")
+  );
 
-  const subCategories = categoriesMap[category];
+  const subCategories = getSubCategoriesForCollection(collectionSlug);
 
   const handleCategoryClick = (category, subCategory) => {
     startNewSectionFlow();
@@ -28,7 +32,7 @@ export default function SubCategory() {
         <div
           key={subCategory.id}
           className={`sub-category-card ${subCategory.gridArea}`}
-          onClick={() => handleCategoryClick(category, subCategory)}
+          onClick={() => handleCategoryClick(collectionSlug, subCategory)}
           style={{ backgroundImage: `url(${subCategory.image})` }}
         >
           <div className="sub-category-overlay"></div>
@@ -36,7 +40,7 @@ export default function SubCategory() {
             className={`sub-category-name ${subCategory.multiline ? "multiline" : ""
               }`}
           >
-            {subCategory.name}
+            {subCategory.displayName ?? subCategory.name}
           </p>
         </div>
       ))}

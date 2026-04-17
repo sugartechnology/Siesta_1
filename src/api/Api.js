@@ -1,4 +1,9 @@
 import { fetchData, postData } from "./Network";
+import {
+  getCollectionCrmValue,
+  getDefaultCollectionSlug,
+  getSubCategoryCrmValue,
+} from "../utils/siestaCatalog";
 
 export const getUserProfile = async (userId) => {
   const endpoint = `${process.env.REACT_APP_API_URL}/users/${userId}/profile`;
@@ -80,6 +85,39 @@ const FILTER_KEY_TO_FIELD = {
   Collection: "collection",
 };
 
+const getOptionValue = (option) => option?.key ?? option?.value ?? option;
+
+const getSelectedCollectionSlug = (filters = []) => {
+  const collectionFilter = filters.find((filter) => {
+    const filterKey = filter?.key ?? filter?.field;
+    return filterKey === "Category" || filterKey === "Collection";
+  });
+
+  const rawCollectionValue = collectionFilter?.options?.[0];
+  return rawCollectionValue
+    ? String(getOptionValue(rawCollectionValue))
+    : getDefaultCollectionSlug();
+};
+
+const normalizeFilterOptionValue = (
+  filterKey,
+  rawValue,
+  selectedCollectionSlug
+) => {
+  const normalizedKey = String(filterKey ?? "");
+  const stringValue = String(rawValue);
+
+  if (normalizedKey === "Category" || normalizedKey === "Collection") {
+    return getCollectionCrmValue(stringValue);
+  }
+
+  if (normalizedKey === "SubCategory") {
+    return getSubCategoryCrmValue(selectedCollectionSlug, stringValue);
+  }
+
+  return stringValue;
+};
+
 /**
  * Siesta filter.filters → CRM SearchCriteria.filters (SearchFilter[])
  * Siesta: [{ key: "Category", options: [{ key, selected }] | value[] }]
@@ -89,6 +127,7 @@ const mapFiltersToSearchCriteria = (filters) => {
   if (!Array.isArray(filters) || filters.length === 0) {
     return [];
   }
+  const selectedCollectionSlug = getSelectedCollectionSlug(filters);
   return filters.map((f) => {
     const rawKey = f.key || f.field;
     const field =
@@ -96,9 +135,13 @@ const mapFiltersToSearchCriteria = (filters) => {
         ? FILTER_KEY_TO_FIELD[rawKey] ?? rawKey.toLowerCase()
         : rawKey;
     const options = (f.options || []).map((o) => {
-      const val = o?.key ?? o?.value ?? o;
-      const label = o?.label ?? o?.key ?? o?.value ?? o;
-      return { value: String(val), label: String(label) };
+      const val = getOptionValue(o);
+      const normalizedValue = normalizeFilterOptionValue(
+        rawKey,
+        val,
+        selectedCollectionSlug
+      );
+      return { value: normalizedValue, label: normalizedValue };
     });
     return {
       field,
