@@ -1,552 +1,205 @@
-.projects-page-container {
-  width: 100vw;
-  height: 100vh;
+.projects-page {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f0f0f0;
+  flex-direction: column;
+  gap: 20px;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
   overflow: hidden;
 }
 
-.projects-page-content {
+.projects-page__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-shrink: 0;
+}
+
+.projects-page__title {
+  margin: 0;
+  font-family: "Poppins", sans-serif;
+  font-size: clamp(24px, 3vw, 32px);
+  font-weight: 600;
+  color: #111827;
+  line-height: 1.2;
+}
+
+.projects-page__subtitle {
+  margin: 6px 0 0;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  color: #6b7280;
+  max-width: 520px;
+}
+
+.projects-page__create-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: none;
+  border-radius: 10px;
+  background: #111827;
+  color: #ffffff;
+  padding: 12px 18px;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+}
+
+.projects-page__create-btn:hover {
+  background: #1f2937;
+}
+
+.projects-page__create-btn--inline {
+  margin-top: 12px;
+}
+
+.projects-page__create-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.projects-page__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.projects-page__search {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+  max-width: 420px;
+  padding: 10px 14px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #ffffff;
+  color: #9ca3af;
+}
+
+.projects-page__search-input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  color: #111827;
+}
+
+.projects-page__search-input::placeholder {
+  color: #9ca3af;
+}
+
+.projects-page__count {
+  font-family: "Poppins", sans-serif;
+  font-size: 13px;
+  color: #6b7280;
+  white-space: nowrap;
+}
+
+.projects-page__list {
   display: flex;
   flex-direction: column;
-  width: 100%;
-  min-height: fit-content;
-  gap: 24px;
-  justify-content: flex-start;
+  gap: 12px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding-right: 4px;
   padding-bottom: 8px;
 }
 
-/* Top Menu - Same as other pages */
-.projects-top-menu {
+.projects-page__state,
+.projects-page__empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 48px 20px;
+  border: 1px dashed #d1d5db;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.65);
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.projects-page__state--error {
+  color: #dc2626;
+  border-color: #fecaca;
+  background: #fef2f2;
+}
+
+.projects-page__banner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  width: 100%;
-  height: 52px;
-  margin-bottom: 25px;
-  position: relative;
-}
-
-.projects-top-menu .menu-left {
-  display: flex;
-  gap: 20px;
-  opacity: 0.8;
-  align-items: center;
-  position: relative;
-  z-index: 100;
-}
-
-.projects-top-menu .back-icon {
-  width: 32px;
-  height: 32px;
-  cursor: pointer;
-  color: #000;
-}
-
-.projects-top-menu .menu-item {
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
   font-family: "Poppins", sans-serif;
-  font-size: 17px;
-  font-weight: 300;
-  line-height: 24px;
-  color: #000;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  font-size: 14px;
+  line-height: 1.4;
 }
 
-.projects-top-menu .menu-item.active {
-  font-weight: 500;
+.projects-page__banner--error {
+  color: #b91c1c;
+  background: #fef2f2;
+  border: 1px solid #fecaca;
 }
 
-.projects-top-menu .menu-item:hover {
-  opacity: 1;
-}
-
-.projects-top-menu .menu-center {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 50;
-  pointer-events: none;
-}
-
-.projects-top-menu .logo {
-  width: 110px;
-  height: 110px;
-  object-fit: contain;
-  display: block;
-  pointer-events: auto;
-}
-
-.projects-top-menu .menu-right {
-  opacity: 0.8;
-  display: flex;
-  align-items: center;
-  gap: 50px;
-  position: relative;
-  z-index: 100;
-}
-
-.projects-top-menu .profile-icon {
+.projects-page__banner-dismiss {
+  flex-shrink: 0;
   width: 28px;
   height: 28px;
-  cursor: pointer;
-  color: #000;
-}
-
-/* New Project Section */
-.new-project-section {
-  position: relative;
-  width: 100%;
-  min-height: clamp(240px, 28vw, 320px);
-  border-radius: 30px;
-  overflow: hidden;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
   border: none;
+  border-radius: 6px;
   background: transparent;
-  padding: clamp(24px, 4vw, 40px);
-  display: grid;
-  place-items: center;
-  flex: 0 0 auto;
-  isolation: isolate;
-  text-align: center;
-  appearance: none;
-}
-
-.new-project-section:hover {
-  transform: translateY(-5px);
-}
-
-.new-project-section:focus-visible {
-  outline: 2px solid #000;
-  outline-offset: 4px;
-}
-
-.new-project-bg {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  opacity: 0.4;
-  object-position: bottom;
-}
-
-.new-project-overlay {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 1;
-}
-
-.new-project-content {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: clamp(18px, 3vw, 42px);
-  z-index: 2;
-  width: min(100%, 680px);
-}
-
-.new-project-title {
-  font-family: "Poppins", sans-serif;
-  font-size: clamp(32px, 5vw, 60px);
-  font-weight: 600;
-  line-height: 1.15;
-  color: #000;
-  margin: 0;
-  text-align: center;
-}
-
-.create-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 14px clamp(36px, 8vw, 120px);
-  min-height: 51px;
-  min-width: min(100%, clamp(220px, 32vw, 340px));
-  border-radius: 80px;
-  border: 1px solid #000;
-  background: rgba(0, 0, 0, 0.1);
-  font-family: "Poppins", sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  line-height: 1.2;
-  color: #000;
-  transition: all 0.3s ease;
-  white-space: nowrap;
-  pointer-events: none;
-}
-
-.new-project-section:hover .create-btn,
-.new-project-section:focus-visible .create-btn {
-  background: rgba(0, 0, 0, 0.2);
-}
-
-/* Recent Projects Section */
-.recent-projects-section {
-  --project-card-height: clamp(260px, 27vw, 370px);
-  background: #161616;
-  border-radius: 30px 30px 30px 88px;
-  padding: clamp(24px, 5vw, 56px) clamp(24px, 3vw, 32px) clamp(24px, 5vw, 56px)
-    clamp(24px, 5vw, 56px);
-  display: grid;
-  grid-template-columns: minmax(220px, 320px) minmax(0, 1fr);
-  gap: clamp(20px, 4vw, 48px);
-  align-items: stretch;
-  position: relative;
-  flex: 0 0 auto;
-  min-height: fit-content;
-}
-
-.recent-projects-header {
-  display: flex;
-  justify-content: space-between;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 24px;
-  position: relative;
-  z-index: 10;
-  flex-shrink: 0;
-  min-height: 100%;
-}
-
-.recent-projects-title {
-  font-family: "Poppins", sans-serif;
-  font-size: 47px;
-  font-weight: 600;
-  line-height: 1.3;
-  color: #fff;
-  margin: 0;
-}
-
-.projects-page-btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  align-self: flex-start;
-  padding: 0 40px;
-  min-height: 50px;
-  border-radius: 80px;
-  border: 1px solid #fff;
-  background: rgba(255, 255, 255, 0.1);
-  font-family: "Poppins", sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  color: #fff;
+  color: inherit;
+  font-size: 20px;
+  line-height: 1;
   cursor: pointer;
-  transition: all 0.3s ease;
-  flex-shrink: 0;
-  white-space: nowrap;
 }
 
-.projects-page-btn:hover {
-  background: rgba(255, 255, 255, 0.2);
-  transform: translateY(-2px);
+.projects-page__banner-dismiss:hover {
+  background: rgba(185, 28, 28, 0.08);
 }
 
-/* Projects Slider Wrapper */
-.projects-slider-wrapper {
-  position: relative;
-  display: flex;
-  align-items: stretch;
-  overflow: hidden;
-  min-width: 0;
-  min-height: var(--project-card-height);
-}
-
-/* Projects Slider */
-.projects-slider-container {
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  min-width: 0;
-  min-height: var(--project-card-height);
-}
-
-.project-slide {
-  padding: 0 10px;
-  outline: none;
-  box-sizing: border-box;
-  display: flex !important;
-  justify-content: center;
-  align-items: center;
-  height: var(--project-card-height);
-}
-
-.project-card {
-  position: relative;
-  width: calc(100% - 4px);
-  height: var(--project-card-height);
-  border-radius: 20px 20px 20px 60px;
-  overflow: hidden;
-  background: #f0f0f0;
-  cursor: pointer;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0px 4px 10px 0px rgba(0, 0, 0, 0.3);
-  user-select: none;
-  flex-shrink: 0;
-}
-
-.project-card:hover {
-  transform: translateY(-10px);
-  box-shadow: 0px 10px 25px 0px rgba(0, 0, 0, 0.5);
-}
-
-.project-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.project-name {
-  position: absolute;
-  bottom: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-family: "Poppins", sans-serif;
-  font-size: 19px;
-  font-weight: 600;
-  line-height: 1.3;
-  color: #000;
-  margin: 0;
-  text-align: center;
-  max-width: calc(100% - 32px);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  background: rgba(255, 255, 255, 0.45);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  padding: 5px 15px;
-  border-radius: 10px;
-}
-
-.project-sections {
-  position: absolute;
-  bottom: 68px;
-  left: 50%;
-  transform: translateX(-50%);
-  max-width: calc(100% - 40px);
-  font-family: "Poppins", sans-serif;
-  font-size: 13px;
-  font-weight: 500;
-  line-height: 1.2;
-  color: #000;
-  margin: 0;
-  text-align: center;
-  background: rgba(255, 255, 255, 0.35);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  padding: 4px 12px;
-  border-radius: 999px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* Slider Arrow */
-.slider-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 48px;
-  height: 46px;
-  border: none;
-  background: transparent;
-  cursor: pointer;
-  z-index: 100;
-  transition: all 0.3s ease;
-  right: 20px;
-}
-
-.slider-arrow:hover {
-  transform: translateY(-50%) scale(1.2);
-  opacity: 0.8;
-}
-
-.slider-arrow.next-arrow {
-  right: 20px;
-}
-
-.slider-arrow svg {
-  width: 100%;
-  height: 100%;
-  filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.5));
-}
-
-/* Slider Overlay (Gradient Fade on Right) */
-.slider-overlay {
-  position: absolute;
-  top: 0;
-  right: 0px;
-  width: 165px;
-  height: 100%;
-  background: linear-gradient(
-    to left,
-    #161616 7.692%,
-    rgba(22, 22, 22, 0) 70.467%
-  );
-  pointer-events: none;
-  z-index: 50;
-  border-bottom-right-radius: 20px;
-}
-
-/* Slick Slider Overrides */
-.slick-slider {
-  position: relative;
-  display: block;
-  box-sizing: border-box;
-  user-select: none;
-  touch-action: pan-y;
-}
-
-.slick-list {
-  position: relative;
-  display: block;
-  overflow: hidden !important;
-  margin: 0;
-  padding: 0;
-  height: var(--project-card-height);
-}
-
-.slick-track {
-  position: relative;
-  top: 0;
-  left: 0;
-  display: flex !important;
-  align-items: center;
-  height: var(--project-card-height);
-}
-
-.slick-slide {
-  display: none;
-  float: left;
-  height: var(--project-card-height);
-  min-height: var(--project-card-height);
-}
-
-.slick-slide.slick-active {
-  display: flex;
-}
-
-.slick-initialized .slick-slide {
-  display: flex;
-}
-
-.slick-slide > div {
-  outline: none;
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* Add smooth scrolling for better UX */
-.slick-list.dragging {
-  cursor: grabbing;
-}
-
-.slick-slide:focus {
-  outline: none;
-}
-
-@media (orientation: portrait) {
-  .recent-projects-section {
-    --project-card-height: clamp(240px, 60vw, 340px);
-    gap: 20px;
-    border-radius: 20px 20px 70px 20px;
-    grid-template-columns: 1fr;
-    padding: 24px 20px 28px;
-    min-height: auto;
+@media (max-width: 768px) {
+  .projects-page__header {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .projects-page-content {
-    gap: 12px;
-  }
-
-  .recent-projects-header {
-    align-items: center;
-    gap: 16px;
-    min-height: 0;
-    text-align: center;
-  }
-
-  .recent-projects-title {
-    font-size: clamp(26px, 5vw, 36px);
-    font-weight: 500;
-    width: auto;
-    letter-spacing: 1.5px;
-  }
-
-  .new-project-title {
-    font-size: clamp(28px, 5vw, 42px);
-    backdrop-filter: blur(3px);
-    padding: 1vh 7vw;
-    border-radius: 8px;
-  }
-
-  .new-project-bg {
-    filter: blur(1px);
-  }
-
-  .new-project-content {
+  .projects-page__create-btn {
+    justify-content: center;
     width: 100%;
-    gap: 16px;
   }
 
-  .new-project-section {
-    min-height: 220px;
-    padding: 24px 20px;
+  .projects-page__toolbar {
+    flex-direction: column;
+    align-items: stretch;
   }
 
-  .create-btn {
-    width: min(100%, 320px);
-    min-width: 0;
-    padding: 14px 32px;
+  .projects-page__search {
+    max-width: none;
   }
 
-  .projects-page-btn {
-    width: min(100%, 320px);
-    min-height: 52px;
-    padding: 0 24px;
-    font-size: 16px;
-    font-weight: 500;
-    margin: 0;
-    align-self: center;
-  }
-
-  .projects-slider-wrapper {
-    overflow: visible;
-  }
-
-  .project-card {
-    width: 100%;
-    border-radius: 20px 20px 60px 20px;
-  }
-
-  .project-name {
-    bottom: 16px;
-    max-width: calc(100% - 24px);
-    font-size: 17px;
-  }
-
-  .project-sections {
-    bottom: 56px;
-    max-width: calc(100% - 28px);
-    font-size: 12px;
-  }
-
-  .slider-arrow,
-  .slider-overlay {
-    display: none;
+  .projects-page__count {
+    text-align: right;
   }
 }

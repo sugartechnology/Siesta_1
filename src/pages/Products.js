@@ -1,7 +1,12 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { fetchProducts, fetchProductVariants } from "../api/Api";
-import { getNextPage, NavigationState } from "../utils/NavigationState";
+import {
+  buildCatalogProductsPath,
+  getNextPage,
+  NavigationState,
+} from "../utils/NavigationState";
+import { startCreateSpaceFlow } from "../utils/createSpaceFlow";
 import {
   catalogCollections,
   categoriesMap,
@@ -9,6 +14,8 @@ import {
   getDefaultSubCategorySlug,
   normalizeCatalogSelection,
 } from "../utils/siestaCatalog";
+import DesignFlowNav from "../components/DesignFlowNav";
+import { useProductCart } from "../contexts/ProductCartContext";
 import "./Products.css";
 import { useTranslation } from "react-i18next";
 
@@ -104,10 +111,33 @@ export default function Products() {
     return [];
   };
 
-  // Seçili ürünlerin state'i (ProductQuantityDTO benzeri)
-  const [selectedProducts, setSelectedProducts] = useState(
-    getInitialSelectedProducts
-  );
+  const {
+    items: selectedProducts,
+    setItems: setSelectedProducts,
+    addProduct: addProductToSelection,
+    removeProduct: removeProductFromSelection,
+    getQuantity: getProductQuantity,
+    totalCount: selectedCount,
+  } = useProductCart();
+
+  useEffect(() => {
+    const initial = getInitialSelectedProducts();
+    if (initial.length > 0) {
+      setSelectedProducts(initial);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  useEffect(() => {
+    const category = searchParams.get("category");
+    if (
+      category &&
+      NavigationState.flowType !== "new" &&
+      NavigationState.productsEntry !== "design"
+    ) {
+      NavigationState.productsEntry = "catalog";
+    }
+  }, [searchParams]);
 
   // Dışardan seçili ürünleri set et
   const selectedCollection =
@@ -118,20 +148,24 @@ export default function Products() {
   );
   const availableSubCategories = categoriesMap[selectedCollection] ?? [];
 
-  const setSelectedProductsFromExternal = (products) => {
-    setSelectedProducts(products);
-  };
-
-  // Seçili ürünleri temizle
-  const clearSelectedProducts = () => {
-    setSelectedProducts([]);
-  };
+  const selectedCollectionMeta = catalogCollections.find(
+    (collection) => collection.value === selectedCollection
+  );
+  const collectionLabel = selectedCollectionMeta
+    ? t(selectedCollectionMeta.translationKey)
+    : selectedCollection;
+  const selectedSubCategoryMeta = availableSubCategories.find(
+    (subCategory) => subCategory.value === selectedSubCategory
+  );
+  const categoryLabel = selectedSubCategoryMeta?.name ?? selectedSubCategory ?? "";
+  const showFilterBreadcrumb = Boolean(collectionLabel && categoryLabel);
 
   const sentinelRef = useRef(null);
 
   // Filter options
 
   const [variants, setVariants] = useState([]);
+  const [isStartingDesign, setIsStartingDesign] = useState(false);
 
   const formatPrice = (product) => {
     if (product?.price === null || product?.price === undefined) {
@@ -170,134 +204,6 @@ export default function Products() {
   };
 
   // URL'i güncelle
-
-  // Ürün ekleme/çıkarma fonksiyonları
-  const addProductToSelection = (product, quantity = 1) => {
-    setSelectedProducts((prev) => {
-      const existingIndex = prev.findIndex(
-        (item) => item.productId === product.productId
-      );
-
-      let updated;
-      if (existingIndex >= 0) {
-        // Ürün zaten var, miktarını artır
-        updated = [...prev];
-        updated[existingIndex] = {
-          ...updated[existingIndex],
-          quantity: Math.max(0, updated[existingIndex].quantity + quantity),
-        };
-      } else {
-        // Yeni ürün ekle
-        updated = [
-          ...prev,
-          {
-            quantity: Math.max(0, quantity),
-            productId: product.productId,
-            baseName: product.name,
-            description: product.description,
-            url:
-              product.images[1] ||
-              product.images[0] ||
-              product.thumbnailUrl ||
-              product.thumbnail ||
-              "/assets/product-placeholder.png",
-          },
-        ];
-      }
-
-      // URL'i güncelle
-      //updateURL(filterState, updated);
-      return updated;
-    });
-  };
-
-  const removeProductFromSelection = (productId, quantity = 1) => {
-    setSelectedProducts((prev) => {
-      const existingIndex = prev.findIndex(
-        (item) => item.productId === productId
-      );
-
-      let updated;
-      if (existingIndex >= 0) {
-        updated = [...prev];
-        const newQuantity = updated[existingIndex].quantity - quantity;
-
-        if (newQuantity <= 0) {
-          // Miktar 0 veya altına düştü, ürünü kaldır
-          updated = updated.filter((item) => item.productId !== productId);
-        } else {
-          // Miktarı güncelle
-          updated[existingIndex] = {
-            ...updated[existingIndex],
-            quantity: newQuantity,
-          };
-        }
-      } else {
-        updated = prev;
-      }
-
-      // URL'i güncelle
-      //updateURL(filterState, updated);
-      return updated;
-    });
-  };
-
-  const getProductQuantity = (productId) => {
-    const selected = selectedProducts.find(
-      (item) => item.productId === productId
-    );
-    return selected ? selected.quantity : 0;
-  };
-
-  const setProductQuantity = (product, newQuantity) => {
-    const quantity = parseInt(newQuantity, 10);
-    if (isNaN(quantity)) return;
-
-    setSelectedProducts((prev) => {
-      const existingIndex = prev.findIndex(
-        (item) => item.productId === product.productId
-      );
-
-      let updated;
-      if (existingIndex >= 0) {
-        if (quantity <= 0) {
-          updated = prev.filter((item) => item.productId !== product.productId);
-        } else {
-          updated = [...prev];
-          updated[existingIndex] = {
-            ...updated[existingIndex],
-            quantity: quantity,
-          };
-        }
-      } else {
-        if (quantity > 0) {
-          updated = [
-            ...prev,
-            {
-              quantity: quantity,
-              productId: product.productId,
-              baseName: product.name,
-              description: product.description,
-              url:
-                product.images[1] ||
-                product.images[0] ||
-                product.thumbnailUrl ||
-                product.thumbnail ||
-                "/assets/product-placeholder.png",
-            },
-          ];
-        } else {
-          updated = prev;
-        }
-      }
-      return updated;
-    });
-  };
-
-  const handleAddToCart = (product) => {
-    addProductToSelection(product, 1);
-    console.log("Product added to selection:", product);
-  };
 
   const getFilter = () => {
     const filter = {
@@ -418,13 +324,56 @@ export default function Products() {
     );
   };
 
-  const handleGenerateDesign = () => {
-    // Sonraki sayfayı belirle
-    const nextPage = getNextPage("products", {
-      selectedProducts: selectedProducts,
-    });
+  const handleGoToDesign = async () => {
+    if (selectedCount === 0 || isStartingDesign) {
+      return;
+    }
 
-    navigate(nextPage);
+    NavigationState.selectedProducts = selectedProducts;
+
+    const isCatalogFlow = NavigationState.productsEntry === "catalog";
+    const inDesignFlow =
+      !isCatalogFlow &&
+      (NavigationState.flowType === "new" ||
+        NavigationState.productsEntry === "design" ||
+        Boolean(NavigationState.section?.id));
+
+    if (inDesignFlow) {
+      navigate(
+        getNextPage("products", {
+          selectedProducts,
+        })
+      );
+      return;
+    }
+
+    if (!isCatalogFlow) {
+      navigate("/projects");
+      return;
+    }
+
+    const returnPath = buildCatalogProductsPath(
+      searchParams.get("category") ?? selectedCollection,
+      searchParams.get("subCategory") ?? selectedSubCategory
+    );
+    const productsToKeep = [...selectedProducts];
+
+    try {
+      setIsStartingDesign(true);
+      NavigationState.catalogReturnPath = returnPath;
+      await startCreateSpaceFlow();
+      NavigationState.catalogReturnPath = returnPath;
+      NavigationState.productsEntry = "catalog";
+      NavigationState.fromCatalogDesign = true;
+      NavigationState.selectedProducts = productsToKeep;
+      navigate("/camera");
+    } catch (error) {
+      console.error("Error starting design from catalog:", error);
+      NavigationState.catalogReturnPath = returnPath;
+      navigate(returnPath);
+    } finally {
+      setIsStartingDesign(false);
+    }
   };
 
   const renderFiltersByName = (filterName, filters) => {
@@ -455,12 +404,33 @@ export default function Products() {
   return (
     <>
       <div className="products-container">
+        <div className="products-page-header">
+          <DesignFlowNav currentStepId="products" />
+          {showFilterBreadcrumb && (
+            <nav
+              className="products-filter-breadcrumb"
+              aria-label={t("products.filterBreadcrumb")}
+            >
+              <span className="products-filter-breadcrumb__segment">
+                {collectionLabel}
+              </span>
+              <span className="products-filter-breadcrumb__sep" aria-hidden="true">
+                ›
+              </span>
+              <span className="products-filter-breadcrumb__segment products-filter-breadcrumb__segment--current">
+                {categoryLabel}
+              </span>
+            </nav>
+          )}
+        </div>
+
         <div className="products-filters-container">
-          {/* Filters and Search */}
           <div className="products-filters-section">
-            <div className="filter-buttons">
-              <select
+            <div className="products-filters-row">
+              <label className="products-filter-field products-filter-field--collection">
+                <select
                 className="products-filter-select"
+                aria-label={t("products.collection")}
                 value={selectedCollection}
                 onChange={(e) => {
                   const nextSelection = buildCatalogSelection(
@@ -483,8 +453,11 @@ export default function Products() {
                   );
                 })}
               </select>
-              <select
+              </label>
+              <label className="products-filter-field products-filter-field--category">
+                <select
                 className="products-filter-select"
+                aria-label={t("products.category")}
                 value={selectedSubCategory}
                 onChange={(e) => {
                   const nextSelection = buildCatalogSelection(
@@ -507,6 +480,7 @@ export default function Products() {
                   );
                 })}
               </select>
+              </label>
               {/*
               
 
@@ -543,8 +517,8 @@ export default function Products() {
               */}
             </div>
 
-            <div className="search-bar">
-              <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+            <div className="products-search-bar">
+              <svg width="16" height="16" viewBox="0 0 15 15" fill="none" aria-hidden="true">
                 <path
                   d="M6.5 11.5C9.26142 11.5 11.5 9.26142 11.5 6.5C11.5 3.73858 9.26142 1.5 6.5 1.5C3.73858 1.5 1.5 3.73858 1.5 6.5C1.5 9.26142 3.73858 11.5 6.5 11.5Z"
                   stroke="currentColor"
@@ -561,8 +535,8 @@ export default function Products() {
                 />
               </svg>
               <input
-                type="text"
-                placeholder={t('products.search')}
+                type="search"
+                placeholder={t("products.search")}
                 onChange={(e) => {
                   const newState = {
                     ...filterState,
@@ -587,8 +561,13 @@ export default function Products() {
         {/* Products Grid */}
         <div className="products-grid-container">
           <div className="products-grid">
-            {products.map((product) => (
-              <div key={product.productId} className="product-card">
+            {products.map((product) => {
+              const quantity = getProductQuantity(product.productId);
+              return (
+              <div
+                key={product.productId}
+                className={`product-card${quantity > 0 ? " product-card--selected" : ""}`}
+              >
                 <div
                   className="product-image-container"
                   onClick={() => handleProductClick(product)}
@@ -604,95 +583,61 @@ export default function Products() {
                     alt={product.name}
                     className="product-image"
                   />
-
-       
+                  {quantity > 0 && (
+                    <span className="product-selected-badge">{quantity}</span>
+                  )}
                 </div>
 
                 <div className="product-info">
-                  <div className="product-details">
-                    <p className="product-code">
-                      Code: {product.code || product.productId.substring(0, 3)}
-                    </p>
-                    <h3 className="product-name">{product.name}</h3>
-                    <p className="p-product-price">{formatPrice(product)}</p>
+                  <h3 className="product-name">{product.name}</h3>
+                  <div className="product-action-slot">
+                    {quantity > 0 ? (
+                      <div className="p-quantity-control">
+                        <button
+                          type="button"
+                          className="p-quantity-btn"
+                          onClick={() =>
+                            removeProductFromSelection(product.productId, 1)
+                          }
+                          aria-label="-"
+                        >
+                          −
+                        </button>
+                        <span className="p-quantity-value">
+                          {getProductQuantity(product.productId)}
+                        </span>
+                        <button
+                          type="button"
+                          className="p-quantity-btn"
+                          onClick={() => addProductToSelection(product, 1)}
+                          aria-label="+"
+                        >
+                          +
+                        </button>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        className="product-add-btn"
+                        onClick={() => handleProductClick(product)}
+                      >
+                        <span>{t("products.add")}</span>
+                        <svg width="14" height="14" viewBox="0 0 20 20" fill="none" aria-hidden="true">
+                          <path
+                            d="M10 5V15M5 10H15"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      </button>
+                    )}
                   </div>
-                  {/* Seçili ürün kontrolü */}
-                  {getProductQuantity(product.productId) > 0 ? (
-                    <div className="p-quantity-control">
-                      <button
-                        className="p-quantity-btn"
-                        onClick={() =>
-                          removeProductFromSelection(product.productId, 1)
-                        }
-                      >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                        >
-                          <path
-                            d="M4 8H12"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </button>
-                      <input
-                        className="p-quantity"
-                        type="number"
-                        value={getProductQuantity(product.productId)}
-                        onChange={(e) =>
-                          setProductQuantity(product, e.target.value)
-                        }
-                      />
-                      <button
-                        className="p-quantity-btn"
-                        onClick={() => addProductToSelection(product, 1)}
-                      >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                        >
-                          <path
-                            d="M8 4V12M4 8H12"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
-                      </button>
-                    </div>
-                  ) : (
-                    <button
-                      className="add-to-cart-btn"
-                      //onClick={() => handleAddToCart(product)}
-                      onClick={() => handleProductClick(product)}
-                    >
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 20 20"
-                        fill="none"
-                      >
-                        <path
-                          d="M10 5V15M5 10H15"
-                          stroke="white"
-                          strokeWidth="2"
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                        />
-                      </svg>
-                    </button>
-                  )}
                 </div>
               </div>
-            ))}
+            );
+            })}
           </div>
 
           {/* View All Products Button */}
@@ -702,11 +647,38 @@ export default function Products() {
           >
             {" "}
           </div>
-          <button className="view-all-btn">{t('products.viewAll')}</button>
+          {hasMore && (
+            <button type="button" className="view-all-btn">
+              {t("products.viewAll")}
+            </button>
+          )}
         </div>
-        <button className="generate-design-btn" onClick={handleGenerateDesign}>
-          {t('products.addToDesign')}
-        </button>
+        <div className="products-footer">
+          {selectedCount > 0 && (
+            <span className="products-selection-count">
+              {selectedCount} {t("products.selected")}
+            </span>
+          )}
+          <button
+            type="button"
+            className="products-complete-btn"
+            onClick={handleGoToDesign}
+            disabled={selectedCount === 0 || isStartingDesign}
+          >
+            <span>
+              {isStartingDesign ? t("products.startingDesign") : t("products.goToDesign")}
+            </span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M5 12h14M13 6l6 6-6 6"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
 
       {/* Variant Modal */}
@@ -718,10 +690,12 @@ export default function Products() {
           />
           <div className="variant-modal">
             <div className="modal-header">
-              <h2>{selectedProduct.name} Variants</h2>
+              <h2>{t("products.variantsTitle", { name: selectedProduct.name })}</h2>
               <button
+                type="button"
                 className="close-btn"
                 onClick={() => setShowVariantModal(false)}
+                aria-label={t("common.cancel")}
               >
                 <svg width="21" height="21" viewBox="0 0 21 21" fill="none">
                   <path
@@ -758,52 +732,26 @@ export default function Products() {
                     </div>
                     <p className="variant-title">{variant.name}</p>
                     {/*<p className="variant-color">{variant.name}</p>*/}
-                    <div className="p-quantity-control">
+                    <div className="variant-qty-control">
                       <button
-                        className="p-quantity-btn"
-                        onClick={() => addProductToSelection(variant, -1)}
+                        type="button"
+                        className="variant-qty-btn"
+                        onClick={() => removeProductFromSelection(variant.productId, 1)}
+                        disabled={getProductQuantity(variant.productId) === 0}
+                        aria-label="-"
                       >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                        >
-                          <path
-                            d="M4 8H12"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+                        −
                       </button>
-                      <input
-                        className="p-quantity"
-                        type="number"
-                        value={getProductQuantity(variant.productId)}
-                        onChange={(e) =>
-                          setProductQuantity(variant, e.target.value)
-                        }
-                      />
+                      <span className="variant-qty-value">
+                        {getProductQuantity(variant.productId)}
+                      </span>
                       <button
-                        className="p-quantity-btn"
+                        type="button"
+                        className="variant-qty-btn"
                         onClick={() => addProductToSelection(variant, 1)}
+                        aria-label="+"
                       >
-                        <svg
-                          width="16"
-                          height="16"
-                          viewBox="0 0 16 16"
-                          fill="none"
-                        >
-                          <path
-                            d="M8 4V12M4 8H12"
-                            stroke="currentColor"
-                            strokeWidth="1.5"
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                          />
-                        </svg>
+                        +
                       </button>
                     </div>
                   </div>
@@ -812,10 +760,11 @@ export default function Products() {
             </div>
 
             <button
-              className="add-to-design-btn"
+              type="button"
+              className="variant-modal-done-btn"
               onClick={() => setShowVariantModal(false)}
             >
-              {t('products.addToDesign')}
+              {t("products.done")}
             </button>
           </div>
         </>

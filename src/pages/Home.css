@@ -166,18 +166,27 @@
 }
 
 .hero-button {
-  width: 177px;
-  height: 49px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 49px;
+  height: auto;
+  padding: 12px 24px;
   background: #5b8c9b;
   border: none;
   border-radius: 79px;
   font-family: "Poppins", sans-serif;
   font-size: 15.76px;
   font-weight: 700;
+  line-height: 1.25;
   color: #fff;
+  text-align: center;
   cursor: pointer;
   transition: all 0.3s ease;
   margin-top: auto;
+  box-sizing: border-box;
 }
 
 .hero-button:hover {
@@ -228,6 +237,16 @@
     width: 80px;
     height: 80px;
   }
+
+  .hero-content {
+    padding: 32px 20px;
+  }
+
+  .hero-button {
+    font-size: 14px;
+    padding: 10px 18px;
+    min-height: 44px;
+  }
 }
 
 @media (orientation: portrait) {
@@ -250,10 +269,14 @@
   }
 
   .hero-button {
-    width: 35vw;
-    height: 5vh;
+    width: fit-content;
+    max-width: 100%;
+    min-height: 44px;
+    height: auto;
     margin-bottom: 5vh;
-    font-size: 2vh;
+    padding: 10px 18px;
+    font-size: clamp(12px, 2vh, 15px);
+    line-height: 1.25;
   }
 
   .hero-section {

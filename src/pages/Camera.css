@@ -107,69 +107,86 @@
 
 /* Main Camera Area */
 .main-camera-area {
-  flex: 1;
-  background: rgba(231, 231, 231, 0.5);
-  border: 1.3px dashed #000;
-  border-radius: 29.55px;
+  flex: 0 0 auto;
+  background: #fafafa;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 36px;
+  margin-bottom: 20px;
   position: relative;
-  min-height: 400px;
+  min-height: 0;
+  padding: 20px 16px;
 }
 
-/* Camera Placeholder */
-.camera-placeholder-box {
+/* Camera / Gallery Picker */
+.camera-picker-box {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 60px 40px;
-  cursor: pointer;
-  transition: all 0.3s ease;
+  gap: 16px;
+  width: 100%;
+  max-width: 480px;
+  padding: 4px 8px;
 }
 
-.camera-placeholder-box:hover {
-  transform: scale(1.02);
+.camera-picker-text {
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #374151;
+  text-align: center;
+  margin: 0;
 }
 
-.camera-icon-circle {
-  width: 78.316px;
-  height: 78.316px;
-  background: #9b9b9b;
-  border-radius: 50%;
+.camera-picker-actions {
+  display: flex;
+  gap: 10px;
+  width: 100%;
+}
+
+.camera-action-btn {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 18px;
-  transition: all 0.3s ease;
-}
-
-.camera-placeholder-box:hover .camera-icon-circle {
-  background: #8a8a8a;
-  transform: scale(1.05);
-}
-
-.placeholder-title {
+  gap: 8px;
+  min-height: 44px;
+  padding: 10px 12px;
+  border: 1px solid #111827;
+  border-radius: 10px;
+  background: #111827;
+  color: #fff;
   font-family: "Poppins", sans-serif;
-  font-size: 18px;
-  font-weight: 700;
-  color: #262628;
-  text-align: center;
-  margin: 0 0 18px 0;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
 }
 
-.placeholder-description {
-  font-family: "Poppins", sans-serif;
-  font-size: 14px;
-  font-weight: 400;
-  line-height: 20px;
-  letter-spacing: -0.14px;
-  color: #262628;
-  text-align: center;
-  margin: 0;
-  max-width: 283px;
+.camera-action-btn:hover {
+  background: #1f2937;
+  border-color: #1f2937;
+}
+
+.camera-action-btn--secondary {
+  background: #fff;
+  color: #111827;
+  border-color: #e5e7eb;
+}
+
+.camera-action-btn--secondary:hover {
+  background: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.camera-action-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
 }
 
 /* Camera Loading */
@@ -300,103 +317,124 @@
 /* Sample Rooms Section */
 .sample-rooms-shell {
   position: relative;
-  min-height: 325px;
+  flex: 1;
+  min-height: 0;
 }
 
 .sample-rooms-section {
-  position: absolute;
-  inset: 0 0 0 0;
-  z-index: 100;
   display: flex;
   flex-direction: column;
-  gap: 16px;
-  padding: 30px 30px 92px;
-  border-top-right-radius: 15px;
-  border-top-left-radius: 15px;
-  box-shadow: 0 5px 17px rgba(0, 0, 0, 1);
-  min-height: 350px;
+  gap: 12px;
+  padding: 0 4px 8px;
+}
+
+.sample-rooms-header {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
 }
 
 .sample-rooms-heading {
   font-family: "Poppins", sans-serif;
-  font-size: 15px;
-  font-weight: 500;
-  color: #000;
-  margin: 0 0 4px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #111827;
+  margin: 0;
+}
+
+.sample-rooms-hint {
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+  color: #6b7280;
+  margin: 0;
 }
 
 .sample-rooms-scroll {
   display: flex;
-  gap: 20px;
+  gap: 12px;
   overflow-x: auto;
-  padding-bottom: 8px;
+  overflow-y: hidden;
+  padding: 4px 2px 10px;
+  scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: thin;
+  scrollbar-color: #d1d5db transparent;
 }
 
 .sample-rooms-scroll::-webkit-scrollbar {
-  height: 6px;
+  height: 4px;
 }
 
 .sample-rooms-scroll::-webkit-scrollbar-track {
-  background: rgba(0, 0, 0, 0.05);
-  border-radius: 3px;
+  background: transparent;
 }
 
 .sample-rooms-scroll::-webkit-scrollbar-thumb {
-  background: rgba(0, 0, 0, 0.2);
-  border-radius: 3px;
+  background: #d1d5db;
+  border-radius: 999px;
 }
 
-.sample-rooms-scroll::-webkit-scrollbar-thumb:hover {
-  background: rgba(0, 0, 0, 0.3);
-}
-
-.sample-room-item {
-  min-width: 199.818px;
-  width: 199.818px;
-  height: 199.818px;
-  border-radius: 21.409px;
+.sample-room-card {
+  flex: 0 0 auto;
+  width: 132px;
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 12px;
+  background: #fff;
   overflow: hidden;
   cursor: pointer;
-  transition: all 0.3s ease;
-  border: 3px solid transparent;
-  flex-shrink: 0;
+  scroll-snap-align: start;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+  text-align: left;
 }
 
-.sample-room-item:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+.sample-room-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
 }
 
-.sample-room-item.selected {
-  border-color: #000;
+.sample-room-card.selected {
+  border-color: #111827;
+  box-shadow: 0 0 0 1px #111827;
 }
 
 .sample-image {
   width: 100%;
-  height: 100%;
+  height: 96px;
   object-fit: cover;
   display: block;
 }
 
+.sample-room-name {
+  display: block;
+  padding: 8px 10px;
+  font-family: "Poppins", sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+  color: #111827;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Skip Button */
 .skip-btn-bottom {
-  position: absolute;
-  bottom: 31px;
-  left: 50%;
-  transform: translateX(-50%);
-  padding: 10px 40px;
-  height: 51px;
-  background: #000;
+  align-self: center;
+  margin-top: 4px;
+  padding: 10px 32px;
+  min-height: 44px;
+  background: #111827;
   border: none;
-  border-radius: 40px;
+  border-radius: 999px;
   font-family: "Poppins", sans-serif;
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.16px;
-  color: white;
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
   cursor: pointer;
-  transition: all 0.3s ease;
-  z-index: 200;
+  transition: background 0.2s ease, transform 0.2s ease;
 }
 
 /* Fullscreen camera layout when camera is active */
@@ -450,16 +488,18 @@
 }
 
 .skip-btn-bottom:hover {
-  background: #1a1a1a;
-  transform: translateX(-50%) translateY(-2px);
-  box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.3);
+  background: #1f2937;
+  transform: translateY(-1px);
 }
 
 .camera-main-container {
   height: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: flex-start;
+  gap: 8px;
+  padding: 16px;
+  box-sizing: border-box;
 }
 
 /* Responsive */
@@ -469,18 +509,8 @@
     height: 95vh;
   }
 
-  .placeholder-title {
-    font-size: 16px;
-  }
-
-  .placeholder-description {
+  .camera-picker-text {
     font-size: 13px;
-  }
-
-  .sample-room-item {
-    min-width: 180px;
-    width: 180px;
-    height: 180px;
   }
 }
 
@@ -503,25 +533,17 @@
     height: 80px;
   }
 
+  .camera-main-container {
+    padding: 12px;
+  }
+
   .main-camera-area {
-    min-height: 300px;
+    padding: 16px 12px;
+    margin-bottom: 14px;
   }
 
-  .camera-placeholder-box {
-    padding: 40px 20px;
-  }
-
-  .camera-icon-circle {
-    width: 60px;
-    height: 60px;
-  }
-
-  .placeholder-title {
-    font-size: 16px;
-  }
-
-  .placeholder-description {
-    font-size: 13px;
+  .camera-picker-actions {
+    flex-direction: column;
   }
 
   .video-controls {
@@ -548,18 +570,12 @@
     font-size: 14px;
   }
 
-  .sample-room-item {
-    min-width: 160px;
-    width: 160px;
-    height: 160px;
-    border-radius: 16px;
+  .sample-room-card {
+    width: 120px;
   }
 
-  .skip-btn-bottom {
-    bottom: 20px;
-    padding: 8px 32px;
-    height: 45px;
-    font-size: 15px;
+  .sample-image {
+    height: 88px;
   }
 }
 
@@ -567,54 +583,19 @@
   .camera-main-container {
     height: auto;
     min-height: fit-content;
-    justify-content: flex-start;
-    gap: 20px;
   }
 
   .main-camera-area {
-    flex: 0 0 auto;
-    min-height: clamp(280px, 42vh, 380px);
-    margin-bottom: 0;
-  }
-
-  .camera-placeholder-box {
-    padding: 32px 20px;
-  }
-
-  .sample-rooms-shell {
-    min-height: 0;
-  }
-
-  .sample-rooms-section {
-    position: static;
-    min-height: 0;
-    padding: 0 0 4px;
-    gap: 14px;
-    box-shadow: none;
-    border-radius: 0;
+    margin-bottom: 12px;
   }
 
   .sample-rooms-scroll {
-    gap: 14px;
-    padding-bottom: 4px;
-  }
-
-  .sample-room-item {
-    min-width: 140px;
-    width: 140px;
-    height: 140px;
+    margin: 0 -4px;
+    padding-left: 4px;
+    padding-right: 4px;
   }
 
   .skip-btn-bottom {
-    position: static;
-    left: auto;
-    bottom: auto;
-    transform: none;
     width: min(100%, 320px);
-    margin: 2px auto 0;
-  }
-
-  .skip-btn-bottom:hover {
-    transform: translateY(-2px);
   }
 }

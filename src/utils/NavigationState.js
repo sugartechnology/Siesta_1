@@ -1,8 +1,10 @@
+import { generateNextSectionName } from "./projectNaming";
+
 // Navigation ve Section işlemleri için state management
 export const DefaultNavigationState = {
   // Mevcut section ID (varsa)
   section: {
-    title: "New Section",
+    title: "Section 1",
     content: "",
     type: "",
     style: "",
@@ -41,6 +43,15 @@ export const DefaultNavigationState = {
   roomType: undefined,
   selectedProducts: [],
   originalImage: "",
+
+  // products sayfasına giriş: 'catalog' | 'design'
+  productsEntry: null,
+
+  // Collections → Go to Design sonrası geri dönüş yolu
+  catalogReturnPath: null,
+
+  // Collections → Go to Design ile başlatılan yeni proje akışı
+  fromCatalogDesign: false,
 };
 
 // Navigation flow maps
@@ -55,8 +66,7 @@ const flowMap = {
   new: {
     "*": "/camera",
     camera: "/photograph",
-    photograph: "/room-type",
-    "room-type": "/products",
+    photograph: "/products",
     products: "/section-details",
   },
 };
@@ -68,9 +78,9 @@ const backMap = {
     "room-type": "/section-details",
   },
   new: {
+    camera: "/projects",
     photograph: "/camera",
-    "room-type": "/photograph",
-    products: "/room-type",
+    products: "/photograph",
     "section-details": "/products",
   },
 };
@@ -122,8 +132,12 @@ export const startNewSectionFlow = (project, section) => {
   if (project) NavigationState.project = project;
   else project = { ...DefaultNavigationState.project };
 
-  if (section) NavigationState.section = section;
-  else section = { ...DefaultNavigationState.section };
+  if (!section) {
+    section = {
+      ...DefaultNavigationState.section,
+      title: generateNextSectionName(project.sections || []),
+    };
+  }
 
   NavigationState.section = section;
   NavigationState.project = project;
@@ -155,7 +169,34 @@ export const getNextPage = (currentPage = "*", data = {}) => {
     return "/";
   }
 
+  if (nextPage === "/products" && NavigationState.flowType === "new") {
+    NavigationState.productsEntry = "design";
+  }
+
   return nextPage;
+};
+
+export const buildCatalogProductsPath = (category, subCategory) => {
+  const params = new URLSearchParams();
+  if (category) {
+    params.set("category", category);
+  }
+  if (subCategory) {
+    params.set("subCategory", subCategory);
+  }
+  const query = params.toString();
+  return query ? `/products?${query}` : "/products";
+};
+
+export const navigateToCatalogReturn = (navigate) => {
+  const returnPath = NavigationState.catalogReturnPath;
+  if (!returnPath) {
+    return false;
+  }
+
+  NavigationState.catalogReturnPath = null;
+  navigate(returnPath);
+  return true;
 };
 
 // Geri dönüş sayfasını belirle

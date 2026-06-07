@@ -73,6 +73,17 @@ export async function setAppLanguagePreference(i18n, preference) {
       ? resolveSystemLanguageForI18n()
       : normalized;
   await i18n.changeLanguage(i18nLng);
+
+  try {
+    if (normalized === "system") {
+      localStorage.removeItem("i18nextLng");
+    } else {
+      localStorage.setItem("i18nextLng", i18nLng);
+    }
+  } catch (e) {
+    console.warn("Failed to persist language preference", e);
+  }
+
   notifyNativeAppLanguage(normalized);
   return true;
 }

@@ -1,203 +1,273 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Slider from "react-slick";
-import "slick-carousel/slick/slick-theme.css";
-import "slick-carousel/slick/slick.css";
-import { getUserProjects } from "../api/Api";
-import NewProjectModal from "../components/NewProjectModal";
-import { getNextPage, startNewSectionFlow } from "../utils/NavigationState";
+import {
+  getProjectById,
+  getProjectSections,
+  getUserProjectsDetailed,
+  removeProject,
+  updateProjectName,
+} from "../api/Api";
+import { generateProjectProformaPdf } from "../utils/projectProformaPdf";
+import ProposalRequestModal from "../components/ProposalRequestModal";
+import ProjectListItem from "../components/ProjectListItem";
+import { startCreateSpaceFlow } from "../utils/createSpaceFlow";
+import { sortProjectsByNewest } from "../utils/projectNaming";
 import "./Projects.css";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../auth/useAuth";
-
-const getSlidesToShow = (width) => {
-  if (width > 1024) {
-    return 3.2;
-  }
-
-  if (width > 490) {
-    return 2.2;
-  }
-
-  return 1.2;
-};
 
 export default function Projects() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { requireAuth } = useAuth();
-  const sliderRef = useRef(null);
-  const [showNewProjectModal, setShowNewProjectModal] = useState(false);
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [slidesToShow, setSlidesToShow] = useState(() =>
-    getSlidesToShow(window.innerWidth)
-  );
+  const [isCreatingSpace, setIsCreatingSpace] = useState(false);
+  const [loadError, setLoadError] = useState(null);
+  const [deleteError, setDeleteError] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [requestingProposalProjectId, setRequestingProposalProjectId] =
+    useState(null);
+  const [proposalModal, setProposalModal] = useState({
+    isOpen: false,
+    project: null,
+    pdfBlob: null,
+    pdfFileName: null,
+    isGenerating: false,
+  });
 
-  // Fetch projects from API
-  const fetchProjects = async () => {
+  const fetchProjects = useCallback(async ({ silent = false } = {}) => {
     try {
-      setLoading(true);
-      const response = await getUserProjects();
-      setProjects(response || []);
+      if (!silent) {
+        setLoading(true);
+      }
+      setLoadError(null);
+      const response = await getUserProjectsDetailed();
+      setProjects(sortProjectsByNewest(response || []));
     } catch (err) {
       console.error("Error fetching projects:", err);
-      setError("Failed to load projects");
+      setLoadError(t("projects.loadError"));
     } finally {
-      setLoading(false);
+      if (!silent) {
+        setLoading(false);
+      }
     }
-  };
+  }, [t]);
 
   useEffect(() => {
     fetchProjects();
-  }, []);
+  }, [fetchProjects]);
 
-  useEffect(() => {
-    const handleResize = () => {
-      setSlidesToShow(getSlidesToShow(window.innerWidth));
-    };
+  const filteredProjects = projects.filter((project) => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return true;
 
-    window.addEventListener("resize", handleResize);
-    return () => {
-      window.removeEventListener("resize", handleResize);
-    };
-  }, []);
+    return (
+      String(project.name || "").toLowerCase().includes(query) ||
+      String(project.mobilePhone || "").toLowerCase().includes(query)
+    );
+  });
 
-  const settings = {
-    dots: false,
-    infinite: false,
-    speed: 500,
-    slidesToShow,
-    slidesToScroll: 1,
-    arrows: false,
-    swipeToSlide: true,
-    draggable: true,
-  };
-
-  const handleProjectClick = (project) => {
-    console.log("Project clicked:", project);
-    // Navigate to project details page
+  const handleOpenDetails = (project) => {
     navigate(`/projects-details/${project.id}`, { state: { project } });
   };
 
   const handleNewProjectClick = async () => {
     const isAuthenticated = await requireAuth();
-    if (!isAuthenticated) {
+    if (!isAuthenticated) return;
+
+    try {
+      setIsCreatingSpace(true);
+      setLoadError(null);
+      setDeleteError(null);
+      await startCreateSpaceFlow({ existingProjects: projects });
+      navigate("/camera");
+    } catch (err) {
+      console.error("Error starting create space flow:", err);
+      setLoadError(t("projects.createError"));
+    } finally {
+      setIsCreatingSpace(false);
+    }
+  };
+
+  const handleRename = async (project, newName) => {
+    await updateProjectName(project.id, newName);
+    setProjects((prev) =>
+      prev.map((item) =>
+        item.id === project.id ? { ...item, name: newName } : item
+      )
+    );
+  };
+
+  const handleDelete = async (project) => {
+    setDeleteError(null);
+
+    try {
+      await removeProject(project.id);
+      setProjects((prev) => prev.filter((item) => item.id !== project.id));
+    } catch (err) {
+      console.error("Error removing project:", err);
+      setDeleteError(t("projects.deleteError"));
+      await fetchProjects({ silent: true });
+    }
+  };
+
+  const closeProposalModal = useCallback(() => {
+    setProposalModal({
+      isOpen: false,
+      project: null,
+      pdfBlob: null,
+      pdfFileName: null,
+      isGenerating: false,
+    });
+    setRequestingProposalProjectId(null);
+  }, []);
+
+  const handleRequestProposal = async (project) => {
+    if (!project?.id || requestingProposalProjectId) {
       return;
     }
 
-    setShowNewProjectModal(true);
-  };
+    setRequestingProposalProjectId(project.id);
+    setLoadError(null);
+    setProposalModal({
+      isOpen: true,
+      project,
+      pdfBlob: null,
+      pdfFileName: null,
+      isGenerating: true,
+    });
 
-  const handleProjectCreated = (project) => {
-    console.log("Project created:", project);
-    // Refresh projects list
-    startNewSectionFlow(project, project.sections[0]);
-    navigate(getNextPage());
+    try {
+      let fullProject = await getProjectById(project.id);
+      if (!fullProject?.sections?.length) {
+        const sections = await getProjectSections(project.id);
+        fullProject = { ...fullProject, sections: sections || [] };
+      }
+
+      const { blob, fileName } = await generateProjectProformaPdf(fullProject, {
+        t,
+        locale: document.documentElement.lang || "en",
+      });
+
+      setProposalModal({
+        isOpen: true,
+        project: fullProject,
+        pdfBlob: blob,
+        pdfFileName: fileName,
+        isGenerating: false,
+      });
+    } catch (err) {
+      console.error("Proposal PDF failed:", err);
+      setLoadError(t("projects.proposal.generateError"));
+      closeProposalModal();
+    } finally {
+      setRequestingProposalProjectId(null);
+    }
   };
 
   return (
-    <div className="projects-page-content">
-      {/* New Project Section */}
-      <button
-        type="button"
-        className="new-project-section"
-        onClick={handleNewProjectClick}
-      >
-        <span className="new-project-overlay" aria-hidden="true" />
-        <img
-          src="/assets/project-new-bg.png"
-          alt="New Project"
-          className="new-project-bg"
-        />
-        <span className="new-project-content">
-          <span className="new-project-title">{t('projects.newProject')}</span>
-          <span className="create-btn" aria-hidden="true">
-            {t('projects.create')}
-          </span>
-        </span>
-      </button>
-
-      {/* Recent Projects Section */}
-      <div className="recent-projects-section">
-        <div className="recent-projects-header">
-          <h2 className="recent-projects-title">{t('projects.recentProjects')}</h2>
-          <button
-            className="projects-page-btn"
-            onClick={() => navigate("/projects-list")}
-          >
-            {t('projects.projectsPage')}
-          </button>
+    <div className="projects-page">
+      <header className="projects-page__header">
+        <div>
+          <h1 className="projects-page__title">{t("projects.pageTitle")}</h1>
+          <p className="projects-page__subtitle">{t("projects.pageSubtitle")}</p>
         </div>
 
-        <div className="projects-slider-wrapper">
-          <div className="projects-slider-container">
-            {loading ? (
-              <div className="loading-message">{t('projects.loading')}</div>
-            ) : error ? (
-              <div className="error-message">{error}</div>
-            ) : projects.length === 0 ? (
-              <div className="no-projects-message">
-                {t('projects.noProjects')}
-              </div>
-            ) : (
-              <Slider ref={sliderRef} {...settings}>
-                {projects.map((project) => (
-                  <div key={project.id} className="project-slide">
-                    <div
-                      className="project-card"
-                      onClick={() => handleProjectClick(project)}
-                    >
-                      <img
-                        src={
-                          project.thumbnailUrl ||
-                          project.rootImageUrl ||
-                          "/assets/logo_big.png"
-                        }
-                        alt={project.name}
-                        className="project-image"
-                        onError={(e) => {
-                          e.target.src = "/assets/logo_big.png";
-                        }}
-                      />
-                      <p className="project-name">{project.name}</p>
-                      {project.sectionCount > 0 && (
-                        <p className="project-sections">
-                          {project.sectionCount} {t('projects.sections')}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-              </Slider>
+        <button
+          type="button"
+          className="projects-page__create-btn"
+          onClick={handleNewProjectClick}
+          disabled={isCreatingSpace}
+        >
+          <span className="projects-page__create-icon" aria-hidden="true">
+            +
+          </span>
+          {isCreatingSpace ? t("projects.creatingSpace") : t("projects.createSpace")}
+        </button>
+      </header>
+
+      <div className="projects-page__toolbar">
+        <div className="projects-page__search">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.5" />
+            <path
+              d="M11 11L14.5 14.5"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinecap="round"
+            />
+          </svg>
+          <input
+            type="search"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder={t("projects.searchPlaceholder")}
+            className="projects-page__search-input"
+          />
+        </div>
+        <span className="projects-page__count">
+          {t("projects.count", { count: filteredProjects.length })}
+        </span>
+      </div>
+
+      {deleteError && (
+        <div className="projects-page__banner projects-page__banner--error" role="alert">
+          <span>{deleteError}</span>
+          <button
+            type="button"
+            className="projects-page__banner-dismiss"
+            onClick={() => setDeleteError(null)}
+            aria-label={t("common.cancel")}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      <div className="projects-page__list">
+        {loading ? (
+          <div className="projects-page__state">{t("projects.loading")}</div>
+        ) : loadError && projects.length === 0 ? (
+          <div className="projects-page__state projects-page__state--error">
+            {loadError}
+          </div>
+        ) : filteredProjects.length === 0 ? (
+          <div className="projects-page__empty">
+            <p>{searchQuery ? t("projects.noResults") : t("projects.noProjects")}</p>
+            {!searchQuery && (
+              <button
+                type="button"
+                className="projects-page__create-btn projects-page__create-btn--inline"
+                onClick={handleNewProjectClick}
+                disabled={isCreatingSpace}
+              >
+                {isCreatingSpace ? t("projects.creatingSpace") : t("projects.createSpace")}
+              </button>
             )}
           </div>
-
-          {/* Navigation Arrow */}
-          <button
-            className="slider-arrow next-arrow"
-            onClick={() => sliderRef.current?.slickNext()}
-          >
-            <svg width="48" height="46" viewBox="0 0 48 46" fill="none">
-              <path
-                d="M18 12L30 23L18 34"
-                stroke="white"
-                strokeWidth="3"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-
-          <div className="slider-overlay" />
-        </div>
+        ) : (
+          filteredProjects.map((project) => (
+            <ProjectListItem
+              key={project.id}
+              project={project}
+              onOpenDetails={handleOpenDetails}
+              onRename={handleRename}
+              onDelete={handleDelete}
+              onRequestProposal={handleRequestProposal}
+              isRequestingProposal={requestingProposalProjectId === project.id}
+            />
+          ))
+        )}
       </div>
-      {/* New Project Modal */}
-      <NewProjectModal
-        isOpen={showNewProjectModal}
-        onClose={() => setShowNewProjectModal(false)}
-        onSubmit={handleProjectCreated}
+
+      <ProposalRequestModal
+        isOpen={proposalModal.isOpen}
+        project={proposalModal.project}
+        pdfBlob={proposalModal.pdfBlob}
+        pdfFileName={proposalModal.pdfFileName}
+        isGenerating={proposalModal.isGenerating}
+        onClose={closeProposalModal}
       />
     </div>
   );

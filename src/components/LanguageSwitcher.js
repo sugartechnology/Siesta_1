@@ -1,31 +1,43 @@
-import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { setAppLanguagePreference } from '../utils/nativeAppLanguage';
+import { useTranslation } from "react-i18next";
+import { setAppLanguagePreference } from "../utils/nativeAppLanguage";
+import "./LanguageSwitcher.css";
 
-const LanguageSwitcher = () => {
-    const { i18n } = useTranslation();
+const LANGUAGES = [
+  { code: "tr", label: "TR" },
+  { code: "en", label: "EN" },
+];
 
-    const changeLanguage = (lng) => {
-        setAppLanguagePreference(i18n, lng);
-    };
+const LanguageSwitcher = ({ variant = "light" }) => {
+  const { i18n, t } = useTranslation();
+  const currentLang = i18n.resolvedLanguage?.startsWith("en") ? "en" : "tr";
 
-    return (
-        <div className="language-switcher">
-            <button
-                onClick={() => changeLanguage('tr')}
-                style={{ fontWeight: i18n.language === 'tr' ? 'bold' : 'normal' }}
-            >
-                TR
-            </button>
-            <span style={{ margin: '0 5px' }}>|</span>
-            <button
-                onClick={() => changeLanguage('en')}
-                style={{ fontWeight: i18n.language === 'en' ? 'bold' : 'normal' }}
-            >
-                EN
-            </button>
-        </div>
-    );
+  const changeLanguage = (lng) => {
+    if (lng === currentLang) return;
+    setAppLanguagePreference(i18n, lng);
+  };
+
+  return (
+    <div
+      className={`language-switcher language-switcher--${variant}`}
+      role="group"
+      aria-label={t("language.select")}
+    >
+      {LANGUAGES.map(({ code, label }) => (
+        <button
+          key={code}
+          type="button"
+          className={`language-switcher__option${
+            currentLang === code ? " is-active" : ""
+          }`}
+          onClick={() => changeLanguage(code)}
+          aria-pressed={currentLang === code}
+          aria-label={t(`language.${code}`)}
+        >
+          {label}
+        </button>
+      ))}
+    </div>
+  );
 };
 
 export default LanguageSwitcher;

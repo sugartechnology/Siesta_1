@@ -1,0 +1,104 @@
+.proposal-pdf-preview {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 360px;
+  background: #f3f4f6;
+}
+
+.proposal-pdf-preview__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  padding: 10px 12px;
+  background: #fff;
+  border-bottom: 1px solid #e5e7eb;
+  flex-shrink: 0;
+}
+
+.proposal-pdf-preview__icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  background: #fff;
+  color: #374151;
+  cursor: pointer;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.proposal-pdf-preview__icon-btn:hover:not(:disabled) {
+  background: #f9fafb;
+  border-color: #d1d5db;
+  color: #111827;
+}
+
+.proposal-pdf-preview__icon-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.proposal-pdf-preview__scroll {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+
+.proposal-pdf-preview__pages {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  padding: 20px 16px 24px;
+}
+
+.proposal-pdf-preview__page {
+  display: block;
+  width: min(100%, 640px);
+  height: auto;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 4px 18px rgba(17, 24, 39, 0.08);
+}
+
+.proposal-pdf-preview__state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 320px;
+  padding: 24px;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.proposal-pdf-preview__spinner {
+  width: 28px;
+  height: 28px;
+  border: 3px solid #e5e7eb;
+  border-top-color: #111827;
+  border-radius: 50%;
+  animation: proposal-pdf-preview-spin 0.7s linear infinite;
+}
+
+@keyframes proposal-pdf-preview-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (max-width: 640px) {
+  .proposal-pdf-preview {
+    min-height: 280px;
+  }
+
+  .proposal-pdf-preview__pages {
+    padding: 16px 12px 20px;
+    gap: 12px;
+  }
+}

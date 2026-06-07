@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUserProjects, removeProject } from "../api/Api";
+import { getUserProjectsDetailed, removeProject } from "../api/Api";
+import { getProjectListThumbnail } from "../utils/projectImages";
+import { sortProjectsByNewest } from "../utils/projectNaming";
 import HoverThumbnailButton from "../components/HoverThumbnailButton";
 import "./ProjectsList.css";
 import { useTranslation } from "react-i18next";
@@ -13,8 +15,8 @@ const ProjectsList = () => {
   const [projects, setProjects] = useState([]);
 
   useEffect(() => {
-    getUserProjects().then((data) => {
-      setProjects(data);
+    getUserProjectsDetailed().then((data) => {
+      setProjects(sortProjectsByNewest(data || []));
     });
   }, []);
 
@@ -90,11 +92,7 @@ const ProjectsList = () => {
         {filteredProjects.length > 0 ? (
           filteredProjects.map((project) => {
             // Image URL'i belirle
-            const imageUrl =
-              project.thumbnailUrl ||
-              project.resultImageUrl ||
-              project.rootImageUrl ||
-              "/assets/logo_big.png";
+            const imageUrl = getProjectListThumbnail(project);
 
             return (
               <div key={project.id} className="project-item-card">

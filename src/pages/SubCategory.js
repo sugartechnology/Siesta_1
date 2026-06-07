@@ -1,5 +1,5 @@
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { startNewSectionFlow } from "../utils/NavigationState";
+import { NavigationState } from "../utils/NavigationState";
 import {
   getSubCategoriesForCollection,
   normalizeCatalogSelection,
@@ -22,7 +22,7 @@ export default function SubCategory() {
   const subCategories = getSubCategoriesForCollection(collectionSlug);
 
   const handleCategoryClick = (category, subCategory) => {
-    startNewSectionFlow();
+    NavigationState.productsEntry = "catalog";
     navigate(extractPath(category, subCategory.value));
   };
 

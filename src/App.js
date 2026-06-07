@@ -3,6 +3,7 @@ import "./App.css";
 import { AuthProvider } from "./auth/AuthProvider";
 import { useAuth } from "./auth/useAuth";
 import { SectionDesignProvider } from "./contexts/SectionDesignContext";
+import { ProductCartProvider } from "./contexts/ProductCartContext";
 import TopMenu from "./components/TopMenu";
 import BottomMenu from "./components/BottomMenu";
 import AccountSettings from "./pages/AccountSettings";
@@ -95,9 +96,11 @@ export default function App() {
   return (
     <Router>
       <AuthProvider>
-        <SectionDesignProvider>
-          <AppChrome />
-        </SectionDesignProvider>
+        <ProductCartProvider>
+          <SectionDesignProvider>
+            <AppChrome />
+          </SectionDesignProvider>
+        </ProductCartProvider>
       </AuthProvider>
     </Router>
   );

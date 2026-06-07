@@ -1,12 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { IMaskInput } from "react-imask";
 import LocationMapModal from "./LocationMapModal";
 import { createProject } from "../api/Api";
+import { generateSectionName } from "../utils/projectNaming";
 import "./NewProjectModal.css";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../auth/useAuth";
 
-export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
+export default function NewProjectModal({
+  isOpen,
+  onClose,
+  onSubmit,
+  suggestedProjectName = "",
+  suggestedSectionName = "",
+}) {
   const { t } = useTranslation();
   const { requireAuth } = useAuth();
   const [formData, setFormData] = useState({
@@ -22,6 +29,16 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
   const [showMapModal, setShowMapModal] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    setFormData((prev) => ({
+      ...prev,
+      projectName: suggestedProjectName || prev.projectName,
+      sectionName: suggestedSectionName || prev.sectionName,
+    }));
+  }, [isOpen, suggestedProjectName, suggestedSectionName]);
 
   const countryCodes = [
     { code: "+1", country: "USA/Canada", flag: "🇺🇸" },
@@ -69,9 +86,13 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
         return;
       }
 
+      const projectName = formData.projectName.trim() || suggestedProjectName;
+      const sectionName =
+        formData.sectionName.trim() || suggestedSectionName || generateSectionName(1);
+
       // Prepare project data for API (ProjectDTO format)
       const projectData = {
-        name: formData.projectName,
+        name: projectName,
         details: formData.additionalInfo,
         mobilePhone: `${formData.countryCode}${formData.phoneNumber}`,
         address: {
@@ -91,7 +112,7 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
         // Create initial section with sectionName
         sections: [
           {
-            title: formData.sectionName,
+            title: sectionName,
             content: "",
             type: null,
             style: null,
@@ -176,38 +197,14 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
         </div>
 
         <form onSubmit={handleSubmit} className="modal-form">
-          <div className="form-row">
-            <div className="form-group">
-              <label htmlFor="projectName">{t('newProjectModal.projectName')}</label>
-              <input
-                type="text"
-                id="projectName"
-                name="projectName"
-                value={formData.projectName}
-                onChange={handleInputChange}
-                placeholder={t('newProjectModal.projectNamePlaceholder')}
-                required
-              />
-            </div>
-
-            <div className="form-group">
-
-              <label htmlFor="sectionName">{t('newProjectModal.sectionName')}</label>
-              <input
-                type="text"
-                id="sectionName"
-                name="sectionName"
-                value={formData.sectionName}
-                onChange={handleInputChange}
-                placeholder={t('newProjectModal.sectionNamePlaceholder')}
-                required
-              />
-            </div>
+          <div className="auto-name-preview">
+            <span className="input-label">{t("newProjectModal.autoNameLabel")}</span>
+            <p className="auto-name-value">{formData.projectName}</p>
           </div>
 
           <div className="form-row">
             <div className="form-group phone-group">
-              <label>{t('newProjectModal.phoneNumber')}</label>
+              <label htmlFor="phoneNumber" className="input-label">{t('newProjectModal.phoneNumber')}</label>
               <div className="phone-input-container">
                 <select
                   name="countryCode"
@@ -223,6 +220,7 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
                 </select>
                 <IMaskInput
                   mask="(000) 000-0000"
+                  id="phoneNumber"
                   value={formData.phoneNumber}
                   onAccept={(value, mask) => {
                     setFormData({ ...formData, phoneNumber: value });
@@ -237,10 +235,11 @@ export default function NewProjectModal({ isOpen, onClose, onSubmit }) {
 
           <div className="form-row">
             <div className="form-group">
-              <label htmlFor="additionalInfo">{t('newProjectModal.additionalInfo')}</label>
+              <label htmlFor="additionalInfo" className="input-label">{t('newProjectModal.additionalInfo')}</label>
               <textarea
                 id="additionalInfo"
                 name="additionalInfo"
+                className="input-field"
                 value={formData.additionalInfo}
                 onChange={handleInputChange}
                 placeholder={t('newProjectModal.additionalInfoPlaceholder')}

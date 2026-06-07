@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { fetchSampleRooms } from "../api/Api";
 import { downloadImageAsBase64 } from "../utils/ImageUtils";
 import { getNextPage, NavigationState } from "../utils/NavigationState";
+import DesignFlowNav from "../components/DesignFlowNav";
 import "./Camera.css";
 import { useTranslation } from "react-i18next";
 
@@ -37,11 +38,6 @@ export default function Camera() {
         setSampleRooms([]);
       });
   }, []);
-
-  // Debug: hasPermission state değişimini takip et
-  useEffect(() => {
-    console.log("🔍 hasPermission state changed:", hasPermission);
-  }, [hasPermission]);
 
   // Video element render edildikten sonra stream'i bağla
   useEffect(() => {
@@ -227,9 +223,7 @@ export default function Camera() {
       navigate(nextPage);
     } catch (error) {
       console.error("Error downloading sample image:", error);
-      // Fallback: original image kullan
-      const nextPage = getNextPage("camera", { image: sample.imageUrl });
-      navigate(nextPage);
+      alert(t("camera.sampleImageError"));
     }
   };
 
@@ -242,20 +236,8 @@ export default function Camera() {
         setStream(null);
       }
 
-      navigate("/room-type", { state: { project } });
+      navigate(getNextPage("photograph"));
     })();
-  };
-
-  const handleAddPhoto = () => {
-    console.log("📷 handleAddPhoto clicked, hasPermission:", hasPermission);
-    // Show options to either open camera or gallery
-    if (!hasPermission) {
-      console.log("📷 Requesting camera permission...");
-      requestCameraPermission();
-    } else {
-      console.log("📷 Opening gallery...");
-      handleGalleryAccess();
-    }
   };
 
   return (
@@ -263,31 +245,66 @@ export default function Camera() {
       className={`camera-main-container ${isFullscreen ? "fullscreen" : ""}`}
       ref={mainContainerRef}
     >
+      {!isFullscreen && <DesignFlowNav currentStepId="camera" />}
       <div className="main-camera-area">
         {!hasPermission && !isRequestingPermission && (
-          <div className="camera-placeholder-box" onClick={handleAddPhoto}>
-            <div className="camera-icon-circle">
-              <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                <path
-                  d="M38 35a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V12a2 2 0 0 1 2-2h7l3-5h12l3 5h7a2 2 0 0 1 2 2z"
-                  stroke="white"
-                  strokeWidth="2.5"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-                <circle
-                  cx="20"
-                  cy="23"
-                  r="7"
-                  stroke="white"
-                  strokeWidth="2.5"
-                />
-              </svg>
+          <div className="camera-picker-box">
+            <p className="camera-picker-text">{t("camera.addPhotoDesc")}</p>
+            <div className="camera-picker-actions">
+              <button
+                type="button"
+                className="camera-action-btn"
+                onClick={requestCameraPermission}
+              >
+                <span className="camera-action-icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <path
+                      d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"
+                      stroke="currentColor"
+                      strokeWidth="1.75"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                    <circle
+                      cx="12"
+                      cy="13"
+                      r="4"
+                      stroke="currentColor"
+                      strokeWidth="1.75"
+                    />
+                  </svg>
+                </span>
+                <span>{t("camera.takePhoto")}</span>
+              </button>
+              <button
+                type="button"
+                className="camera-action-btn camera-action-btn--secondary"
+                onClick={handleGalleryAccess}
+              >
+                <span className="camera-action-icon" aria-hidden="true">
+                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                    <rect
+                      x="3"
+                      y="3"
+                      width="18"
+                      height="18"
+                      rx="2"
+                      stroke="currentColor"
+                      strokeWidth="1.75"
+                    />
+                    <circle cx="8.5" cy="8.5" r="1.5" fill="currentColor" />
+                    <path
+                      d="M21 15l-5-5L5 21"
+                      stroke="currentColor"
+                      strokeWidth="1.75"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
+                  </svg>
+                </span>
+                <span>{t("camera.chooseGallery")}</span>
+              </button>
             </div>
-            <h3 className="placeholder-title">{t('camera.addPhoto')}</h3>
-            <p className="placeholder-description">
-              {t('camera.addPhotoDesc')}
-            </p>
           </div>
         )}
 
@@ -300,10 +317,6 @@ export default function Camera() {
 
         {hasPermission && !isRequestingPermission && (
           <div className="camera-video-box">
-            {console.log(
-              "🎬 Rendering video element with hasPermission:",
-              hasPermission
-            )}
             <video
               ref={videoRef}
               autoPlay
@@ -356,12 +369,17 @@ export default function Camera() {
       {/* Sample Rooms Section */}
       <div className="sample-rooms-shell">
         <div className="sample-rooms-section">
-          <h3 className="sample-rooms-heading">{t('camera.sampleRooms')}</h3>
-          <div className="sample-rooms-scroll">
+          <div className="sample-rooms-header">
+            <h3 className="sample-rooms-heading">{t("camera.sampleRooms")}</h3>
+            <p className="sample-rooms-hint">{t("camera.sampleRoomsHint")}</p>
+          </div>
+          <div className="sample-rooms-scroll" role="list">
             {sampleRooms.map((sample) => (
-              <div
+              <button
+                type="button"
                 key={sample.id}
-                className={`sample-room-item ${
+                role="listitem"
+                className={`sample-room-card ${
                   selectedSample?.id === sample.id ? "selected" : ""
                 }`}
                 onClick={() => handleSampleSelect(sample)}
@@ -372,11 +390,12 @@ export default function Camera() {
                   alt={sample.name}
                   className="sample-image"
                 />
-              </div>
+                <span className="sample-room-name">{sample.name}</span>
+              </button>
             ))}
           </div>
-          <button className="skip-btn-bottom" onClick={handleSkip}>
-            {t('common.next')}
+          <button type="button" className="skip-btn-bottom" onClick={handleSkip}>
+            {t("common.next")}
           </button>
         </div>
       </div>

@@ -1,8 +1,15 @@
-import React, { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { getProjectById, updateProjectName } from "../api/Api";
+import { useSectionDesign } from "../contexts/SectionDesignContext";
+import {
+  deleteSection,
+  getProjectById,
+  updateProjectName,
+  updateSectionName,
+} from "../api/Api";
 import "./ProjectDetails.css";
 import EditableTitle from "../components/EditableTitle";
+import SectionListItem from "../components/SectionListItem";
 import {
   startNewSectionFlow,
   startExistingSectionFlow,
@@ -10,24 +17,34 @@ import {
 } from "../utils/NavigationState";
 import { useTranslation } from "react-i18next";
 
+const getSectionImage = (section) =>
+  section.thumbnailUrl ||
+  section.resultImageUrl ||
+  section.rootImageUrl ||
+  section.designs?.[0]?.thumbnailUrl ||
+  section.designs?.[0]?.resultImageUrl ||
+  null;
+
+const isSectionProcessing = (section) => {
+  const status = section.designs?.[0]?.status;
+  return status === "PROCESSING";
+};
+
 const ProjectDetails = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { id } = useParams();
+  const { registerSection, unregisterSection, subscribeSectionUpdates } =
+    useSectionDesign();
   const [project, setProject] = useState(null);
   const [projectError, setProjectError] = useState("");
 
   useEffect(() => {
-    console.log("useEffect", id);
-
     let isMounted = true;
 
     const fetchProjectData = async () => {
       try {
-        console.log("fetchProjectData", id);
         const response = await getProjectById(id);
-
-        // Component hala mount edilmişse state'i güncelle
         if (isMounted) {
           setProjectError("");
           setProject(response);
@@ -44,11 +61,42 @@ const ProjectDetails = () => {
 
     fetchProjectData();
 
-    // Cleanup function
     return () => {
       isMounted = false;
     };
   }, [id]);
+
+  useEffect(() => {
+    const processingIds = (project?.sections || [])
+      .filter(isSectionProcessing)
+      .map((section) => section.id)
+      .filter(Boolean);
+
+    processingIds.forEach((sectionId) => registerSection(sectionId));
+
+    return () => {
+      processingIds.forEach((sectionId) => unregisterSection(sectionId));
+    };
+  }, [project?.sections, registerSection, unregisterSection]);
+
+  useEffect(() => {
+    return subscribeSectionUpdates((updatedSection) => {
+      if (!updatedSection?.id) return;
+
+      setProject((prev) => {
+        if (!prev?.sections?.length) return prev;
+
+        const index = prev.sections.findIndex(
+          (section) => section.id === updatedSection.id
+        );
+        if (index < 0) return prev;
+
+        const sections = [...prev.sections];
+        sections[index] = updatedSection;
+        return { ...prev, sections };
+      });
+    });
+  }, [subscribeSectionUpdates]);
 
   const handleSectionClick = (section) => {
     startExistingSectionFlow(project, section);
@@ -82,135 +130,156 @@ const ProjectDetails = () => {
     }
   };
 
+  const handleSectionRename = async (section, newTitle) => {
+    const trimmedTitle = newTitle?.trim();
+    if (!section?.id || !trimmedTitle) {
+      return;
+    }
+
+    const previousProject = project;
+    setProject((prev) => ({
+      ...prev,
+      sections: prev.sections.map((s) =>
+        s.id === section.id ? { ...s, title: trimmedTitle } : s
+      ),
+    }));
+
+    try {
+      const updatedSection = await updateSectionName(section.id, trimmedTitle);
+      setProject((prev) => ({
+        ...prev,
+        sections: prev.sections.map((s) =>
+          s.id === section.id ? { ...s, ...updatedSection, title: trimmedTitle } : s
+        ),
+      }));
+      setProjectError("");
+    } catch (error) {
+      console.error("Error updating section name:", error);
+      setProject(previousProject);
+      setProjectError(
+        error?.message || "Failed to update section name. Please try again."
+      );
+      throw error;
+    }
+  };
+
+  const handleSectionDelete = async (section) => {
+    if (!section?.id) {
+      return;
+    }
+
+    const previousProject = project;
+    setProject((prev) => ({
+      ...prev,
+      sections: prev.sections.filter((s) => s.id !== section.id),
+    }));
+
+    try {
+      await deleteSection(section.id);
+      setProjectError("");
+    } catch (error) {
+      console.error("Error deleting section:", error);
+      setProject(previousProject);
+      setProjectError(
+        error?.message || "Failed to delete section. Please try again."
+      );
+    }
+  };
+
+  const sections = project?.sections || [];
+
+  const handleBack = () => {
+    navigate("/projects");
+  };
+
   return (
-    <div className="project-details-content-wrapper">
+    <div className="pd-page">
+      <button
+        type="button"
+        className="pd-back-btn"
+        onClick={handleBack}
+        aria-label={t("designFlow.back")}
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M15 18l-6-6 6-6"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+        <span>{t("designFlow.back")}</span>
+      </button>
+
       {projectError && (
-        <div className="section-details-error-banner" role="alert">
+        <div className="pd-error-banner" role="alert">
           {projectError}
         </div>
       )}
-      {/* Project Title */}
-      <h1 className="project-title">
-        {project ? (
-          <EditableTitle
-            value={project.name}
-            onChange={handleTitleChange}
-            placeholder="Click to edit"
-            className="project-title"
-            autoFocus={false}
-          />
-        ) : (
-          t('common.loading')
-        )}
-      </h1>
 
-      {/* Sections Grid */}
-      <div className="sections-card">
-        <div className="sections-grid">
-          {project &&
-            project.sections.map((section) => (
-              <div
-                key={section.id}
-                className="section-card"
-                onClick={() => handleSectionClick(section)}
-              >
-                <div className="section-image-container">
-                  <img
-                    src={
-                      section.thumbnailUrl ||
-                      section.resultImageUrl ||
-                      section.rootImageUrl ||
-                      "/assets/logo_big.png"
-                    }
-                    alt={section.title}
-                    onError={(e) => {
-                      e.target.src = "/assets/logo_big.png";
-                    }}
-                    className="section-image"
-                  />
-                  <div className="section-overlay"></div>
-                  {section.hasLoading && (
-                    <div className="loading-icon">
-                      <svg
-                        width="100"
-                        height="100"
-                        viewBox="0 0 100 100"
-                        fill="none"
-                      >
-                        <circle
-                          cx="50"
-                          cy="50"
-                          r="40"
-                          stroke="white"
-                          strokeWidth="8"
-                          strokeOpacity="0.3"
-                        />
-                        <circle
-                          cx="50"
-                          cy="50"
-                          r="40"
-                          stroke="white"
-                          strokeWidth="8"
-                          strokeLinecap="round"
-                          strokeDasharray="60 200"
-                          strokeDashoffset="0"
-                        >
-                          <animateTransform
-                            attributeName="transform"
-                            type="rotate"
-                            from="0 50 50"
-                            to="360 50 50"
-                            dur="1s"
-                            repeatCount="indefinite"
-                          />
-                        </circle>
-                      </svg>
-                    </div>
-                  )}
-                </div>
-                <div className="section-name">{section.title}</div>
-              </div>
-            ))}
-        </div>
-      </div>
-
-      {/* Project Details and Add New Section */}
-      <div className="bottom-section">
-        <div className="project-info-card">
-          <h2 className="info-title">{t('projectDetails.projectNameDetails')}</h2>
-          <p className="info-description">
-            {project ? project.details : t('common.loading')}
-          </p>
-          <p className="info-phone">
-            {project ? project.mobilePhone : t('common.loading')}
-          </p>
-        </div>
-
-        <div className="add-section-card" onClick={handleAddNewSection}>
-          <div className="add-section-image-container">
-            <img
-              src="/assets/project-01.png"
-              alt="Add New Section"
-              className="add-section-image"
+      <header className="pd-header">
+        <h1 className="pd-title">
+          {project ? (
+            <EditableTitle
+              value={project.name}
+              onChange={handleTitleChange}
+              placeholder={t("sectionDetails.clickToEdit")}
+              className="pd-title-input"
+              autoFocus={false}
             />
-            <div className="add-section-overlay"></div>
+          ) : (
+            t("common.loading")
+          )}
+        </h1>
+        {project && (
+          <p className="pd-meta">
+            {t("projectDetails.sectionCount", { count: sections.length })}
+          </p>
+        )}
+      </header>
+
+      <button
+        type="button"
+        className="pd-add-section-btn"
+        onClick={handleAddNewSection}
+        disabled={!project}
+      >
+        <span className="pd-add-section-btn__icon" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+            <path
+              d="M12 5v14M5 12h14"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+        </span>
+        {t("projectDetails.addNewSection")}
+      </button>
+
+      <div className="pd-sections-panel">
+        {!project ? (
+          <div className="pd-empty">{t("common.loading")}</div>
+        ) : sections.length === 0 ? (
+          <div className="pd-empty">
+            <p>{t("projectDetails.noSections")}</p>
           </div>
-          <div className="add-section-content">
-            <div className="add-icon">
-              <svg width="90" height="90" viewBox="0 0 90 90" fill="none">
-                <circle cx="45" cy="45" r="43" stroke="white" strokeWidth="4" />
-                <path
-                  d="M45 20V70M20 45H70"
-                  stroke="white"
-                  strokeWidth="6"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </div>
-            <h3 className="pd-add-section-text">{t('projectDetails.addNewSection')}</h3>
+        ) : (
+          <div className="pd-sections-scroll" role="list">
+            {sections.map((section) => (
+              <SectionListItem
+                key={section.id}
+                section={section}
+                imageUrl={getSectionImage(section)}
+                isProcessing={isSectionProcessing(section)}
+                onOpen={handleSectionClick}
+                onRename={handleSectionRename}
+                onDelete={handleSectionDelete}
+              />
+            ))}
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

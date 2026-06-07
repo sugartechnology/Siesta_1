@@ -9,6 +9,13 @@
   justify-content: center;
 }
 
+.login-language-control {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  z-index: 20;
+}
+
 /* Background */
 .login-background {
   position: absolute;
@@ -38,8 +45,20 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  /*gap: 30px;
-  padding: 40px;*/
+  width: 100%;
+  max-width: 100%;
+  padding: 24px;
+  box-sizing: border-box;
+  max-height: 100vh;
+  overflow-y: auto;
+}
+
+.login-content > .login-welcome-text,
+.login-content > .login-page-title,
+.login-content > .login-card {
+  width: 100%;
+  max-width: 440px;
+  box-sizing: border-box;
 }
 
 /* Logo */
@@ -92,87 +111,38 @@
 
 /* Login Card */
 .login-card {
-  background: rgba(255, 255, 255, 0.5);
-  backdrop-filter: blur(10px);
-  border-radius: 30px;
-  padding: 40px 35px;
-  width: 100%;
-  max-width: 380px;
-  box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.3);
+  background: rgba(255, 255, 255, 0.94);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.8);
+  border-radius: 16px;
+  padding: 36px 32px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12);
+}
+
+.login-card .input-field {
+  padding: 14px 16px;
+  font-size: 16px;
 }
 
 /* Form */
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 24px;
-}
-
-.input-group {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.input-label {
-  font-family: "Poppins", sans-serif;
-  font-size: 17px;
-  font-weight: 200;
-  color: #636363;
-  margin: 0;
-}
-input[type="text"] {
-  background: transparent !important;
-  background-color: transparent !important;
-  background-image: none !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  outline: none !important;
-  -webkit-appearance: none !important;
-  appearance: none !important;
-}
-
-.input-field {
-  background-color: transparent !important;
-  background: none !important;
-  border: none; /* isteğe bağlı */
-  box-shadow: none !important;
-  outline: none;
-  -webkit-appearance: none !important; /* Safari / iOS */
-  -moz-appearance: none; /* Firefox */
-  appearance: none; /* Modern browsers */
-  font-family: "Poppins", sans-serif;
-  font-size: 17px;
-  font-weight: 400;
-  color: #000;
-  padding: 12px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
-  outline: none;
-  transition: border-color 0.3s ease;
-}
-
-.input-field::placeholder {
-  color: #000;
-  opacity: 0.6;
-}
-
-.input-field:focus {
-  border-bottom-color: #000;
+  gap: 18px;
 }
 
 .forgot-password-btn {
   align-self: flex-start;
   font-family: "Poppins", sans-serif;
-  font-size: 17px;
-  font-weight: 400;
-  color: #000;
+  font-size: 13px;
+  font-weight: 500;
+  color: #374151;
   background: none;
   border: none;
   padding: 0;
   cursor: pointer;
   text-decoration: none;
-  transition: opacity 0.3s ease;
+  transition: color 0.2s ease;
 }
 
 .forgot-password-btn:hover {
@@ -190,9 +160,9 @@ input[type="text"] {
   align-items: center;
   gap: 8px;
   font-family: "Poppins", sans-serif;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 400;
-  color: #000;
+  color: #374151;
   cursor: pointer;
 }
 
@@ -204,86 +174,37 @@ input[type="text"] {
 
 .sign-in-btn {
   font-family: "Poppins", sans-serif;
-  font-size: 16px;
-  font-weight: 700;
+  font-size: 15px;
+  font-weight: 600;
   color: #fff;
-  background: #000;
+  background: #111827;
   border: none;
-  border-radius: 40px;
-  padding: 12px 21px;
+  border-radius: 8px;
+  padding: 14px 20px;
+  min-height: 48px;
+  width: 100%;
   cursor: pointer;
-  transition: all 0.3s ease;
-  letter-spacing: 0.16px;
+  transition: background 0.2s ease;
+  letter-spacing: 0.01em;
 }
 
-.sign-in-btn:hover {
-  background: #222;
-  transform: translateY(-2px);
-  box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+.sign-in-btn:hover:not(:disabled) {
+  background: #1f2937;
 }
 
-/* Social Login */
-.social-divider {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin: 20px 0;
-}
-
-.divider-line {
-  flex: 1;
-  height: 1px;
-  background: rgba(0, 0, 0, 0.2);
-}
-
-.divider-text {
-  font-family: "Poppins", sans-serif;
-  font-size: 14px;
-  font-weight: 500;
-  color: #000;
-  white-space: nowrap;
-}
-
-.social-buttons {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-  margin-bottom: 20px;
-}
-
-.social-btn {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 55px;
-  height: 52px;
-  background: rgba(255, 255, 255, 0.5);
-  border: none;
-  border-radius: 44px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.social-btn img {
-  width: 35px;
-  height: 35px;
-  object-fit: contain;
-}
-
-.social-btn:hover {
-  background: rgba(255, 255, 255, 0.7);
-  transform: translateY(-2px);
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+.sign-in-btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
 }
 
 /* Sign Up Link */
 .signup-link {
   font-family: "Poppins", sans-serif;
-  font-size: 17px;
+  font-size: 13px;
   font-weight: 400;
-  color: #666666;
+  color: #6b7280;
   text-align: center;
-  margin-top: 10px;
+  margin-top: 20px;
 }
 
 .signup-link-text {
@@ -322,55 +243,33 @@ input[type="text"] {
   color: #000;
 }
 
-/* Error Messages */
-.error-message {
-  font-family: "Poppins", sans-serif;
-  font-size: 14px;
-  font-weight: 400;
-  color: #d32f2f;
-  background: rgba(211, 47, 47, 0.1);
-  padding: 10px 15px;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  text-align: center;
-}
-
-.success-message {
-  font-family: "Poppins", sans-serif;
-  font-size: 14px;
-  font-weight: 400;
-  color: #065f46;
-  background: rgba(209, 250, 229, 0.3);
-  padding: 10px 15px;
-  border-radius: 8px;
-  margin-bottom: 15px;
-  text-align: center;
-}
-
-.field-error {
-  font-family: "Poppins", sans-serif;
-  font-size: 13px;
-  font-weight: 400;
-  color: #d32f2f;
-  margin-top: 5px;
-  display: block;
-}
-
-.input-error {
-  border-bottom-color: #d32f2f !important;
-}
-
-.input-error:focus {
-  border-bottom-color: #d32f2f !important;
+.login-form .error-message,
+.login-form .success-message {
+  margin-bottom: 4px;
 }
 
 /* Responsive Design */
-@media (max-width: 768px) {
+
+/* Tablet: en az ekranın %50'si */
+@media (min-width: 481px) and (max-width: 1024px) {
   .login-content {
-    /*padding: 20px;
-    gap: 20px;*/
+    padding: 28px;
   }
 
+  .login-content > .login-welcome-text,
+  .login-content > .login-page-title,
+  .login-content > .login-card {
+    width: 50%;
+    min-width: 50%;
+    max-width: none;
+  }
+
+  .login-card {
+    padding: 40px 36px;
+  }
+}
+
+@media (max-width: 768px) {
   .login-logo {
     width: 80px;
     height: 80px;
@@ -388,27 +287,33 @@ input[type="text"] {
     font-size: 16px;
   }
 
-  .login-card {
-    padding: 30px 25px;
-    max-width: 340px;
-  }
-
-  .input-label,
-  .input-field,
   .forgot-password-btn,
   .signup-link {
-    font-size: 15px;
-  }
-
-  .sign-in-btn {
-    font-size: 15px;
+    font-size: 13px;
   }
 }
 
+/* Mobil: en az ekranın %80'i */
 @media (max-width: 480px) {
+  .login-language-control {
+    top: 16px;
+    right: 16px;
+  }
+
+  .login-content {
+    padding: 20px 16px;
+  }
+
+  .login-content > .login-welcome-text,
+  .login-content > .login-page-title,
+  .login-content > .login-card {
+    width: 80%;
+    min-width: 80%;
+    max-width: none;
+  }
+
   .login-card {
-    padding: 25px 20px;
-    max-width: 300px;
+    padding: 32px 24px;
   }
 
   .welcome-subtitle {
@@ -418,27 +323,5 @@ input[type="text"] {
   .welcome-title {
     font-size: 28px;
   }
-
-  .social-btn {
-    width: 50px;
-    height: 48px;
-  }
-
-  .social-btn img {
-    width: 30px;
-    height: 30px;
-  }
 }
 
-/* 2) Chrome/Safari autofill boyasını söndür */
-.login-form input.input-field:-webkit-autofill,
-.login-form input.input-field:-webkit-autofill:hover,
-.login-form input.input-field:-webkit-autofill:focus,
-.login-form input.input-field:-webkit-autofill:active {
-  background: transparent !important;
-  background-color: transparent !important;
-  background-image: none !important;
-
-  /* Chrome'un autofill "fade-in" animasyonunu öldürme hack'i */
-  transition: background-color 9999s ease-out 0s, color 9999s ease-out 0s !important;
-}

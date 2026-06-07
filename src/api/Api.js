@@ -355,8 +355,18 @@ export const generateDesignForSection = async (projectId, sectionId, prompt) => 
 };
 
 // Get products by IDs
-export const getProductsByIds = async (productIds) => {
-  const endpoint = `${process.env.REACT_APP_API_URL}/projects/products/by-ids`;
+export const getProductsByIds = async (
+  productIds,
+  { includeImages = true } = {}
+) => {
+  const baseUrl = `${process.env.REACT_APP_API_URL}/projects/products/by-ids`;
+  const queryParams = new URLSearchParams();
+  if (includeImages) {
+    queryParams.append("includeImages", "true");
+  }
+  const endpoint = queryParams.toString()
+    ? `${baseUrl}?${queryParams.toString()}`
+    : baseUrl;
   return await postData(endpoint, productIds);
 };
 

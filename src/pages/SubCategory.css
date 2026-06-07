@@ -148,21 +148,35 @@
 .sub-category-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.4), transparent 60%);
+  background: linear-gradient(
+    to top,
+    rgba(0, 0, 0, 0.82) 0%,
+    rgba(0, 0, 0, 0.42) 42%,
+    rgba(0, 0, 0, 0.08) 72%,
+    transparent 100%
+  );
   pointer-events: none;
 }
 
 .sub-category-name {
   font-family: "Poppins", sans-serif;
-  font-size: 30px;
-  font-weight: 500;
-  line-height: 1.19;
+  font-size: clamp(18px, 2.4vw, 30px);
+  font-weight: 700;
+  line-height: 1.25;
   text-align: center;
-  color: #000;
+  color: #fff;
   position: relative;
   z-index: 2;
   margin: 0;
+  width: 100%;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: rgba(0, 0, 0, 0.28);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
   white-space: pre-line;
+  box-sizing: border-box;
 }
 
 .sub-category-name.multiline {
@@ -181,7 +195,7 @@
   }
 
   .sub-category-name {
-    font-size: 24px;
+    font-size: clamp(16px, 2.2vw, 24px);
   }
 }
 
@@ -229,7 +243,8 @@
   }
 
   .sub-category-name.multiline {
-    font-size: 2vh;
+    font-size: clamp(14px, 2.8vw, 18px);
+    line-height: 1.3;
   }
 
   .sub-category-card.column-span-3 {

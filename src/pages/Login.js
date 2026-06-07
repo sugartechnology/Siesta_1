@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import "./Login.css";
 import { useAuth } from "../auth/useAuth";
 import { useTranslation } from "react-i18next";
+import LanguageSwitcher from "../components/LanguageSwitcher";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -31,14 +32,8 @@ const Login = () => {
   const [registerLoading, setRegisterLoading] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
 
-  const imgLogo = "/assets/logo_big.png";
   const imgBackground = "/assets/login_background.webp";
-  const imgFacebook =
-    "http://localhost:3845/assets/88b63fe33fffe95c43e282e2280b18c129842d26.svg";
-  const imgGoogle =
-    "http://localhost:3845/assets/6976bc1ec977a49f1b8210b6a3215c023b636d69.svg";
-  const imgApple =
-    "http://localhost:3845/assets/aa9ac7f11aa49d2924c673c3aa1f0b953d28b9b8.svg";
+
 
   const auth = useAuth();
   const REMEMBER_ME_KEY = "siesta_login_prefs";
@@ -181,12 +176,6 @@ const Login = () => {
     }
   };
 
-  const handleSocialLogin = (provider) => {
-    // Simulate social login - in real app, this would handle OAuth
-    alert(`Logging in with ${provider}...`);
-    navigate("/home");
-  };
-
   const handleContinueWithoutLogin = () => {
     navigate("/home");
   };
@@ -203,6 +192,10 @@ const Login = () => {
 
   return (
     <div className="login-container">
+      <div className="login-language-control">
+        <LanguageSwitcher variant="glass" />
+      </div>
+
       {/* Background Image */}
       <div className="login-background">
         <img
@@ -223,7 +216,7 @@ const Login = () => {
         {/* Welcome Text */}
         <div className="login-welcome-text">
           <h2 className="welcome-subtitle">{t('login.welcomeSubtitle')}</h2>
-          <h1 className="welcome-title">SiestaAI</h1>
+          <h1 className="welcome-title">Siesta Exclusive AI</h1>
         </div>
 
         {/* Sign in to continue - Moved outside card */}
@@ -240,25 +233,29 @@ const Login = () => {
 
               {/* Username Field */}
               <div className="input-group">
-                <label className="input-label">{t('login.username')}</label>
+                <label htmlFor="login-username" className="input-label">{t('login.username')}</label>
                 <input
+                  id="login-username"
                   type="text"
                   value={loginUsername}
                   onChange={(e) => setLoginUsername(e.target.value)}
                   placeholder="johndoe@mail.com"
                   className="input-field"
+                  autoComplete="username"
                 />
               </div>
 
               {/* Password Field */}
               <div className="input-group">
-                <label className="input-label">{t('login.password')}</label>
+                <label htmlFor="login-password" className="input-label">{t('login.password')}</label>
                 <input
+                  id="login-password"
                   type="password"
                   value={loginPassword}
                   onChange={(e) => setLoginPassword(e.target.value)}
                   placeholder="•••••••••"
                   className="input-field"
+                  autoComplete="current-password"
                 />
               </div>
 
@@ -295,14 +292,15 @@ const Login = () => {
               )}
               {/* Name Field */}
               <div className="input-group">
-                <label className="input-label">{t('login.fullName')}</label>
+                <label htmlFor="register-name" className="input-label">{t('login.fullName')}</label>
                 <input
+                  id="register-name"
                   type="text"
                   value={registerName}
                   onChange={(e) => setRegisterName(e.target.value)}
                   placeholder="John Doe"
-                  className={`input-field ${registerErrors.name ? "input-error" : ""
-                    }`}
+                  className={`input-field ${registerErrors.name ? "input-error" : ""}`}
+                  autoComplete="name"
                 />
                 {registerErrors.name && (
                   <span className="field-error">{registerErrors.name}</span>
@@ -311,14 +309,15 @@ const Login = () => {
 
               {/* Email Field */}
               <div className="input-group">
-                <label className="input-label">{t('login.email')}</label>
+                <label htmlFor="register-email" className="input-label">{t('login.email')}</label>
                 <input
+                  id="register-email"
                   type="email"
                   value={registerEmail}
                   onChange={(e) => setRegisterEmail(e.target.value)}
                   placeholder="johndoe@mail.com"
-                  className={`input-field ${registerErrors.email ? "input-error" : ""
-                    }`}
+                  className={`input-field ${registerErrors.email ? "input-error" : ""}`}
+                  autoComplete="email"
                 />
                 {registerErrors.email && (
                   <span className="field-error">{registerErrors.email}</span>
@@ -327,14 +326,15 @@ const Login = () => {
 
               {/* Password Field */}
               <div className="input-group">
-                <label className="input-label">{t('login.password')}</label>
+                <label htmlFor="register-password" className="input-label">{t('login.password')}</label>
                 <input
+                  id="register-password"
                   type="password"
                   value={registerPassword}
                   onChange={(e) => setRegisterPassword(e.target.value)}
                   placeholder="•••••••••"
-                  className={`input-field ${registerErrors.password ? "input-error" : ""
-                    }`}
+                  className={`input-field ${registerErrors.password ? "input-error" : ""}`}
+                  autoComplete="new-password"
                 />
                 {registerErrors.password && (
                   <span className="field-error">{registerErrors.password}</span>
@@ -343,14 +343,15 @@ const Login = () => {
 
               {/* Re-Password Field */}
               <div className="input-group">
-                <label className="input-label">{t('login.confirmPassword')}</label>
+                <label htmlFor="register-confirm-password" className="input-label">{t('login.confirmPassword')}</label>
                 <input
+                  id="register-confirm-password"
                   type="password"
                   value={registerRePassword}
                   onChange={(e) => setRegisterRePassword(e.target.value)}
                   placeholder="•••••••••"
-                  className={`input-field ${registerErrors.rePassword ? "input-error" : ""
-                    }`}
+                  className={`input-field ${registerErrors.rePassword ? "input-error" : ""}`}
+                  autoComplete="new-password"
                 />
                 {registerErrors.rePassword && (
                   <span className="field-error">
@@ -370,28 +371,6 @@ const Login = () => {
             </form>
           )}
 
-          {/* Social Login Divider */}
-          <div className="social-divider">
-            <div className="divider-line"></div>
-            <span className="divider-text">
-              {t('login.or')} {isLogin ? t('login.signInLowerCase') : t('login.signUpLowerCase')} {t('login.with')}
-            </span>
-            <div className="divider-line"></div>
-          </div>
-
-          {/* Social Login Buttons 
-          <div className="social-buttons">
-            <button className="social-btn" onClick={() => handleSocialLogin('Facebook')}>
-              <img src={imgFacebook} alt="Facebook" />
-            </button>
-            <button className="social-btn" onClick={() => handleSocialLogin('Google')}>
-              <img src={imgGoogle} alt="Google" />
-            </button>
-            <button className="social-btn" onClick={() => handleSocialLogin('Apple')}>
-              <img src={imgApple} alt="Apple" />
-            </button>
-          </div>
-          */}
           {/* Toggle between Login and Register */}
           {isLogin ? (
             <div className="signup-link">

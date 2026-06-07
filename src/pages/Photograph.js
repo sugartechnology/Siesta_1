@@ -7,9 +7,20 @@ import {
   toggleHorizontalFlip,
   toggleVerticalFlip,
 } from "../utils/ImageUtils";
-import { getNextPage, NavigationState } from "../utils/NavigationState";
+import {
+  getNextPage,
+  NavigationState,
+  updateNavigationState,
+} from "../utils/NavigationState";
+import DesignFlowNav from "../components/DesignFlowNav";
 import "./Photograph.css";
 import { useTranslation } from "react-i18next";
+
+const hasProductsInSection = () => {
+  const sectionProducts = NavigationState.section?.productIds || [];
+  const selectedProducts = NavigationState.selectedProducts || [];
+  return sectionProducts.length > 0 || selectedProducts.length > 0;
+};
 
 export default function Photograph() {
   const navigate = useNavigate();
@@ -66,9 +77,18 @@ export default function Photograph() {
 
   const handleNext = () => {
     const finalImage = processedImage || capturedImage;
+
+    if (hasProductsInSection()) {
+      updateNavigationState({ image: finalImage });
+      navigate("/section-details");
+      return;
+    }
+
     const nextPage = getNextPage("photograph", { image: finalImage });
     navigate(nextPage);
   };
+
+  const hasProducts = hasProductsInSection();
 
   const handleRetake = () => {
     navigate("/camera", { state: { project } });
@@ -76,7 +96,7 @@ export default function Photograph() {
 
   return (
     <div className="photograph-page-content">
-      {/* Image Editor Area */}
+      <DesignFlowNav currentStepId="photograph" />
       <div className="image-editor-container">
         {capturedImage ? (
           <div className="image-with-grid">
@@ -119,113 +139,10 @@ export default function Photograph() {
               ></div>
             </div>
 
-            {/* Control Buttons */}
-            <div className="image-controls">
-              <div className="controls-left">
-                <button
-                  className="control-btn"
-                  onClick={handleFlipHorizontal}
-                  title={t('photograph.flipHorizontal')}
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M12 2V22M12 2L7 7M12 2L17 7M12 22L7 17M12 22L17 17"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <rect
-                      x="10"
-                      y="8"
-                      width="4"
-                      height="8"
-                      fill="white"
-                      opacity="0.3"
-                    />
-                  </svg>
-                </button>
-                <button
-                  className="control-btn"
-                  onClick={handleFlipVertical}
-                  title={t('photograph.flipVertical')}
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M2 12H22M2 12L7 7M2 12L7 17M22 12L17 7M22 12L17 17"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                    <rect
-                      x="8"
-                      y="10"
-                      width="8"
-                      height="4"
-                      fill="white"
-                      opacity="0.3"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              {/* Next Button */}
-              {capturedImage && (
-                <button className="next-btn-bottom" onClick={handleNext}>
-                  {t('common.next')}
-                </button>
-              )}
-
-              <div className="controls-right">
-                <button
-                  className="control-btn"
-                  onClick={handleRotateLeft}
-                  title={t('photograph.rotateLeft')}
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M12 20C16.4183 20 20 16.4183 20 12C20 7.58172 16.4183 4 12 4C7.58172 4 4 7.58172 4 12"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M4 8V12H8"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-                <button
-                  className="control-btn"
-                  onClick={handleRotateRight}
-                  title={t('photograph.rotateRight')}
-                >
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                    <path
-                      d="M12 20C7.58172 20 4 16.4183 4 12C4 7.58172 7.58172 4 12 4C16.4183 4 20 7.58172 20 12"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M20 8V12H16"
-                      stroke="white"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                    />
-                  </svg>
-                </button>
-              </div>
-            </div>
           </div>
         ) : (
           <div className="no-image-state">
-            <div className="no-image-icon">
+            <div className="no-image-icon" aria-hidden="true">
               <svg width="100" height="100" viewBox="0 0 100 100" fill="none">
                 <rect
                   x="10"
@@ -254,10 +171,11 @@ export default function Photograph() {
                 />
               </svg>
             </div>
-            <h3>{t('photograph.noPhoto')}</h3>
-            <p>{t('photograph.goBackDesc')}</p>
-            <button className="back-to-camera-btn" onClick={handleRetake}>
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+            <p className="no-image-badge">{t("photograph.uploadRequired")}</p>
+            <h3>{t("photograph.noPhoto")}</h3>
+            <p>{t("photograph.uploadRequiredDesc")}</p>
+            <button type="button" className="back-to-camera-btn" onClick={handleRetake}>
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                 <path
                   d="M19 17a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3l2-3h4l2 3h3a2 2 0 0 1 2 2z"
                   stroke="currentColor"
@@ -271,11 +189,120 @@ export default function Photograph() {
                   strokeWidth="2"
                 />
               </svg>
-              {t('photograph.backToCamera')}
+              {t("photograph.uploadPhotoCta")}
             </button>
           </div>
         )}
       </div>
+
+      {capturedImage && (
+        <div className="photograph-actions">
+          <div className="transform-toolbar" role="toolbar" aria-label="Image adjustments">
+            <div className="transform-group">
+              <button
+                type="button"
+                className="transform-btn"
+                onClick={handleFlipHorizontal}
+                title={t("photograph.flipHorizontal")}
+                aria-label={t("photograph.flipHorizontal")}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M12 3v18M8 7l4-4 4 4M8 17l4 4 4-4"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+              <button
+                type="button"
+                className="transform-btn"
+                onClick={handleFlipVertical}
+                title={t("photograph.flipVertical")}
+                aria-label={t("photograph.flipVertical")}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M3 12h18M7 8l-4 4 4 4M17 8l4 4-4 4"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            <span className="transform-divider" aria-hidden="true" />
+
+            <div className="transform-group">
+              <button
+                type="button"
+                className="transform-btn"
+                onClick={handleRotateLeft}
+                title={t("photograph.rotateLeft")}
+                aria-label={t("photograph.rotateLeft")}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M12 20a8 8 0 1 0-8-8"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M4 8v4h4"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+              <button
+                type="button"
+                className="transform-btn"
+                onClick={handleRotateRight}
+                title={t("photograph.rotateRight")}
+                aria-label={t("photograph.rotateRight")}
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path
+                    d="M12 20a8 8 0 1 1 8-8"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                  />
+                  <path
+                    d="M20 8v4h-4"
+                    stroke="currentColor"
+                    strokeWidth="1.75"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+          </div>
+
+          <button type="button" className="choose-product-btn" onClick={handleNext}>
+            <span>
+              {hasProducts ? t("products.goToDesign") : t("photograph.chooseProduct")}
+            </span>
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path
+                d="M5 12h14M13 6l6 6-6 6"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

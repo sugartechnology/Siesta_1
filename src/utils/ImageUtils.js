@@ -233,6 +233,51 @@ export const isValidBase64Image = (base64String) => {
   );
 };
 
+const isResolvableImageUrl = (value) =>
+  typeof value === "string" &&
+  (value.startsWith("http://") ||
+    value.startsWith("https://") ||
+    value.startsWith("/"));
+
+/**
+ * Section referans görselini API'ye yüklenebilir File objesine dönüştürür.
+ * Base64 ve yerel/uzak URL formatlarını destekler.
+ */
+export const resolveSectionImageFile = async (
+  imageSrc,
+  filename = "section-image.jpg"
+) => {
+  if (!imageSrc || typeof imageSrc !== "string") {
+    return null;
+  }
+
+  if (isValidBase64Image(imageSrc)) {
+    const mimeType = getMimeTypeFromBase64(imageSrc);
+    const extension = mimeType.includes("png")
+      ? "png"
+      : mimeType.includes("webp")
+        ? "webp"
+        : "jpg";
+    return base64ToFile(imageSrc, `section-image.${extension}`);
+  }
+
+  if (isResolvableImageUrl(imageSrc)) {
+    const url = imageSrc.startsWith("/")
+      ? `${window.location.origin}${imageSrc}`
+      : imageSrc;
+    const base64 = await downloadImageAsBase64(url);
+    const mimeType = getMimeTypeFromBase64(base64);
+    const extension = mimeType.includes("png")
+      ? "png"
+      : mimeType.includes("webp")
+        ? "webp"
+        : "jpg";
+    return base64ToFile(base64, `section-image.${extension}`);
+  }
+
+  return null;
+};
+
 /**
  * Base64 string'den MIME type'ı çıkarır
  * @param {string} base64String - Base64 string

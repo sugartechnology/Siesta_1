@@ -1,6 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { getNextPage, roomTypes } from "../utils/NavigationState";
+import DesignFlowNav from "../components/DesignFlowNav";
 import "./RoomType.css";
 import { useTranslation } from "react-i18next";
 
@@ -21,7 +22,7 @@ const RoomType = () => {
 
   return (
     <div className="room-type-content-wrapper">
-      {/* Room Types Grid */}
+      <DesignFlowNav currentStepId="room-type" />
       <div className="room-types-grid">
         {roomTypes.map((roomType) => (
           <div
