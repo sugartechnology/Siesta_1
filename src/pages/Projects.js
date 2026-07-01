@@ -15,11 +15,13 @@ import { sortProjectsByNewest } from "../utils/projectNaming";
 import "./Projects.css";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../auth/useAuth";
+import { useProductCart } from "../contexts/ProductCartContext";
 
 export default function Projects() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { requireAuth } = useAuth();
+  const { clearCart } = useProductCart();
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isCreatingSpace, setIsCreatingSpace] = useState(false);
@@ -80,6 +82,7 @@ export default function Projects() {
       setIsCreatingSpace(true);
       setLoadError(null);
       setDeleteError(null);
+      clearCart();
       await startCreateSpaceFlow({ existingProjects: projects });
       navigate("/camera");
     } catch (err) {

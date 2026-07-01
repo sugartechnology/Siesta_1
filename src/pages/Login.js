@@ -5,23 +5,114 @@ import { useAuth } from "../auth/useAuth";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "../components/LanguageSwitcher";
 
+const REMEMBER_ME_KEY = "siesta_login_prefs";
+
+const emailInputProps = {
+  type: "email",
+  inputMode: "email",
+  spellCheck: false,
+  autoCapitalize: "off",
+  autoCorrect: "off",
+  placeholder: "",
+};
+
+const passwordInputProps = {
+  spellCheck: false,
+  autoCapitalize: "off",
+  autoCorrect: "off",
+  placeholder: "",
+};
+
+const EyeIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path
+      d="M2.25 12C3.75 7.5 7.5 4.5 12 4.5C16.5 4.5 20.25 7.5 21.75 12C20.25 16.5 16.5 19.5 12 19.5C7.5 19.5 3.75 16.5 2.25 12Z"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinejoin="round"
+    />
+    <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.75" />
+  </svg>
+);
+
+const EyeOffIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+    <path
+      d="M3 3l18 18M10.2 10.2C9.82 10.58 9.6 11.1 9.6 11.7C9.6 12.86 10.54 13.8 11.7 13.8C12.3 13.8 12.82 13.58 13.2 13.2M6.53 6.67C4.74 7.97 3.3 9.77 2.25 12C3.75 16.5 7.5 19.5 12 19.5C13.77 19.5 15.4 18.97 16.77 18.05M9.9 5.27C10.58 5.1 11.28 5 12 5C16.5 5 20.25 8 21.75 12C21.2 13.36 20.4 14.58 19.4 15.58"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    />
+  </svg>
+);
+
+function PasswordField({
+  id,
+  name,
+  label,
+  hint,
+  hintId,
+  value,
+  onChange,
+  autoComplete,
+  enterKeyHint,
+  hasError = false,
+  errorMessage = "",
+  isVisible,
+  onToggleVisibility,
+  toggleLabel,
+}) {
+  return (
+    <div className="input-group">
+      <label htmlFor={id} className="input-label">
+        {label}
+      </label>
+      <p id={hintId} className="input-hint">
+        {hint}
+      </p>
+      <div className="password-input-wrap">
+        <input
+          {...passwordInputProps}
+          id={id}
+          name={name}
+          type={isVisible ? "text" : "password"}
+          value={value}
+          onChange={onChange}
+          className={`input-field ${hasError ? "input-error" : ""}`}
+          autoComplete={autoComplete}
+          enterKeyHint={enterKeyHint}
+          aria-describedby={hintId}
+        />
+        <button
+          type="button"
+          className="password-toggle-btn"
+          onClick={onToggleVisibility}
+          aria-label={toggleLabel}
+          aria-pressed={isVisible}
+        >
+          {isVisible ? <EyeOffIcon /> : <EyeIcon />}
+        </button>
+      </div>
+      {errorMessage && <span className="field-error">{errorMessage}</span>}
+    </div>
+  );
+}
+
 const Login = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const [isLogin, setIsLogin] = useState(true); // Toggle between login and register
+  const [isLogin, setIsLogin] = useState(true);
 
-  // Login form state
-  const [loginUsername, setLoginUsername] = useState("");
+  const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  // Register form state
   const [registerName, setRegisterName] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
   const [registerRePassword, setRegisterRePassword] = useState("");
 
-  // Error states
   const [loginError, setLoginError] = useState("");
   const [registerErrors, setRegisterErrors] = useState({
     name: "",
@@ -31,12 +122,13 @@ const Login = () => {
   });
   const [registerLoading, setRegisterLoading] = useState(false);
   const [registerSuccess, setRegisterSuccess] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [showRegisterPassword, setShowRegisterPassword] = useState(false);
+  const [showRegisterConfirmPassword, setShowRegisterConfirmPassword] =
+    useState(false);
 
   const imgBackground = "/assets/login_background.webp";
-
-
   const auth = useAuth();
-  const REMEMBER_ME_KEY = "siesta_login_prefs";
 
   useEffect(() => {
     try {
@@ -44,36 +136,59 @@ const Login = () => {
       if (!stored) return;
 
       const parsed = JSON.parse(stored);
-      if (parsed?.rememberMe && typeof parsed.username === "string") {
+      const rememberedEmail =
+        typeof parsed?.email === "string"
+          ? parsed.email
+          : typeof parsed?.username === "string"
+            ? parsed.username
+            : "";
+
+      if (parsed?.rememberMe && rememberedEmail) {
         setRememberMe(true);
-        setLoginUsername(parsed.username);
+        setLoginEmail(rememberedEmail);
       }
     } catch (error) {
       console.error("Failed to read remember-me prefs:", error);
     }
   }, []);
 
+  const handleRememberMeChange = (checked) => {
+    setRememberMe(checked);
+    if (!checked) {
+      try {
+        localStorage.removeItem(REMEMBER_ME_KEY);
+      } catch (error) {
+        console.error("Failed to clear remember-me prefs:", error);
+      }
+    }
+  };
+
   const handleSignIn = (e) => {
     e.preventDefault();
     setLoginError("");
 
-    // Accept any login info as long as both fields have values
-    if (!loginUsername.trim() || !loginPassword.trim()) {
-      setLoginError("Please enter both username and password");
+    if (!loginEmail.trim() || !loginPassword.trim()) {
+      setLoginError(t("login.errors.loginRequired"));
+      return;
+    }
+
+    if (!validateEmail(loginEmail)) {
+      setLoginError(t("login.errors.emailInvalid"));
       return;
     }
 
     auth
-      .login(loginUsername, loginPassword)
+      .login(loginEmail.trim(), loginPassword)
       .then(() => {
-        console.log("Login successful");
         try {
           if (rememberMe) {
-            const prefs = {
-              rememberMe: true,
-              username: loginUsername,
-            };
-            localStorage.setItem(REMEMBER_ME_KEY, JSON.stringify(prefs));
+            localStorage.setItem(
+              REMEMBER_ME_KEY,
+              JSON.stringify({
+                rememberMe: true,
+                email: loginEmail.trim(),
+              })
+            );
           } else {
             localStorage.removeItem(REMEMBER_ME_KEY);
           }
@@ -84,7 +199,7 @@ const Login = () => {
       })
       .catch((error) => {
         console.error("Login error:", error);
-        setLoginError("Invalid username or password");
+        setLoginError(t("login.errors.invalidCredentials"));
       });
   };
 
@@ -96,7 +211,6 @@ const Login = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
 
-    // Reset errors
     const errors = {
       name: "",
       email: "",
@@ -106,39 +220,35 @@ const Login = () => {
 
     let hasError = false;
 
-    // Validate name
     if (!registerName.trim()) {
-      errors.name = "Name is required";
+      errors.name = t("login.errors.nameRequired");
       hasError = true;
     } else if (registerName.trim().length < 2) {
-      errors.name = "Name must be at least 2 characters";
+      errors.name = t("login.errors.nameMinLength");
       hasError = true;
     }
 
-    // Validate email
     if (!registerEmail.trim()) {
-      errors.email = "Email is required";
+      errors.email = t("login.errors.emailRequired");
       hasError = true;
     } else if (!validateEmail(registerEmail)) {
-      errors.email = "Please enter a valid email address";
+      errors.email = t("login.errors.emailInvalid");
       hasError = true;
     }
 
-    // Validate password
     if (!registerPassword) {
-      errors.password = "Password is required";
+      errors.password = t("login.errors.passwordRequired");
       hasError = true;
     } else if (registerPassword.length < 6) {
-      errors.password = "Password must be at least 6 characters";
+      errors.password = t("login.errors.passwordMinLength");
       hasError = true;
     }
 
-    // Validate re-password
     if (!registerRePassword) {
-      errors.rePassword = "Please confirm your password";
+      errors.rePassword = t("login.errors.confirmPasswordRequired");
       hasError = true;
     } else if (registerPassword !== registerRePassword) {
-      errors.rePassword = "Passwords do not match";
+      errors.rePassword = t("login.errors.passwordMismatch");
       hasError = true;
     }
 
@@ -148,16 +258,14 @@ const Login = () => {
     if (!hasError) {
       setRegisterLoading(true);
       try {
-        await auth.register(registerName, registerEmail, registerPassword);
+        await auth.register(registerName, registerEmail.trim(), registerPassword);
         setRegisterSuccess(true);
-        // Clear register form
         setRegisterName("");
         setRegisterEmail("");
         setRegisterPassword("");
         setRegisterRePassword("");
         setRegisterErrors({ name: "", email: "", password: "", rePassword: "" });
 
-        // Show success message and switch to login after 2 seconds
         setTimeout(() => {
           setIsLogin(true);
           setRegisterSuccess(false);
@@ -166,7 +274,7 @@ const Login = () => {
         console.error("Registration error:", error);
         setRegisterErrors({
           name: "",
-          email: error.message || "Kayıt başarısız. Lütfen tekrar deneyin.",
+          email: error.message || t("login.errors.registerFailed"),
           password: "",
           rePassword: "",
         });
@@ -176,18 +284,17 @@ const Login = () => {
     }
   };
 
-  const handleContinueWithoutLogin = () => {
-    navigate("/home");
-  };
-
   const switchToRegister = () => {
     setIsLogin(false);
     setLoginError("");
+    setShowLoginPassword(false);
   };
 
   const switchToLogin = () => {
     setIsLogin(true);
     setRegisterErrors({ name: "", email: "", password: "", rePassword: "" });
+    setShowRegisterPassword(false);
+    setShowRegisterConfirmPassword(false);
   };
 
   return (
@@ -196,7 +303,6 @@ const Login = () => {
         <LanguageSwitcher variant="glass" />
       </div>
 
-      {/* Background Image */}
       <div className="login-background">
         <img
           src={imgBackground}
@@ -206,199 +312,204 @@ const Login = () => {
         <div className="background-overlay"></div>
       </div>
 
-      {/* Login Content */}
       <div className="login-content">
-        {/* Logo
-        <div className="login-logo-container">
-          <img src={imgLogo} alt="Siesta" className="login-logo" />
-        </div>
- */}
-        {/* Welcome Text */}
         <div className="login-welcome-text">
-          <h2 className="welcome-subtitle">{t('login.welcomeSubtitle')}</h2>
+          <h2 className="welcome-subtitle">{t("login.welcomeSubtitle")}</h2>
           <h1 className="welcome-title">Siesta Exclusive AI</h1>
         </div>
 
-        {/* Sign in to continue - Moved outside card */}
         <h3 className="login-page-title">
-          {isLogin ? t('login.signInToContinue') : t('login.createYourAccount')}
+          {isLogin ? t("login.signInToContinue") : t("login.createYourAccount")}
         </h3>
 
-        {/* Login/Register Form Card */}
         <div className="login-card">
           {isLogin ? (
-            // LOGIN FORM
             <form onSubmit={handleSignIn} className="login-form">
               {loginError && <div className="error-message">{loginError}</div>}
 
-              {/* Username Field */}
               <div className="input-group">
-                <label htmlFor="login-username" className="input-label">{t('login.username')}</label>
+                <label htmlFor="login-email" className="input-label">
+                  {t("login.email")}
+                </label>
+                <p id="login-email-hint" className="input-hint">
+                  {t("login.emailHint")}
+                </p>
                 <input
-                  id="login-username"
-                  type="text"
-                  value={loginUsername}
-                  onChange={(e) => setLoginUsername(e.target.value)}
-                  placeholder="johndoe@mail.com"
+                  {...emailInputProps}
+                  id="login-email"
+                  name="email"
+                  value={loginEmail}
+                  onChange={(e) => setLoginEmail(e.target.value)}
                   className="input-field"
                   autoComplete="username"
+                  enterKeyHint="next"
+                  aria-describedby="login-email-hint"
                 />
               </div>
 
-              {/* Password Field */}
-              <div className="input-group">
-                <label htmlFor="login-password" className="input-label">{t('login.password')}</label>
-                <input
-                  id="login-password"
-                  type="password"
-                  value={loginPassword}
-                  onChange={(e) => setLoginPassword(e.target.value)}
-                  placeholder="•••••••••"
-                  className="input-field"
-                  autoComplete="current-password"
-                />
-              </div>
+              <PasswordField
+                id="login-password"
+                name="password"
+                label={t("login.password")}
+                hint={t("login.passwordHint")}
+                hintId="login-password-hint"
+                value={loginPassword}
+                onChange={(e) => setLoginPassword(e.target.value)}
+                autoComplete="current-password"
+                enterKeyHint="done"
+                isVisible={showLoginPassword}
+                onToggleVisibility={() => setShowLoginPassword((prev) => !prev)}
+                toggleLabel={
+                  showLoginPassword
+                    ? t("login.hidePassword")
+                    : t("login.showPassword")
+                }
+              />
 
-              {/* Remember Me */}
               <div className="remember-me-row">
                 <label className="remember-me-label">
                   <input
                     type="checkbox"
                     className="remember-me-checkbox"
                     checked={rememberMe}
-                    onChange={(e) => setRememberMe(e.target.checked)}
+                    onChange={(e) => handleRememberMeChange(e.target.checked)}
                   />
-                  {t('login.rememberMe')}
+                  {t("login.rememberMe")}
                 </label>
               </div>
 
-              {/* Forgot Password */}
               <button type="button" className="forgot-password-btn">
-                {t('login.forgotPassword')}
+                {t("login.forgotPassword")}
               </button>
 
-              {/* Sign In Button */}
               <button type="submit" className="sign-in-btn">
-                {t('login.signIn')}
+                {t("login.signIn")}
               </button>
             </form>
           ) : (
-            // REGISTER FORM
             <form onSubmit={handleRegister} className="login-form">
               {registerSuccess && (
-                <div className="success-message">
-                  Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...
-                </div>
+                <div className="success-message">{t("login.registerSuccess")}</div>
               )}
-              {/* Name Field */}
+
               <div className="input-group">
-                <label htmlFor="register-name" className="input-label">{t('login.fullName')}</label>
+                <label htmlFor="register-name" className="input-label">
+                  {t("login.fullName")}
+                </label>
+                <p id="register-name-hint" className="input-hint">
+                  {t("login.fullNameHint")}
+                </p>
                 <input
                   id="register-name"
+                  name="name"
                   type="text"
                   value={registerName}
                   onChange={(e) => setRegisterName(e.target.value)}
-                  placeholder="John Doe"
+                  placeholder=""
                   className={`input-field ${registerErrors.name ? "input-error" : ""}`}
                   autoComplete="name"
+                  enterKeyHint="next"
+                  aria-describedby="register-name-hint"
                 />
                 {registerErrors.name && (
                   <span className="field-error">{registerErrors.name}</span>
                 )}
               </div>
 
-              {/* Email Field */}
               <div className="input-group">
-                <label htmlFor="register-email" className="input-label">{t('login.email')}</label>
+                <label htmlFor="register-email" className="input-label">
+                  {t("login.email")}
+                </label>
+                <p id="register-email-hint" className="input-hint">
+                  {t("login.registerEmailHint")}
+                </p>
                 <input
+                  {...emailInputProps}
                   id="register-email"
-                  type="email"
+                  name="email"
                   value={registerEmail}
                   onChange={(e) => setRegisterEmail(e.target.value)}
-                  placeholder="johndoe@mail.com"
                   className={`input-field ${registerErrors.email ? "input-error" : ""}`}
                   autoComplete="email"
+                  enterKeyHint="next"
+                  aria-describedby="register-email-hint"
                 />
                 {registerErrors.email && (
                   <span className="field-error">{registerErrors.email}</span>
                 )}
               </div>
 
-              {/* Password Field */}
-              <div className="input-group">
-                <label htmlFor="register-password" className="input-label">{t('login.password')}</label>
-                <input
-                  id="register-password"
-                  type="password"
-                  value={registerPassword}
-                  onChange={(e) => setRegisterPassword(e.target.value)}
-                  placeholder="•••••••••"
-                  className={`input-field ${registerErrors.password ? "input-error" : ""}`}
-                  autoComplete="new-password"
-                />
-                {registerErrors.password && (
-                  <span className="field-error">{registerErrors.password}</span>
-                )}
-              </div>
+              <PasswordField
+                id="register-password"
+                name="new-password"
+                label={t("login.password")}
+                hint={t("login.registerPasswordHint")}
+                hintId="register-password-hint"
+                value={registerPassword}
+                onChange={(e) => setRegisterPassword(e.target.value)}
+                autoComplete="new-password"
+                enterKeyHint="next"
+                hasError={Boolean(registerErrors.password)}
+                errorMessage={registerErrors.password}
+                isVisible={showRegisterPassword}
+                onToggleVisibility={() =>
+                  setShowRegisterPassword((prev) => !prev)
+                }
+                toggleLabel={
+                  showRegisterPassword
+                    ? t("login.hidePassword")
+                    : t("login.showPassword")
+                }
+              />
 
-              {/* Re-Password Field */}
-              <div className="input-group">
-                <label htmlFor="register-confirm-password" className="input-label">{t('login.confirmPassword')}</label>
-                <input
-                  id="register-confirm-password"
-                  type="password"
-                  value={registerRePassword}
-                  onChange={(e) => setRegisterRePassword(e.target.value)}
-                  placeholder="•••••••••"
-                  className={`input-field ${registerErrors.rePassword ? "input-error" : ""}`}
-                  autoComplete="new-password"
-                />
-                {registerErrors.rePassword && (
-                  <span className="field-error">
-                    {registerErrors.rePassword}
-                  </span>
-                )}
-              </div>
+              <PasswordField
+                id="register-confirm-password"
+                name="confirm-password"
+                label={t("login.confirmPassword")}
+                hint={t("login.confirmPasswordHint")}
+                hintId="register-confirm-password-hint"
+                value={registerRePassword}
+                onChange={(e) => setRegisterRePassword(e.target.value)}
+                autoComplete="new-password"
+                enterKeyHint="done"
+                hasError={Boolean(registerErrors.rePassword)}
+                errorMessage={registerErrors.rePassword}
+                isVisible={showRegisterConfirmPassword}
+                onToggleVisibility={() =>
+                  setShowRegisterConfirmPassword((prev) => !prev)
+                }
+                toggleLabel={
+                  showRegisterConfirmPassword
+                    ? t("login.hidePassword")
+                    : t("login.showPassword")
+                }
+              />
 
-              {/* Sign Up Button */}
               <button
                 type="submit"
                 className="sign-in-btn"
                 disabled={registerLoading}
               >
-                {registerLoading ? t('login.saving') : t('login.signUp')}
+                {registerLoading ? t("login.saving") : t("login.signUp")}
               </button>
             </form>
           )}
 
-          {/* Toggle between Login and Register */}
           {isLogin ? (
             <div className="signup-link">
-              {t('login.dontHaveAccount')}{" "}
+              {t("login.dontHaveAccount")}{" "}
               <span className="signup-link-text" onClick={switchToRegister}>
-                {t('login.signUp')}
+                {t("login.signUp")}
               </span>
             </div>
           ) : (
             <div className="signup-link">
-              {t('login.alreadyHaveAccount')}{" "}
+              {t("login.alreadyHaveAccount")}{" "}
               <span className="signup-link-text" onClick={switchToLogin}>
-                {t('login.signIn')}
+                {t("login.signIn")}
               </span>
             </div>
           )}
-
-          {/* Continue Without Login 
-          {isLogin && (
-            <div className="continue-without-login">
-              <button
-                className="continue-link"
-                onClick={handleContinueWithoutLogin}
-              >
-                Continue Without Login
-              </button>
-            </div>
-          )}*/}
         </div>
       </div>
     </div>
