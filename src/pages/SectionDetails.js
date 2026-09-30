@@ -32,6 +32,7 @@ import SidebarScrollHint from "../components/SidebarScrollHint";
 import "./SectionDetails.css";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../auth/useAuth";
+import { downloadImageInNativeApp } from "../utils/nativeDownload";
 
 const isSectionProcessing = (section) =>
   section.designs?.[0]?.status === "PROCESSING";
@@ -789,6 +790,8 @@ const SectionDetails = () => {
 
   const handleDownloadDesign = async () => {
     if (!resultImageUrl) return;
+
+    if (downloadImageInNativeApp(resultImageUrl)) return;
 
     const fileName = `${(project?.name || section?.title || "siesta-design")
       .trim()

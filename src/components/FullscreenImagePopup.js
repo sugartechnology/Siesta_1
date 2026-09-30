@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { downloadImageInNativeApp } from "../utils/nativeDownload";
 import "./FullscreenImagePopup.css";
 
 const FullscreenImagePopup = ({
@@ -64,22 +65,12 @@ const FullscreenImagePopup = ({
 
   const handleDownload = async () => {
     try {
-      if (
-        window.webkit &&
-        window.webkit.messageHandlers &&
-        window.webkit.messageHandlers.downloadImage
-      ) {
-        window.webkit.messageHandlers.downloadImage.postMessage({
-          url: currentImageUrl,
-        });
-      } else {
-        // Fallback: eski yöntem (web tarayıcıda)
+      if (downloadImageInNativeApp(currentImageUrl)) return;
 
-        const link = document.createElement("a");
-        link.href = currentImageUrl;
-        link.download = `image-${currentIndex + 1}-${Date.now()}.jpg`;
-        link.click();
-      }
+      const link = document.createElement("a");
+      link.href = currentImageUrl;
+      link.download = `image-${currentIndex + 1}-${Date.now()}.jpg`;
+      link.click();
     } catch (error) {
       console.error("Download failed:", error);
 
