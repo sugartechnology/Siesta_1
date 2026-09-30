@@ -119,9 +119,9 @@ const SectionDetails = () => {
   const sectionIdRef = useRef(null);
   const sidebarRef = useRef(null);
   const waitingForGenerationResultRef = useRef(false);
-  const promptRef = useRef(getSectionCustomizationPrompt(initialSection));
+  const promptRef = useRef("");
   const promptDirtyRef = useRef(false);
-  const loadedSectionIdRef = useRef(initialSection?.id ?? null);
+  const loadedSectionIdRef = useRef(null);
   const [isSavingSection, setIsSavingSection] = useState(false);
   const [isGeneratingDesign, setIsGeneratingDesign] = useState(false);
   const [designGenerationError, setDesignGenerationError] = useState(null);
@@ -154,9 +154,12 @@ const SectionDetails = () => {
   }
 
   const [section, setSection] = useState(initialSection);
-  const [customizationPrompt, setCustomizationPrompt] = useState(
-    getSectionCustomizationPrompt(initialSection)
-  );
+  const [customizationPrompt, setCustomizationPrompt] = useState(() => {
+    const initialPrompt = getSectionCustomizationPrompt(initialSection);
+    promptRef.current = initialPrompt;
+    loadedSectionIdRef.current = initialSection?.id ?? null;
+    return initialPrompt;
+  });
   const [project, setProject] = useState(
     NavigationState.project || { name: "New Project", sections: [section] }
   );
