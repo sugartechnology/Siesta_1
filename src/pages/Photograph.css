@@ -272,6 +272,27 @@
   background: #f3f4f6;
 }
 
+.change-photo-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 20px;
+  border: 1px solid #d1d5db;
+  border-radius: 999px;
+  background: #fff;
+  color: #111827;
+  font-family: "Poppins", sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.change-photo-btn:hover {
+  background: #f9fafb;
+}
+
 .choose-product-btn {
   display: inline-flex;
   align-items: center;

@@ -169,19 +169,31 @@ export default function Camera() {
   };
 
   const handleGalleryAccess = () => {
-    fileInputRef.current?.click();
+    const input = fileInputRef.current;
+    if (!input) return;
+    input.value = "";
+    input.click();
   };
 
   const handleFileChange = (e) => {
     const file = e.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        NavigationState.image = event.target.result;
-        navigate("/photograph");
-      };
-      reader.readAsDataURL(file);
+    e.target.value = "";
+    if (!file) return;
+
+    const isImage =
+      (file.type && file.type.startsWith("image/")) ||
+      /\.(jpe?g|png|webp|gif|heic|heif|bmp|avif)$/i.test(file.name || "");
+    if (!isImage) {
+      window.alert(t("camera.invalidImage"));
+      return;
     }
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      NavigationState.image = event.target.result;
+      navigate("/photograph");
+    };
+    reader.readAsDataURL(file);
   };
 
   const capturePhoto = () => {
@@ -401,10 +413,9 @@ export default function Camera() {
       </div>
       <input
         ref={fileInputRef}
+        className="camera-file-input"
         type="file"
-        accept="image/*"
         onChange={handleFileChange}
-        style={{ display: "none" }}
       />
     </div>
   );

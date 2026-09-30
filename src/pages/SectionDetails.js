@@ -68,6 +68,25 @@ const hasPersistedServerImage = (sectionData) => {
   );
 };
 
+const SAVE_TIMEOUT_MS = 60000;
+
+const withTimeout = (promise, ms) =>
+  new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error("timeout"));
+    }, ms);
+    promise.then(
+      (value) => {
+        clearTimeout(timer);
+        resolve(value);
+      },
+      (error) => {
+        clearTimeout(timer);
+        reject(error);
+      }
+    );
+  });
+
 const sectionNeedsImageUpload = (sectionData) => {
   if (hasPersistedServerImage(sectionData)) {
     return false;
@@ -100,6 +119,9 @@ const SectionDetails = () => {
   const sectionIdRef = useRef(null);
   const sidebarRef = useRef(null);
   const waitingForGenerationResultRef = useRef(false);
+  const promptRef = useRef(getSectionCustomizationPrompt(initialSection));
+  const promptDirtyRef = useRef(false);
+  const loadedSectionIdRef = useRef(initialSection?.id ?? null);
   const [isSavingSection, setIsSavingSection] = useState(false);
   const [isGeneratingDesign, setIsGeneratingDesign] = useState(false);
   const [designGenerationError, setDesignGenerationError] = useState(null);
@@ -160,8 +182,19 @@ const SectionDetails = () => {
   sectionIdRef.current = section?.id;
 
   useEffect(() => {
-    setCustomizationPrompt(getSectionCustomizationPrompt(section));
-  }, [section?.id]);
+    const nextId = section?.id ?? null;
+    const previousId = loadedSectionIdRef.current;
+    if (previousId === nextId) return;
+
+    const keepTypedPrompt = !previousId && nextId && promptDirtyRef.current;
+    loadedSectionIdRef.current = nextId;
+    if (keepTypedPrompt) return;
+
+    promptDirtyRef.current = false;
+    const nextPrompt = getSectionCustomizationPrompt(section);
+    promptRef.current = nextPrompt;
+    setCustomizationPrompt(nextPrompt);
+  }, [section?.id, section]);
 
   useEffect(() => {
     const sectionId = section?.id;
@@ -235,7 +268,9 @@ const SectionDetails = () => {
             NavigationState.section = section;
             setContextSection(section);
             setProject(project);
-            updateSection(section, project.id);
+            updateSection(section, project.id).catch((error) => {
+              console.error("Error saving section:", error);
+            });
           } catch (error) {
             console.error("Error creating project:", error);
             if (isMounted) {
@@ -246,7 +281,9 @@ const SectionDetails = () => {
           }
         } else {
           setContextSection(section);
-          updateSection(section);
+          updateSection(section).catch((error) => {
+            console.error("Error saving section:", error);
+          });
         }
 
         NavigationState.sectionMode = undefined;
@@ -268,9 +305,12 @@ const SectionDetails = () => {
     const preservedImage = isValidBase64Image(replaceSection?.rootImageUrl)
       ? replaceSection.rootImageUrl
       : undefined;
-    const mergedSection = preservedImage
-      ? { ...response, rootImageUrl: preservedImage }
-      : response;
+    const localPrompt = sanitizeCustomizationPrompt(promptRef.current);
+    const mergedSection = {
+      ...(preservedImage ? { ...response, rootImageUrl: preservedImage } : response),
+      content: localPrompt,
+      prompt: localPrompt,
+    };
 
     setContextSection(mergedSection, replaceSection);
     setSection(mergedSection);
@@ -294,8 +334,18 @@ const SectionDetails = () => {
     try {
       const image = sectionToSave.rootImageUrl;
 
+      let imageFile = null;
+      try {
+        imageFile = await resolveSectionImageFile(image);
+      } catch (error) {
+        console.error("Error preparing section image:", error);
+      }
+
+      const promptForSave = sanitizeCustomizationPrompt(promptRef.current);
       const updateSectionData = {
         ...sectionToSave,
+        content: promptForSave,
+        prompt: promptForSave,
         productIds: products.map((product) => ({
           productId: product.productId,
           quantity: product.quantity,
@@ -304,34 +354,54 @@ const SectionDetails = () => {
         thumbnailUrl: undefined,
       };
 
-      let imageFile = null;
-      try {
-        imageFile = await resolveSectionImageFile(image);
-      } catch (error) {
-        console.error("Error preparing section image:", error);
-      }
-
       const replaceSection = sectionToSave;
       const targetProjectId = projectId || project.id;
       const existingSectionId = sectionToSave?.id || null;
 
-      const response = existingSectionId
-        ? imageFile
-          ? await updateSectionWithImage(
-              existingSectionId,
+      const response = await withTimeout(
+        existingSectionId
+          ? imageFile
+            ? updateSectionWithImage(
+                existingSectionId,
+                updateSectionData,
+                imageFile
+              )
+            : updateSectionJson(existingSectionId, updateSectionData)
+          : addSectionToProject(
+              targetProjectId,
               updateSectionData,
               imageFile
-            )
-          : await updateSectionJson(existingSectionId, updateSectionData)
-        : await addSectionToProject(
-            targetProjectId,
-            updateSectionData,
-            imageFile
-          );
+            ),
+        SAVE_TIMEOUT_MS
+      );
 
-      return applySavedSection(response, replaceSection);
+      let saved = applySavedSection(response, replaceSection);
+      const latestPrompt = sanitizeCustomizationPrompt(promptRef.current);
+      if (saved?.id && latestPrompt !== promptForSave) {
+        const followUp = await withTimeout(
+          updateSectionJson(saved.id, {
+            ...updateSectionData,
+            id: saved.id,
+            content: latestPrompt,
+            prompt: latestPrompt,
+          }),
+          SAVE_TIMEOUT_MS
+        );
+        saved = applySavedSection(followUp, replaceSection);
+      }
+
+      if (sanitizeCustomizationPrompt(promptRef.current) === latestPrompt) {
+        promptDirtyRef.current = false;
+      }
+
+      return saved;
     } catch (error) {
       console.error("Error saving section:", error);
+      setDesignGenerationError(
+        error?.message === "timeout"
+          ? t("sectionDetails.sectionSaveError")
+          : error?.message || t("sectionDetails.sectionSaveError")
+      );
       throw error;
     } finally {
       setIsSavingSection(false);
@@ -386,10 +456,7 @@ const SectionDetails = () => {
     navigate("/camera");
   };
 
-  const buildSectionPayload = (
-    sectionData,
-    promptValue = customizationPrompt
-  ) => {
+  const buildSectionPayload = (sectionData, promptValue = promptRef.current) => {
     const sanitizedPrompt = sanitizeCustomizationPrompt(promptValue);
     return {
       ...sectionData,
@@ -404,6 +471,8 @@ const SectionDetails = () => {
 
   const handleCustomizationPromptChange = (event) => {
     const value = event.target.value;
+    promptRef.current = value;
+    promptDirtyRef.current = true;
     setCustomizationPrompt(value);
 
     const updatedSection = {
@@ -415,17 +484,34 @@ const SectionDetails = () => {
     setContextSection(updatedSection);
   };
 
-  const handleCustomizationPromptBlur = async (value = customizationPrompt) => {
+  const handleCustomizationPromptBlur = async (value = promptRef.current) => {
+    const sanitized = sanitizeCustomizationPrompt(value);
+    promptRef.current = sanitized;
+    promptDirtyRef.current = true;
     if (!section?.id || isSavingSection) return;
 
     try {
-      const saved = await updateSectionJson(
+      let saved = await updateSectionJson(
         section.id,
-        buildSectionPayload(section, value)
+        buildSectionPayload(section, sanitized)
       );
       applySavedSection(saved, section);
+      const latestPrompt = sanitizeCustomizationPrompt(promptRef.current);
+      if (latestPrompt !== sanitized) {
+        saved = await updateSectionJson(
+          section.id,
+          buildSectionPayload(section, latestPrompt)
+        );
+        applySavedSection(saved, section);
+      }
+      if (sanitizeCustomizationPrompt(promptRef.current) === latestPrompt) {
+        promptDirtyRef.current = false;
+      }
     } catch (error) {
       console.error("Error saving customization prompt:", error);
+      setDesignGenerationError(
+        error?.message || t("sectionDetails.sectionSaveError")
+      );
     }
   };
 
@@ -506,7 +592,7 @@ const SectionDetails = () => {
       await startGeneration(
         project.id,
         sectionForGeneration.id,
-        customizationPrompt.trim(),
+        sanitizeCustomizationPrompt(promptRef.current).trim(),
         { project, section: sectionForGeneration }
       );
     } catch (error) {
@@ -823,6 +909,12 @@ const SectionDetails = () => {
           {designGenerationError}
         </div>
       )}
+      {isSavingSection && (
+        <div className="sd-generating-banner" role="status" aria-live="polite">
+          <span className="sd-generating-banner__spinner" aria-hidden="true" />
+          <span>{t("sectionDetails.savingSection")}</span>
+        </div>
+      )}
       {isGenerating && !isSavingSection && (
         <div className="sd-generating-banner" role="status" aria-live="polite">
           <span className="sd-generating-banner__spinner" aria-hidden="true" />
@@ -936,7 +1028,6 @@ const SectionDetails = () => {
               onChange={handleCustomizationPromptChange}
               onBlur={(event) => handleCustomizationPromptBlur(event.target.value)}
               placeholder={t("sectionDetails.customizationPromptPlaceholder")}
-              disabled={isSavingSection}
               rows={4}
             />
           </section>
@@ -1081,7 +1172,7 @@ const SectionDetails = () => {
 
             {showResultStage && (
               <div className="sd-result-stage">
-                {isSavingSection && (
+                {isSavingSection && !hasGeneratedImage && (
                   <div className="sd-processing">
                     <span className="sd-processing__spinner" aria-hidden="true" />
                     <p>{t("sectionDetails.savingSection")}</p>
@@ -1095,7 +1186,7 @@ const SectionDetails = () => {
                   </div>
                 )}
 
-                {!isSavingSection && !isGenerating && hasGeneratedImage && (
+                {hasGeneratedImage && (!isGenerating || isSavingSection) && (
                   <button
                     type="button"
                     className="sd-result-image-btn"

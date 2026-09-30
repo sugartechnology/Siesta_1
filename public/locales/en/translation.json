@@ -267,7 +267,8 @@
     "permissionError": "Camera permission denied",
     "sampleRooms": "Sample Rooms",
     "sampleRoomsHint": "Or pick a ready-made room",
-    "sampleImageError": "Could not load the sample room image. Please take or choose your own photo."
+    "sampleImageError": "Could not load the sample room image. Please take or choose your own photo.",
+    "invalidImage": "Please choose an image file."
   },
   "photograph": {
     "flipHorizontal": "Flip Horizontal",
@@ -275,6 +276,7 @@
     "rotateLeft": "Rotate Left",
     "rotateRight": "Rotate Right",
     "chooseProduct": "Choose Product",
+    "changePhoto": "Choose another photo",
     "noPhoto": "No Photo Uploaded",
     "uploadRequired": "Photo required",
     "uploadRequiredDesc": "To continue with your design, take a photo or choose one from your gallery on the previous step.",

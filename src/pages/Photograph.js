@@ -287,6 +287,9 @@ export default function Photograph() {
             </div>
           </div>
 
+          <button type="button" className="change-photo-btn" onClick={handleRetake}>
+            {t("photograph.changePhoto")}
+          </button>
           <button type="button" className="choose-product-btn" onClick={handleNext}>
             <span>
               {hasProducts ? t("products.goToDesign") : t("photograph.chooseProduct")}

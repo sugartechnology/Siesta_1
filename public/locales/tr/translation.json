@@ -267,7 +267,8 @@
     "permissionError": "Kameraya erişim izni verilmedi",
     "sampleRooms": "Örnek Odalar",
     "sampleRoomsHint": "Ya da hazır bir oda seçin",
-    "sampleImageError": "Örnek oda görseli yüklenemedi. Lütfen kendi fotoğrafınızı çekin veya galeriden seçin."
+    "sampleImageError": "Örnek oda görseli yüklenemedi. Lütfen kendi fotoğrafınızı çekin veya galeriden seçin.",
+    "invalidImage": "Lütfen bir görsel dosyası seçin."
   },
   "photograph": {
     "flipHorizontal": "Yatay Çevir",
@@ -275,6 +276,7 @@
     "rotateLeft": "Sola Döndür",
     "rotateRight": "Sağa Döndür",
     "chooseProduct": "Ürün Seç",
+    "changePhoto": "Başka fotoğraf seç",
     "noPhoto": "Fotoğraf Yüklenmedi",
     "uploadRequired": "Fotoğraf gerekli",
     "uploadRequiredDesc": "Tasarıma devam etmek için önceki adımda bir fotoğraf çekin veya galeriden seçin.",

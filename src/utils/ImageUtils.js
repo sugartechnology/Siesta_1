@@ -193,31 +193,20 @@ export const resizeImage = (imageSrc, maxWidth, maxHeight) => {
 };
 
 /**
- * Base64 string'i File objesine dönüştürür
+ * Base64 string'i File objesine dönüştürür.
+ * Büyük görsellerde ana iş parçacığını kilitlememek için tarayıcının decode yolunu kullanır.
  * @param {string} base64String - Base64 encoded string (data:image/... formatında olabilir)
  * @param {string} filename - Dosya adı (varsayılan: "image.jpg")
- * @returns {File} File objesi
+ * @returns {Promise<File>} File objesi
  */
-export const base64ToFile = (base64String, filename = "image.jpg") => {
-  // Base64 string'den data URL'i çıkar
-  const base64Data = base64String.includes(",")
-    ? base64String.split(",")[1]
-    : base64String;
-
-  // MIME type'ı base64 string'den çıkar
+export const base64ToFile = async (base64String, filename = "image.jpg") => {
   const mimeType = getMimeTypeFromBase64(base64String);
-
-  // Base64'ü binary'ye dönüştür
-  const byteCharacters = atob(base64Data);
-  const byteNumbers = new Array(byteCharacters.length);
-  for (let i = 0; i < byteCharacters.length; i++) {
-    byteNumbers[i] = byteCharacters.charCodeAt(i);
-  }
-  const byteArray = new Uint8Array(byteNumbers);
-
-  // File objesi oluştur - doğru MIME type ile
-  const blob = new Blob([byteArray], { type: mimeType });
-  return new File([blob], filename, { type: mimeType });
+  const dataUrl = base64String.startsWith("data:")
+    ? base64String
+    : `data:${mimeType};base64,${base64String}`;
+  const response = await fetch(dataUrl);
+  const blob = await response.blob();
+  return new File([blob], filename, { type: blob.type || mimeType });
 };
 
 /**
@@ -258,7 +247,7 @@ export const resolveSectionImageFile = async (
       : mimeType.includes("webp")
         ? "webp"
         : "jpg";
-    return base64ToFile(imageSrc, `section-image.${extension}`);
+    return await base64ToFile(imageSrc, `section-image.${extension}`);
   }
 
   if (isResolvableImageUrl(imageSrc)) {
@@ -272,7 +261,7 @@ export const resolveSectionImageFile = async (
       : mimeType.includes("webp")
         ? "webp"
         : "jpg";
-    return base64ToFile(base64, `section-image.${extension}`);
+    return await base64ToFile(base64, `section-image.${extension}`);
   }
 
   return null;
