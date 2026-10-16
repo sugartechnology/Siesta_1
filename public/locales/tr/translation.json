@@ -196,6 +196,41 @@
     "alreadyHaveAccount": "Zaten hesabınız var mı?",
     "rememberMe": "Beni hatırla",
     "registerSuccess": "Kayıt başarılı! Giriş sayfasına yönlendiriliyorsunuz...",
+    "recovery": {
+      "title": "Şifrenizi sıfırlayın",
+      "identifierLabel": "E-posta veya kullanıcı adı",
+      "identifierHint": "Hesabınıza kayıtlı e-posta adresini veya kullanıcı adını girin.",
+      "identifierRequired": "Lütfen e-posta adresinizi veya kullanıcı adınızı girin.",
+      "continue": "Devam",
+      "channelLabel": "Nereye gönderelim?",
+      "channelHint": "Giriş yapabileceğiniz geçici bir şifre göndereceğiz.",
+      "channelEmail": "E-posta: {{destination}}",
+      "channelSms": "SMS: {{destination}}",
+      "send": "Geçici şifre gönder",
+      "pleaseWait": "Lütfen bekleyin...",
+      "sent": "Geçici şifre gönderildi: {{destination}}. {{minutes}} dakika içinde bu şifreyle giriş yapın.",
+      "alreadySent": "Geçici şifre zaten gönderildi. {{minutes}} dakika sonra yenisini isteyebilirsiniz.",
+      "notFound": "Bu e-posta veya kullanıcı adıyla bir hesap bulunamadı.",
+      "supportRequired": "Bu hesapta kayıtlı e-posta veya telefon yok. Lütfen destekle iletişime geçin.",
+      "failed": "Bir sorun oluştu. Lütfen daha sonra tekrar deneyin.",
+      "backToSignIn": "Girişe dön"
+    },
+    "changePassword": {
+      "title": "Yeni şifre belirleyin",
+      "info": "Geçici şifreyle giriş yaptınız. Devam etmek için yeni bir şifre belirleyin.",
+      "currentPassword": "Geçici şifre",
+      "currentPasswordHint": "Giriş yaptığınız geçici şifreyi girin.",
+      "newPassword": "Yeni şifre",
+      "newPasswordHint": "En az 4 karakterden oluşan bir şifre belirleyin.",
+      "confirmNewPassword": "Yeni şifreyi onaylayın",
+      "confirmNewPasswordHint": "Yeni şifrenizi tekrar girin.",
+      "save": "Kaydet ve devam et",
+      "errors": {
+        "currentRequired": "Lütfen geçici şifrenizi girin.",
+        "tooShort": "Yeni şifre en az 4 karakter olmalıdır.",
+        "tooLong": "Yeni şifre çok uzun. Lütfen daha kısa bir şifre seçin."
+      }
+    },
     "errors": {
       "loginRequired": "Lütfen e-posta ve şifrenizi girin.",
       "invalidCredentials": "E-posta veya şifre hatalı.",

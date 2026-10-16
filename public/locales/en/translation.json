@@ -196,6 +196,41 @@
     "alreadyHaveAccount": "Already have an account?",
     "rememberMe": "Remember me",
     "registerSuccess": "Registration successful! Redirecting to sign in...",
+    "recovery": {
+      "title": "Reset your password",
+      "identifierLabel": "Email or username",
+      "identifierHint": "Enter the email address or username linked to your account.",
+      "identifierRequired": "Please enter your email or username.",
+      "continue": "Continue",
+      "channelLabel": "Where should we send it?",
+      "channelHint": "We will send you a temporary password to sign in with.",
+      "channelEmail": "Email: {{destination}}",
+      "channelSms": "SMS: {{destination}}",
+      "send": "Send temporary password",
+      "pleaseWait": "Please wait...",
+      "sent": "Temporary password sent to {{destination}}. Sign in with it within {{minutes}} minutes.",
+      "alreadySent": "A temporary password was already sent. You can request a new one in {{minutes}} minutes.",
+      "notFound": "No account was found with this email or username.",
+      "supportRequired": "No email or phone number is registered for this account. Please contact support.",
+      "failed": "Something went wrong. Please try again later.",
+      "backToSignIn": "Back to sign in"
+    },
+    "changePassword": {
+      "title": "Set a new password",
+      "info": "You signed in with a temporary password. Choose a new password to continue.",
+      "currentPassword": "Temporary password",
+      "currentPasswordHint": "Enter the temporary password you signed in with.",
+      "newPassword": "New password",
+      "newPasswordHint": "Choose a password with at least 4 characters.",
+      "confirmNewPassword": "Confirm new password",
+      "confirmNewPasswordHint": "Re-enter your new password.",
+      "save": "Save and continue",
+      "errors": {
+        "currentRequired": "Please enter your temporary password.",
+        "tooShort": "The new password must be at least 4 characters.",
+        "tooLong": "The new password is too long. Please choose a shorter one."
+      }
+    },
     "errors": {
       "loginRequired": "Please enter your email and password.",
       "invalidCredentials": "Invalid email or password.",

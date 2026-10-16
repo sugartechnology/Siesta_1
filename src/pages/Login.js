@@ -4,6 +4,7 @@ import "./Login.css";
 import { useAuth } from "../auth/useAuth";
 import { useTranslation } from "react-i18next";
 import LanguageSwitcher from "../components/LanguageSwitcher";
+import ForgotPasswordForm from "../components/ForgotPasswordForm";
 
 const REMEMBER_ME_KEY = "siesta_login_prefs";
 
@@ -47,7 +48,7 @@ const EyeOffIcon = () => (
   </svg>
 );
 
-function PasswordField({
+export function PasswordField({
   id,
   name,
   label,
@@ -103,6 +104,7 @@ const Login = () => {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [isLogin, setIsLogin] = useState(true);
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
 
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
@@ -179,7 +181,7 @@ const Login = () => {
 
     auth
       .login(loginEmail.trim(), loginPassword)
-      .then(() => {
+      .then((crmUser) => {
         try {
           if (rememberMe) {
             localStorage.setItem(
@@ -195,7 +197,7 @@ const Login = () => {
         } catch (storageError) {
           console.error("Failed to persist remember-me prefs:", storageError);
         }
-        navigate("/home");
+        navigate(crmUser?.forcePasswordChange ? "/change-password" : "/home");
       })
       .catch((error) => {
         console.error("Login error:", error);
@@ -297,6 +299,19 @@ const Login = () => {
     setShowRegisterConfirmPassword(false);
   };
 
+  const openForgotPassword = () => {
+    setIsForgotPassword(true);
+    setLoginError("");
+  };
+
+  // Recovery accepts email or username; only an email can prefill the sign-in field.
+  const closeForgotPassword = (identifier) => {
+    setIsForgotPassword(false);
+    if (identifier && validateEmail(identifier)) {
+      setLoginEmail(identifier);
+    }
+  };
+
   return (
     <div className="login-container">
       <div className="login-language-control">
@@ -319,11 +334,20 @@ const Login = () => {
         </div>
 
         <h3 className="login-page-title">
-          {isLogin ? t("login.signInToContinue") : t("login.createYourAccount")}
+          {isForgotPassword
+            ? t("login.recovery.title")
+            : isLogin
+              ? t("login.signInToContinue")
+              : t("login.createYourAccount")}
         </h3>
 
         <div className="login-card">
-          {isLogin ? (
+          {isForgotPassword ? (
+            <ForgotPasswordForm
+              initialIdentifier={loginEmail.trim()}
+              onBack={closeForgotPassword}
+            />
+          ) : isLogin ? (
             <form onSubmit={handleSignIn} className="login-form">
               {loginError && <div className="error-message">{loginError}</div>}
 
@@ -378,7 +402,11 @@ const Login = () => {
                 </label>
               </div>
 
-              <button type="button" className="forgot-password-btn">
+              <button
+                type="button"
+                className="forgot-password-btn"
+                onClick={openForgotPassword}
+              >
                 {t("login.forgotPassword")}
               </button>
 
@@ -495,7 +523,7 @@ const Login = () => {
             </form>
           )}
 
-          {isLogin ? (
+          {isForgotPassword ? null : isLogin ? (
             <div className="signup-link">
               {t("login.dontHaveAccount")}{" "}
               <span className="signup-link-text" onClick={switchToRegister}>
