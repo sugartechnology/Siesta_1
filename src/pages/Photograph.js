@@ -202,9 +202,9 @@ export default function Photograph() {
               <button
                 type="button"
                 className="transform-btn"
-                onClick={handleFlipHorizontal}
-                title={t("photograph.flipHorizontal")}
-                aria-label={t("photograph.flipHorizontal")}
+                onClick={handleFlipVertical}
+                title={t("photograph.flipVertical")}
+                aria-label={t("photograph.flipVertical")}
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path
@@ -219,9 +219,9 @@ export default function Photograph() {
               <button
                 type="button"
                 className="transform-btn"
-                onClick={handleFlipVertical}
-                title={t("photograph.flipVertical")}
-                aria-label={t("photograph.flipVertical")}
+                onClick={handleFlipHorizontal}
+                title={t("photograph.flipHorizontal")}
+                aria-label={t("photograph.flipHorizontal")}
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                   <path
