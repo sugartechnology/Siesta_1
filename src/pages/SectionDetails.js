@@ -543,17 +543,8 @@ const SectionDetails = () => {
   const handleRegenerate = async () => {
     if (!project?.id || !section?.id || isGenerating) return;
 
-    const hasSpaceType = Boolean(section?.type?.trim());
     const hasProducts = products.some((product) => (product.quantity ?? 1) > 0);
 
-    if (!hasSpaceType && !hasProducts) {
-      setDesignGenerationError(t("sectionDetails.generateDesignMissingBoth"));
-      return;
-    }
-    if (!hasSpaceType) {
-      setDesignGenerationError(t("sectionDetails.generateDesignMissingSpaceType"));
-      return;
-    }
     if (!hasProducts) {
       setDesignGenerationError(t("sectionDetails.generateDesignMissingProducts"));
       return;
