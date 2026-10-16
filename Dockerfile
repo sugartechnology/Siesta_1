@@ -35,6 +35,7 @@ COPY --from=builder /app/build ./build
 # Port 7764'i expose et
 EXPOSE 7764
 
-# serve ile SPA routing desteği ile çalıştır
-CMD ["serve", "-s", "build", "-l", "7764"]
+# serve ile çalıştır. SPA yönlendirmesi "-s" ile değil build/serve.json (public/serve.json) ile yapılıyor:
+# "-s" /.well-known/apple-app-site-association dosyasını da index.html'e çeviriyordu.
+CMD ["serve", "build", "-l", "7764"]
 
