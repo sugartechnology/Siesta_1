@@ -1,4 +1,9 @@
-import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
+import {
+  Route,
+  BrowserRouter as Router,
+  Routes,
+  useLocation,
+} from "react-router-dom";
 import "./App.css";
 import { AuthProvider } from "./auth/AuthProvider";
 import { useAuth } from "./auth/useAuth";
@@ -9,6 +14,7 @@ import BottomMenu from "./components/BottomMenu";
 import AccountSettings from "./pages/AccountSettings";
 import Camera from "./pages/Camera";
 import Catalog from "./pages/Catalog";
+import ChangePassword from "./pages/ChangePassword";
 import Home from "./pages/Home";
 import Login from "./pages/Login";
 import Photograph from "./pages/Photograph";
@@ -39,14 +45,17 @@ function NotFound() {
 
 function AppChrome() {
   const { user } = useAuth();
+  const location = useLocation();
+  // No menus while a new password is required: the CRM blocks every other page.
+  const showMenus = user && location.pathname !== "/change-password";
   return (
     <div className="App">
-      {user && <TopMenu />}
+      {showMenus && <TopMenu />}
       {/*<TopMenu />*/}
       <div className="app-content">
         <AppRoutes />
       </div>
-      {user && <BottomMenu />}
+      {showMenus && <BottomMenu />}
     </div>
   );
 }
@@ -74,6 +83,7 @@ function AppRoutes() {
     { path: "/photograph", element: <Photograph /> },
     { path: "/room-type", element: <RoomType /> },
     { path: "/account-settings", element: <AccountSettings /> },
+    { path: "/change-password", element: <ChangePassword /> },
   ];
 
   return (

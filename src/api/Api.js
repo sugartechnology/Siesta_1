@@ -28,6 +28,40 @@ export const registerUser = async (name, email, password) => {
   return await postData(endpoint, payload);
 };
 
+// ===== PASSWORD RECOVERY (public, no sign-in) =====
+// Accept-Language: CRM error messages come back in the app language (tr/en).
+
+/** POST /api/public/password-recovery/options → { matched, supportRequired, availableChannels: [{ channel, maskedDestination }], retryAfterSeconds } */
+export const getPasswordRecoveryOptions = async (identifier, language) => {
+  const endpoint = `${process.env.REACT_APP_API_URL}/public/password-recovery/options`;
+  const companySlug = process.env.REACT_APP_COMPANY_SLUG || "siesta";
+  const payload = { companySlug, identifier };
+  const headers = language ? { "Accept-Language": language } : undefined;
+  return await postData(endpoint, payload, headers);
+};
+
+/** POST /api/public/password-recovery/send, channel: "EMAIL" | "SMS" → { sent, supportRequired, maskedDestination, retryAfterSeconds, expiresInSeconds } */
+export const sendTemporaryPassword = async (identifier, channel, language) => {
+  const endpoint = `${process.env.REACT_APP_API_URL}/public/password-recovery/send`;
+  const companySlug = process.env.REACT_APP_COMPANY_SLUG || "siesta";
+  const payload = { companySlug, identifier, channel };
+  const headers = language ? { "Accept-Language": language } : undefined;
+  return await postData(endpoint, payload, headers);
+};
+
+/** PUT /api/user/me/password → 204. Allowed while a new password is required; afterwards the CRM ends all sessions. */
+export const changeCurrentUserPassword = async (
+  currentPassword,
+  newPassword,
+  confirmNewPassword,
+  language
+) => {
+  const endpoint = `${process.env.REACT_APP_API_URL}/user/me/password`;
+  const payload = { currentPassword, newPassword, confirmNewPassword };
+  const headers = language ? { "Accept-Language": language } : undefined;
+  return await postData(endpoint, payload, headers, "PUT");
+};
+
 // Get current user profile
 export const getCurrentUser = async () => {
   const endpoint = `${process.env.REACT_APP_API_URL}/user/me`;

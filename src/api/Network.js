@@ -52,6 +52,18 @@ const parseResponsePayload = async (response) => {
   }
 };
 
+// After signing in with a temporary password the CRM answers every request with
+// 403 PASSWORD_CHANGE_REQUIRED until a new password is set.
+const redirectIfPasswordChangeRequired = (status, payload) => {
+  if (
+    status === 403 &&
+    payload?.errorCode === "PASSWORD_CHANGE_REQUIRED" &&
+    window.location.pathname !== "/change-password"
+  ) {
+    window.location.assign("/change-password");
+  }
+};
+
 const buildHttpError = async (response) => {
   const payload = await parseResponsePayload(response);
   const message =
@@ -64,6 +76,7 @@ const buildHttpError = async (response) => {
   const error = new Error(message);
   error.status = response.status;
   error.payload = payload;
+  redirectIfPasswordChangeRequired(response.status, payload);
   return error;
 };
 

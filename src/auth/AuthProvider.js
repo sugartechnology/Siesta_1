@@ -131,6 +131,8 @@ export function AuthProvider({ children }) {
     }
     setToken(data.accessToken);
     setUser(mapLoginUserToSiesta(data.user));
+    // CRM user; forcePasswordChange is true after signing in with a temporary password.
+    return data.user;
   }
 
   async function register(name, email, password) {
