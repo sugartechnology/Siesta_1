@@ -159,6 +159,17 @@ export function AuthProvider({ children }) {
   }
 
   async function logout() {
+    // CRM keeps a 30-day refresh cookie; without clearing it the next
+    // session check signs the user straight back in.
+    try {
+      await fetch(API_URL + "/logout", {
+        method: "POST",
+        headers: buildAuthHeaders(token),
+        credentials: "include",
+      });
+    } catch (error) {
+      console.error("Logout request failed:", error);
+    }
     setToken(null);
     setUser(null);
     navigate("/login");
