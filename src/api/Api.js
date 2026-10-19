@@ -389,8 +389,10 @@ export const deleteSection = async (sectionId) => {
 };
 
 // Generate AI design for section
+// v2: CRM decor-ai'deki siesta-generate-design scriptini çalıştırır (istem, arthur → OpenAI ve model orada).
+// Geri dönmek için uç adresini "generate-design" yapmak yeter; cevap aynı.
 export const generateDesignForSection = async (projectId, sectionId, prompt) => {
-  const endpoint = `${process.env.REACT_APP_API_URL}/projects/${projectId}/sections/${sectionId}/generate-design`;
+  const endpoint = `${process.env.REACT_APP_API_URL}/projects/${projectId}/sections/${sectionId}/generate-design-v2`;
   const payload = new FormData();
   payload.append("prompt", prompt);
   return await postData(endpoint, payload);
