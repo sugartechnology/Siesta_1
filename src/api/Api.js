@@ -45,6 +45,14 @@ export const sendTemporaryPassword = async (identifier, channel, language) => {
   const endpoint = `${process.env.REACT_APP_API_URL}/public/password-recovery/send`;
   const companySlug = process.env.REACT_APP_COMPANY_SLUG || "siesta";
   const payload = { companySlug, identifier, channel };
+  // Sign-in link in the mail/SMS. The CRM uses it only if the signature (made once with the
+  // CRM's secret for this company and address) matches; otherwise it links to the CRM portal.
+  const loginUrl = process.env.REACT_APP_LOGIN_URL;
+  const loginUrlSignature = process.env.REACT_APP_LOGIN_URL_SIGNATURE;
+  if (loginUrl && loginUrlSignature) {
+    payload.loginUrl = loginUrl;
+    payload.loginUrlSignature = loginUrlSignature;
+  }
   const headers = language ? { "Accept-Language": language } : undefined;
   return await postData(endpoint, payload, headers);
 };
